@@ -1,0 +1,97 @@
+<div class="box">
+	<h2>Login Page</h2>
+
+	<form [formGroup]="loginForm" (ngSubmit)="UpdateData()">
+		<!-- Username field -->
+		<div class="form-field">
+			<label for="username">Username:</label>
+			<input id="username" type="text" formControlName="username" />
+			<div
+				*ngIf="
+					loginForm.get('username')?.touched &&
+					loginForm.get('username')?.errors
+				"
+				class="error"
+			>
+				<div *ngIf="loginForm.get('username')?.errors?.['required']">
+					Username is required
+				</div>
+				<div *ngIf="loginForm.get('username')?.errors?.['minlength']">
+					Username must be at least 4 characters
+				</div>
+			</div>
+		</div>
+
+		<!-- Password field -->
+		<div class="form-field">
+			<label for="password">Password:</label>
+			<input id="password" type="password" formControlName="password" />
+			<div
+				*ngIf="
+					loginForm.get('password')?.touched &&
+					loginForm.get('password')?.errors
+				"
+				class="error"
+			>
+				<div *ngIf="loginForm.get('password')?.errors?.['required']">
+					Password is required
+				</div>
+			</div>
+		</div>
+
+		<!-- Nested email fields -->
+		<div formGroupName="email" class="email-group">
+			<h3>Email Information</h3>
+
+			<div class="form-field">
+				<label for="provider">Email Provider:</label>
+				<input id="provider" type="text" formControlName="provider" />
+			</div>
+
+			<div class="form-field">
+				<label for="emailString">Full Email:</label>
+				<input
+					id="emailString"
+					type="email"
+					formControlName="emailString"
+				/>
+				<div
+					*ngIf="
+						loginForm.get('email.emailString')?.touched &&
+						loginForm.get('email.emailString')?.errors
+					"
+					class="error"
+				>
+					<div
+						*ngIf="loginForm.get('email.emailString')?.errors?.['email']"
+					>
+						Please enter a valid email
+					</div>
+				</div>
+			</div>
+		</div>
+		<div
+			*ngIf="loginForm.hasError('emailProviderMismatch')"
+			class="cross-validation-error-message alert alert-danger"
+			>
+			Email must match its provider
+		</div>
+
+		<button type="submit" [disabled]="!loginForm.valid">Submit</button>
+	</form>
+
+	<p>Form Status: {{ loginForm.status }}</p>
+</div>
+
+<!-- Display data when available -->
+<div *ngIf="dataAvailable(); else noData" class="data-display">
+	<h3>Form Data:</h3>
+	<p>Username = {{ loginForm.get("username")?.value || "" }}</p>
+	<p>Password = {{ loginForm.get("password")?.value || "" }}</p>
+	<p>Email Provider = {{ loginForm.get("email.provider")?.value || "" }}</p>
+	<p>Email = {{ loginForm.get("email.emailString")?.value || "" }}</p>
+</div>
+
+<ng-template #noData>
+	<h2 style="color: chartreuse">Complete the form to see data</h2>
+</ng-template>

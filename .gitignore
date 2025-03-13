@@ -52,3 +52,25 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+# Angular specific
+.angular/
+.angular-cache/
+coverage/
+dist/
+tmp/
+temp/
+out-tsc/
+node_modules/
+
+# Angular build artifacts
+*.ngfactory.ts
+*.ngsummary.json
+
+# Angular environment files
+src/environments/environment*.ts
+
+# Angular IDE specific
+.idea/
+.vscode/
+.sublime-project
+.sublime-workspace

@@ -1,0 +1,10 @@
+$primary-color: #004c7e;
+@mixin rounded-corners($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+}
+
+.button {
+  @include rounded-corners(5px);
+}
