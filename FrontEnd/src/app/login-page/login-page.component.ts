@@ -12,8 +12,10 @@ import {
 	Validators,
 } from '@angular/forms';
 import { first } from 'rxjs';
+import { UserGetterService } from '../user-getter.service';
+import { response } from 'express';
 
-export function EmailProviderValidator(
+/* export function EmailProviderValidator(
     email: string,
     provider: string
 ): ValidatorFn {
@@ -25,15 +27,15 @@ export function EmailProviderValidator(
             return null;
         }
         
-        const emailString: string = emailControl.value || '';
+        const email: string = emailControl.value || '';
         const emailProvider: string = providerControl.value || '';
         
-        if (!emailProvider || !emailString) {
+        if (!emailProvider || !email) {
             return null;
         }
         
         // Check if email contains the provider
-        if (emailString.includes(emailProvider)) {
+        if (email.includes(emailProvider)) {
             return null;
         }
         
@@ -41,7 +43,7 @@ export function EmailProviderValidator(
         return { emailProviderMismatch: true };
     };
 }
-
+ */
 @Component({
 	selector: 'app-login-page',
 	standalone: true,
@@ -51,23 +53,19 @@ export function EmailProviderValidator(
 })
 export class LoginPageComponent {
 	private formBuilder = inject(FormBuilder);
-	loginForm = this.formBuilder.group(
-		{
-			username: ['', [Validators.required, Validators.minLength(4)]],
-			password: ['', Validators.required],
-			email: this.formBuilder.group({
-				provider: [''],
-				emailString: ['', Validators.email],
-			}),
-		},
-		{
-			validators: EmailProviderValidator(
-				'email.emailString',
-				'email.provider'
-			),
-		}
-	);
-
+	private userGetterService = inject(UserGetterService);
+	private isRegistering: boolean = false;
+	usernameExist: boolean = false;
+	usernameChecked: string = '';
+	emailExists: boolean = false;
+	emailError: string = '';
+	showEmailConfirmation: boolean = false;
+	foundUsername: string = '';
+	loginForm = this.formBuilder.group({
+		username: ['', [Validators.required, Validators.minLength(4)]],
+		password: ['', Validators.required],
+		email: ['', Validators.email],
+	});
 	dataAvailable(): boolean {
 		const usernameValue: string =
 			this.loginForm.get('username')?.value || '';
@@ -80,6 +78,109 @@ export class LoginPageComponent {
 			passwordValue.trim() !== ''
 		);
 	}
+	checkIfUserExist(): void {
+		const username: string | null =
+			this.loginForm.get('username')?.value || '';
+		const email: string | null = this.loginForm.get('email')?.value || '';
+
+		if (!username && !email && !this.loginForm.get('username')?.errors)
+			return;
+		this.userGetterService.userExists(email, username).subscribe({
+			next: (response) => {
+				if (username) {
+					this.usernameChecked = username;
+					this.usernameExist = response.userExists;
+					if (!this.usernameExist) {
+						this.isRegistering = true;
+					}
+				}
+			},
+		});
+	}
+	checkEmailExists(): void {
+		const email = this.loginForm.get('email')?.value;
+
+		if (email && !this.loginForm.get('email')?.errors) {
+			this.userGetterService.userExists(email, null).subscribe({
+				next: (response) => {
+					this.emailExists = response.userExists;
+
+					if (this.emailExists) {
+						// Email exists, get the username but don't auto-fill
+						this.userGetterService
+							.getUsernameByEmail(email)
+							.subscribe({
+								next: (usernameResponse) => {
+									if (usernameResponse.username) {
+										// Show confirmation dialog instead of auto-filling
+										this.foundUsername =
+											usernameResponse.username;
+										this.showEmailConfirmation = true;
+									}
+								},
+								error: (error) => {
+									console.error(
+										'Error retrieving username:',
+										error
+									);
+									this.emailError =
+										'Error retrieving account information.';
+								},
+							});
+					} else {
+						// Email doesn't exist, which is fine for registration
+						this.emailError = '';
+					}
+				},
+				error: (error) => {
+					console.error('Error checking email existence:', error);
+					this.emailError = 'Error checking email.';
+				},
+			});
+		}
+	}
+
+	/**
+	 * Handle user confirming they are the account holder
+	 */
+	confirmEmailUser(): void {
+		// Set the username from the found account
+		this.loginForm.patchValue({
+			username: this.foundUsername,
+		});
+		this.usernameChecked = this.foundUsername;
+		this.usernameExist = true;
+
+		// Hide the confirmation dialog
+		this.showEmailConfirmation = false;
+
+		// Focus on the password field
+		setTimeout(() => {
+			document.getElementById('password')?.focus();
+		}, 100);
+	}
+
+	/**
+	 * Handle user canceling the email confirmation
+	 */
+	cancelEmailConfirmation(): void {
+		// Hide the confirmation dialog
+		this.showEmailConfirmation = false;
+
+		// Clear the email field
+		this.loginForm.patchValue({
+			email: '',
+		});
+
+		// Show error message
+		this.emailError =
+			'This email is already in use. Please use a different email.';
+
+		// Focus back on the email field
+		setTimeout(() => {
+			document.getElementById('email')?.focus();
+		}, 100);
+	}
 
 	UpdateData(): void {
 		if (this.loginForm.valid) {
@@ -90,5 +191,8 @@ export class LoginPageComponent {
 			// Mark all fields as touched to display validation errors
 			this.loginForm.markAllAsTouched();
 		}
+	}
+	registerDiv(): boolean {
+		return this.isRegistering;
 	}
 }

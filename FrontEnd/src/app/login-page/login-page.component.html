@@ -2,10 +2,15 @@
 	<h2>Login Page</h2>
 
 	<form [formGroup]="loginForm" (ngSubmit)="UpdateData()">
-		<!-- Username field -->
+		<!-- Username field with user existence check -->
 		<div class="form-field">
 			<label for="username">Username:</label>
-			<input id="username" type="text" formControlName="username" />
+			<input
+				id="username"
+				type="text"
+				formControlName="username"
+				(blur)="checkIfUserExist()"
+			/>
 			<div
 				*ngIf="
 					loginForm.get('username')?.touched &&
@@ -20,9 +25,51 @@
 					Username must be at least 4 characters
 				</div>
 			</div>
+
+			<!-- User existence feedback -->
+			<div
+				*ngIf="
+					usernameChecked &&
+					usernameChecked === loginForm.get('username')?.value
+				"
+				class="user-status"
+			>
+				<div *ngIf="usernameExist" class="exists">
+					User exists. Please enter password to login.
+				</div>
+				<div *ngIf="!usernameExist" class="not-exists">
+					Username not found. Please complete registration.
+				</div>
+			</div>
+		</div>
+
+		<div class="form-field" *ngIf="registerDiv()">
+			<label for="email">Full Email:</label>
+			<input
+				id="email"
+				type="email"
+				formControlName="email"
+				(blur)="checkEmailExists()"
+			/>
+			<div
+				*ngIf="
+					loginForm.get('email')?.touched &&
+					loginForm.get('email')?.errors
+				"
+				class="error"
+			>
+				<div *ngIf="loginForm.get('email')?.errors">
+					Please enter a valid email
+				</div>
+			</div>
+			<!-- Email existence feedback -->
+			<div *ngIf="emailError" class="error email-exists">
+				{{ emailError }}
+			</div>
 		</div>
 
 		<!-- Password field -->
+
 		<div class="form-field">
 			<label for="password">Password:</label>
 			<input id="password" type="password" formControlName="password" />
@@ -39,48 +86,56 @@
 			</div>
 		</div>
 
-		<!-- Nested email fields -->
-		<div formGroupName="email" class="email-group">
-			<h3>Email Information</h3>
-
-			<div class="form-field">
-				<label for="provider">Email Provider:</label>
-				<input id="provider" type="text" formControlName="provider" />
-			</div>
-
-			<div class="form-field">
-				<label for="emailString">Full Email:</label>
-				<input
-					id="emailString"
-					type="email"
-					formControlName="emailString"
-				/>
-				<div
-					*ngIf="
-						loginForm.get('email.emailString')?.touched &&
-						loginForm.get('email.emailString')?.errors
-					"
-					class="error"
-				>
-					<div
-						*ngIf="loginForm.get('email.emailString')?.errors?.['email']"
-					>
-						Please enter a valid email
-					</div>
-				</div>
-			</div>
-		</div>
-		<div
-			*ngIf="loginForm.hasError('emailProviderMismatch')"
-			class="cross-validation-error-message alert alert-danger"
-			>
-			Email must match its provider
-		</div>
-
-		<button type="submit" [disabled]="!loginForm.valid">Submit</button>
+		<button
+			type="submit"
+			[disabled]="!loginForm.valid"
+			[ngClass]="{ disabled: !loginForm.valid }"
+		>
+			LOGIN
+		</button>
+		<p></p>
+		<button
+			type="submit"
+			[disabled]="!loginForm.valid"
+			[ngClass]="{ disabled: !loginForm.valid }"
+		>
+			REGISTER
+		</button>
 	</form>
 
 	<p>Form Status: {{ loginForm.status }}</p>
+	<!-- Email Confirmation Modal -->
+	<div class="modal-overlay" *ngIf="showEmailConfirmation">
+		<div class="modal-dialog">
+			<h3>Account Found</h3>
+			<p>
+				An account with the email
+				<strong>{{ loginForm.get("email")?.value }}</strong> already
+				exists.
+			</p>
+			<p>
+				Would you like to sign in as <strong>{{ foundUsername }}</strong
+				>?
+			</p>
+
+			<div class="modal-actions">
+				<button
+					type="button"
+					class="btn-secondary"
+					(click)="cancelEmailConfirmation()"
+				>
+					No, use different email
+				</button>
+				<button
+					type="button"
+					class="btn-primary"
+					(click)="confirmEmailUser()"
+				>
+					Yes, that's me
+				</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <!-- Display data when available -->
