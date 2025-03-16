@@ -86,56 +86,44 @@
 			</div>
 		</div>
 
-		<button
-			type="submit"
-			[disabled]="!loginForm.valid"
-			[ngClass]="{ disabled: !loginForm.valid }"
-		>
-			LOGIN
-		</button>
-		<p></p>
-		<button
-			type="submit"
-			[disabled]="!loginForm.valid"
-			[ngClass]="{ disabled: !loginForm.valid }"
-		>
-			REGISTER
-		</button>
+		<div class="button-group">
+			<my-ui-button
+				*ngIf="!registerDiv()"
+				text="LOGIN"
+				variant="default"
+				size="lg"
+				[disabled]="!loginForm.valid"
+				(buttonClick)="UpdateData()"
+			></my-ui-button>
+
+			<my-ui-button
+				*ngIf="registerDiv()"
+				text="REGISTER"
+				variant="outline"
+				size="lg"
+				[disabled]="!loginForm.valid"
+				(buttonClick)="UpdateData()"
+			></my-ui-button>
+		</div>
 	</form>
 
 	<p>Form Status: {{ loginForm.status }}</p>
 	<!-- Email Confirmation Modal -->
-	<div class="modal-overlay" *ngIf="showEmailConfirmation">
-		<div class="modal-dialog">
-			<h3>Account Found</h3>
-			<p>
-				An account with the email
-				<strong>{{ loginForm.get("email")?.value }}</strong> already
-				exists.
-			</p>
-			<p>
-				Would you like to sign in as <strong>{{ foundUsername }}</strong
-				>?
-			</p>
-
-			<div class="modal-actions">
-				<button
-					type="button"
-					class="btn-secondary"
-					(click)="cancelEmailConfirmation()"
-				>
-					No, use different email
-				</button>
-				<button
-					type="button"
-					class="btn-primary"
-					(click)="confirmEmailUser()"
-				>
-					Yes, that's me
-				</button>
-			</div>
-		</div>
-	</div>
+	<app-confirmation-modal
+		[show]="showEmailConfirmation"
+		title="Account Found"
+		[message]="
+			'An account with the email ' +
+			(loginForm.get('email')?.value || '') +
+			' already exists.'
+		"
+		description="Would you like to sign in as"
+		[highlightedText]="foundUsername"
+		confirmText="Yes, that's me"
+		cancelText="No, use different email"
+		(confirmed)="confirmEmailUser()"
+		(cancelled)="cancelEmailConfirmation()"
+	></app-confirmation-modal>
 </div>
 
 <!-- Display data when available -->

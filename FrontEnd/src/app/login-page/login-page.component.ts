@@ -14,6 +14,8 @@ import {
 import { first } from 'rxjs';
 import { UserGetterService } from '../user-getter.service';
 import { response } from 'express';
+import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
+import { ButtonComponent } from 'my-ui';
 
 /* export function EmailProviderValidator(
     email: string,
@@ -47,7 +49,12 @@ import { response } from 'express';
 @Component({
 	selector: 'app-login-page',
 	standalone: true,
-	imports: [CommonModule, ReactiveFormsModule],
+	imports: [
+		CommonModule,
+		ReactiveFormsModule,
+		ConfirmationModalComponent,
+		ButtonComponent,
+	],
 	templateUrl: './login-page.component.html',
 	styleUrl: './login-page.component.scss',
 })
@@ -116,6 +123,7 @@ export class LoginPageComponent {
 										this.foundUsername =
 											usernameResponse.username;
 										this.showEmailConfirmation = true;
+										console.log('email already present');
 									}
 								},
 								error: (error) => {
