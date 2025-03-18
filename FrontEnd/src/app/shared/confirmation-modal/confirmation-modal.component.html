@@ -1,0 +1,27 @@
+<div class="modal-overlay" *ngIf="show">
+	<div class="modal-dialog">
+		<h3>{{ title }}</h3>
+		<p>{{ message }}</p>
+		<p *ngIf="description">
+			{{ description }}
+			<strong *ngIf="highlightedText">{{ highlightedText }}</strong>
+		</p>
+		<div class="button-group">
+			<!-- Cancel Button -->
+			<my-ui-button
+				[text]="cancelText"
+				variant="secondary"
+				[disabled]="false"
+				(buttonClick)="onCancel()"
+			></my-ui-button>
+
+			<!-- Confirm Button -->
+			<my-ui-button
+				[text]="confirmText"
+				variant="default"
+				[disabled]="false"
+				(buttonClick)="onConfirm()"
+			></my-ui-button>
+		</div>
+	</div>
+</div>
