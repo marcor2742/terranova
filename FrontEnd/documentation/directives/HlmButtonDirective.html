@@ -79,7 +79,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content directive">
                    <div class="content-data">
 
 
@@ -88,10 +88,9 @@
 
 
 
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >LoginService</li>
+  <li class="breadcrumb-item">Directives</li>
+  <li class="breadcrumb-item" >HlmButtonDirective</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -115,23 +114,38 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/app/login.service.ts</code>
+            <code>libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts</code>
         </p>
 
 
-            <p class="comment">
-                <h3>Description</h3>
-            </p>
-            <p class="comment">
-                <p>Service responsible for handling user authentication and registration.</p>
-<p>This service provides methods to log in and register users by making HTTP requests to the backend API.</p>
-<b>Example :</b><div><pre class="line-numbers"><code class="language-html">```typescript
-constructor(private loginService: LoginService) {}</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-html">  console.log(response);
-});</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-html">  console.log(response);
-});</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-none"></code></pre></div>
-            </p>
 
 
+
+
+        <section data-compodoc="block-metadata">
+            <h3>Metadata</h3>
+            <table class="table table-sm table-hover metadata">
+                <tbody>
+
+                    <tr>
+                        <td class="col-md-3">Selector</td>
+                        <td class="col-md-9"><code>[hlmBtn]</code></td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-3">Standalone</td>
+                        <td class="col-md-9"><code>true</code></td>
+                    </tr>
+
+
+                    <tr>
+                        <td class="col-md-3">exportAs</td>
+                        <td class="col-md-9"><code>hlmBtn</code></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </section>
 
             <section data-compodoc="block-index">
     <h3 id="index">Index</h3>
@@ -147,11 +161,33 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#loginUrl" >loginUrl</a>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_additionalClasses" >_additionalClasses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_computedClass" >_computedClass</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#registerUrl" >registerUrl</a>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#_config" >_config</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#size" >size</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#userClass" >userClass</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#variant" >variant</a>
                             </li>
                         </ul>
                     </td>
@@ -166,10 +202,7 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#login" >login</a>
-                            </li>
-                            <li>
-                                <a href="#register" >register</a>
+                                <a href="#setClass" >setClass</a>
                             </li>
                         </ul>
                     </td>
@@ -183,54 +216,10 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(http: HttpClient)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/login.service.ts:45</a></div>
-                            </td>
-                        </tr>
 
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>http</td>
-                                                  
-                                                        <td>
-                                                                    <code>HttpClient</code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
+
+
+
 
             <section data-compodoc="block-methods">
     
@@ -241,32 +230,30 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="login"></a>
+                    <a name="setClass"></a>
                     <span class="name">
-                        <span ><b>login</b></span>
-                        <a href="#login"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>setClass</b></span>
+                        <a href="#setClass"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>login(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, password: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>setClass(classes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">src/app/login.service.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:57</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                        <div class="io-description"><p>Logs in a user with the provided email and password.</p>
-</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -277,12 +264,11 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>email</td>
+                                                <td>classes</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -292,118 +278,16 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
                                             </td>
 
 
-                                            <td>
-                                                    <ul>
-<li>The email address of the user.</li>
-</ul>
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                                <td>password</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                            <td>
-                                                    <ul>
-<li>The password of the user.</li>
-</ul>
-
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/AuthResponse.html" target="_self" >Observable&lt;AuthResponse&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
                             <div class="io-description">
-                                <p>An observable of the authentication response.</p>
-
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="register"></a>
-                    <span class="name">
-                        <span ><b>register</b></span>
-                        <a href="#register"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>register(userData: <a href="../classes/User.html" target="_self">Partial&lt;User&gt;</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">src/app/login.service.ts:68</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-                        <div class="io-description"><p>Registers a new user with the provided user data.</p>
-</div>
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
                                 
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userData</td>
-                                            <td>
-                                                            <code><a href="../classes/User.html" target="_self" >Partial&lt;User&gt;</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                            <td>
-                                                    <ul>
-<li>Partial user data containing at least email and password.</li>
-</ul>
-
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/AuthResponse.html" target="_self" >Observable&lt;AuthResponse&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                <p>An observable of the authentication response.</p>
-
                             </div>
                 </td>
             </tr>
@@ -419,22 +303,23 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="loginUrl"></a>
+                    <a name="_additionalClasses"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
-                        <span ><b>loginUrl</b></span>
-                        <a href="#loginUrl"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_additionalClasses</b></span>
+                        <a href="#_additionalClasses"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>environment.loginUrl</code>
+                        <i>Default value : </i><code>signal&lt;ClassValue&gt;(&#x27;&#x27;)</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/login.service.ts:44</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -445,22 +330,133 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="registerUrl"></a>
+                    <a name="_computedClass"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>registerUrl</b></span>
-                        <a href="#registerUrl"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Protected</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_computedClass</b></span>
+                        <a href="#_computedClass"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>environment.registerUrl</code>
+                        <i>Default value : </i><code>computed(() &#x3D;&gt;
+		hlm(buttonVariants({ variant: this.variant(), size: this.size() }), this.userClass(), this._additionalClasses()),
+	)</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/app/login.service.ts:45</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_config"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>_config</b></span>
+                        <a href="#_config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>injectBrnButtonConfig()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="size"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>size</b></span>
+                        <a href="#size"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>input&lt;ButtonVariants[&#x27;size&#x27;]&gt;(this._config.size)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userClass"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>userClass</b></span>
+                        <a href="#userClass"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>input&lt;ClassValue&gt;(&#x27;&#x27;, { alias: &#x27;class&#x27; })</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="variant"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>variant</b></span>
+                        <a href="#variant"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>input&lt;ButtonVariants[&#x27;variant&#x27;]&gt;(this._config.variant)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">libs/ui/ui-button-helm/src/lib/hlm-button.directive.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -469,88 +465,76 @@ constructor(private loginService: LoginService) {}</code></pre></div><b>Example 
     </table>
 </section>
 
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
-import { environment } from &#x27;../environments/environment&#x27;;
-import { HttpClient } from &#x27;@angular/common/http&#x27;;
-import { Observable } from &#x27;rxjs&#x27;;
-import { User } from &#x27;./user&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Directive, computed, input, signal } from &#x27;@angular/core&#x27;;
+import { hlm } from &#x27;@spartan-ng/brain/core&#x27;;
+import { type VariantProps, cva } from &#x27;class-variance-authority&#x27;;
+import type { ClassValue } from &#x27;clsx&#x27;;
+import { injectBrnButtonConfig } from &#x27;./hlm-button.token&#x27;;
 
-/**
- * Represents the response received after an authentication attempt.
- * 
- * @interface AuthResponse
- * @property {User} user - The authenticated user details.
- * @property {string} token - The JWT token provided upon successful authentication.
- * @property {string} [error] - An optional error message if the authentication fails.
- */
-interface AuthResponse {
-	user: User;
-	token: string;
-	error?: string;
-}
+export const buttonVariants &#x3D; cva(
+	&#x27;inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background&#x27;,
+	{
+		variants: {
+			variant: {
+				default: &#x27;bg-primary text-primary-foreground hover:bg-primary/90&#x27;,
+				destructive: &#x27;bg-destructive text-destructive-foreground hover:bg-destructive/90&#x27;,
+				outline: &#x27;border border-input hover:bg-accent hover:text-accent-foreground&#x27;,
+				secondary: &#x27;bg-secondary text-secondary-foreground hover:bg-secondary/80&#x27;,
+				ghost: &#x27;hover:bg-accent hover:text-accent-foreground&#x27;,
+				link: &#x27;underline-offset-4 hover:underline text-primary&#x27;,
+			},
+			size: {
+				default: &#x27;h-10 py-2 px-4&#x27;,
+				sm: &#x27;h-9 px-3 rounded-md&#x27;,
+				lg: &#x27;h-11 px-8 rounded-md&#x27;,
+				icon: &#x27;h-10 w-10&#x27;,
+			},
+		},
+		defaultVariants: {
+			variant: &#x27;default&#x27;,
+			size: &#x27;default&#x27;,
+		},
+	},
+);
+export type ButtonVariants &#x3D; VariantProps&lt;typeof buttonVariants&gt;;
 
-/**
- * Service responsible for handling user authentication and registration.
- * 
- * @remarks
- * This service provides methods to log in and register users by making HTTP requests to the backend API.
- * 
- * @example
- * &#x60;&#x60;&#x60;typescript
- * constructor(private loginService: LoginService) {}
- * 
- * this.loginService.login(&#x27;user@example.com&#x27;, &#x27;password123&#x27;).subscribe(response &#x3D;&gt; {
- *   console.log(response);
- * });
- * 
- * this.loginService.register({ email: &#x27;newuser@example.com&#x27;, password: &#x27;password123&#x27; }).subscribe(response &#x3D;&gt; {
- *   console.log(response);
- * });
- * &#x60;&#x60;&#x60;
- */
-@Injectable({
-	providedIn: &#x27;root&#x27;,
+@Directive({
+	selector: &#x27;[hlmBtn]&#x27;,
+	standalone: true,
+	exportAs: &#x27;hlmBtn&#x27;,
+	host: {
+		&#x27;[class]&#x27;: &#x27;_computedClass()&#x27;,
+	},
 })
-export class LoginService {
-	private loginUrl &#x3D; environment.loginUrl;
-	private registerUrl &#x3D; environment.registerUrl;
-	constructor(private http: HttpClient) {}
+export class HlmButtonDirective {
+	private readonly _config &#x3D; injectBrnButtonConfig();
 
-	/**
-	 * Logs in a user with the provided email and password.
-	 * 
-	 * @param email - The email address of the user.
-	 * @param password - The password of the user.
-	 * @returns An observable of the authentication response.
-	 */
-	login(email: string, password: string): Observable&lt;AuthResponse&gt; {
-		return this.http.post&lt;AuthResponse&gt;(&#x60;${this.loginUrl}&#x60;, {
-			email,
-			password,
-		});
-	}
+	private readonly _additionalClasses &#x3D; signal&lt;ClassValue&gt;(&#x27;&#x27;);
 
-	/**
-	 * Registers a new user with the provided user data.
-	 * 
-	 * @param userData - Partial user data containing at least email and password.
-	 * @returns An observable of the authentication response.
-	 */
-	register(userData: Partial&lt;User&gt;): Observable&lt;AuthResponse&gt; {
-		return this.http.post&lt;AuthResponse&gt;(
-			&#x60;${this.registerUrl}&#x60;,
-			userData
-		);
+	public readonly userClass &#x3D; input&lt;ClassValue&gt;(&#x27;&#x27;, { alias: &#x27;class&#x27; });
+
+	protected readonly _computedClass &#x3D; computed(() &#x3D;&gt;
+		hlm(buttonVariants({ variant: this.variant(), size: this.size() }), this.userClass(), this._additionalClasses()),
+	);
+
+	public readonly variant &#x3D; input&lt;ButtonVariants[&#x27;variant&#x27;]&gt;(this._config.variant);
+
+	public readonly size &#x3D; input&lt;ButtonVariants[&#x27;size&#x27;]&gt;(this._config.size);
+
+	setClass(classes: string): void {
+		this._additionalClasses.set(classes);
 	}
 }
 </code></pre>
     </div>
 
 </div>
+
 
 
 
@@ -589,8 +573,8 @@ export class LoginService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'LoginService.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'directive';
+            var COMPODOC_CURRENT_PAGE_URL = 'HlmButtonDirective.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

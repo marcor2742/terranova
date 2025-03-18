@@ -54,10 +54,6 @@ export class UserGetterService {
 		email: string | null,
 		username: string | null
 	): Observable<UserExist> {
-		return new Observable<UserExist>((observer) => {
-			observer.next({ userExists: false });
-			observer.complete();
-		});
 		if (email) {
 			return this.http.get<UserExist>(`${this.userCheckerUrl}/${email}`);
 		} else if (username) {
@@ -99,10 +95,6 @@ export class UserGetterService {
 	 * @returns Observable containing the username and possible error messages
 	 */
 	getUsernameByEmail(email: string): Observable<{ username: string; errors?: string[] }> {
-		return new Observable<{username:string; errors?:string[]}>((observer) => {
-			observer.next({ username : 'lollo' });
-			observer.complete();
-		});
 		return this.http.get<{ username: string; errors?: string[] }>(
 			`${this.userInfoUrl}/usernameByEmail/${email}`
 		);

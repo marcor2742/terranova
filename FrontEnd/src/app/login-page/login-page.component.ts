@@ -16,36 +16,6 @@ import { UserGetterService } from '../user-getter.service';
 import { response } from 'express';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ButtonComponent } from 'my-ui';
-
-/* export function EmailProviderValidator(
-    email: string,
-    provider: string
-): ValidatorFn {
-    return (formGroup: AbstractControl): ValidationErrors | null => {
-        const emailControl = formGroup.get(email);
-        const providerControl = formGroup.get(provider);
-
-        if (!emailControl || !providerControl || emailControl.errors || providerControl.errors) {
-            return null;
-        }
-        
-        const email: string = emailControl.value || '';
-        const emailProvider: string = providerControl.value || '';
-        
-        if (!emailProvider || !email) {
-            return null;
-        }
-        
-        // Check if email contains the provider
-        if (email.includes(emailProvider)) {
-            return null;
-        }
-        
-        // Return validation error
-        return { emailProviderMismatch: true };
-    };
-}
- */
 @Component({
 	selector: 'app-login-page',
 	standalone: true,
@@ -138,6 +108,7 @@ export class LoginPageComponent {
 					} else {
 						// Email doesn't exist, which is fine for registration
 						this.emailError = '';
+
 					}
 				},
 				error: (error) => {
@@ -201,6 +172,6 @@ export class LoginPageComponent {
 		}
 	}
 	registerDiv(): boolean {
-		return this.isRegistering;
-	}
+		return !this.usernameExist && this.usernameChecked !== '';
+	  }
 }

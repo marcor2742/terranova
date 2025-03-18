@@ -204,9 +204,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
 import { environment } from &#x27;../environments/environment&#x27;;
-import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { HttpClient, HttpParams } from &#x27;@angular/common/http&#x27;;
 import { Observable } from &#x27;rxjs&#x27;;
 import { User } from &#x27;./user&#x27;;
+
 /**
  * Response interface for user existence check
  * @property userExists - Indicates if a user with the given email/username exists
@@ -214,23 +215,53 @@ import { User } from &#x27;./user&#x27;;
 interface UserExist {
 	userExists: boolean;
 }
+
+/**
+ * Simple respone for user infomation
+ * @property user - the user returned by the response
+ * @property errors - Optional errors if something goes wrong
+ */
 interface UserGetter {
-	user: User
-	errors?: string
+	user: User;
+	errors?: string;
+}
+
+/**
+ * Response interface for partial user data requests
+ * @property userData - Selected user fields
+ * @property errors - Array of error messages if issues occur
+ */
+interface PartialUserResponse {
+	userData: Partial&lt;User&gt;;
+	errors?: string[];
 }
 
 @Injectable({
 	providedIn: &#x27;root&#x27;,
 })
+/**
+ * Service to handle user information
+ * Checks with the Auth API for the user existance and info
+ */
 export class UserGetterService {
 	private userInfoUrl: string &#x3D; environment.userInfoUrl;
 	private userCheckerUrl: string &#x3D; environment.userCheckerUrl;
 	constructor(private http: HttpClient) {}
 
+	/**
+	 * Check if a user with provided credentials exist
+	 * @param email - Email to check if a corresponding user exists
+	 * @param username - Username to check if a corresponding user exists
+	 * @returns Observable&lt;UserExist&gt; - Observable that returns the user existence
+	 */
 	userExists(
 		email: string | null,
 		username: string | null
 	): Observable&lt;UserExist&gt; {
+		return new Observable&lt;UserExist&gt;((observer) &#x3D;&gt; {
+			observer.next({ userExists: false });
+			observer.complete();
+		});
 		if (email) {
 			return this.http.get&lt;UserExist&gt;(&#x60;${this.userCheckerUrl}/${email}&#x60;);
 		} else if (username) {
@@ -243,6 +274,42 @@ export class UserGetterService {
 				observer.complete();
 			});
 		}
+	}
+
+	userInfo(): Observable&lt;UserGetter&gt; {
+		return this.http.get&lt;UserGetter&gt;(&#x60;${this.userInfoUrl}&#x60;);
+	}
+
+	/**
+	 * Retrieves specific user fields to minimize payload size
+	 * @param userId - ID of the user to retrieve
+	 * @param fields - Array of field names to include in response
+	 * @returns Observable containing requested user fields and possible error messages
+	 */
+	getUserPartial(
+		userId: string,
+		fields: string[]
+	): Observable&lt;PartialUserResponse&gt; {
+		const params &#x3D; new HttpParams().set(&#x27;fields&#x27;, fields.join(&#x27;,&#x27;));
+		return this.http.get&lt;PartialUserResponse&gt;(
+			&#x60;${this.userInfoUrl}/${userId}&#x60;,
+			{ params }
+		);
+	}
+
+	/**
+	 * Retrieves the username associated with the provided email
+	 * @param email - Email of the user to retrieve the username for
+	 * @returns Observable containing the username and possible error messages
+	 */
+	getUsernameByEmail(email: string): Observable&lt;{ username: string; errors?: string[] }&gt; {
+		return new Observable&lt;{username:string; errors?:string[]}&gt;((observer) &#x3D;&gt; {
+			observer.next({ username : &#x27;lollo&#x27; });
+			observer.complete();
+		});
+		return this.http.get&lt;{ username: string; errors?: string[] }&gt;(
+			&#x60;${this.userInfoUrl}/usernameByEmail/${email}&#x60;
+		);
 	}
 }
 </code></pre>

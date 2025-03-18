@@ -126,6 +126,13 @@
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Represents the response received after an authentication attempt.</p>
+
+            </p>
 
 
         <section data-compodoc="block-index">
@@ -285,12 +292,39 @@ import { HttpClient } from &#x27;@angular/common/http&#x27;;
 import { Observable } from &#x27;rxjs&#x27;;
 import { User } from &#x27;./user&#x27;;
 
+/**
+ * Represents the response received after an authentication attempt.
+ * 
+ * @interface AuthResponse
+ * @property {User} user - The authenticated user details.
+ * @property {string} token - The JWT token provided upon successful authentication.
+ * @property {string} [error] - An optional error message if the authentication fails.
+ */
 interface AuthResponse {
 	user: User;
 	token: string;
 	error?: string;
 }
 
+/**
+ * Service responsible for handling user authentication and registration.
+ * 
+ * @remarks
+ * This service provides methods to log in and register users by making HTTP requests to the backend API.
+ * 
+ * @example
+ * &#x60;&#x60;&#x60;typescript
+ * constructor(private loginService: LoginService) {}
+ * 
+ * this.loginService.login(&#x27;user@example.com&#x27;, &#x27;password123&#x27;).subscribe(response &#x3D;&gt; {
+ *   console.log(response);
+ * });
+ * 
+ * this.loginService.register({ email: &#x27;newuser@example.com&#x27;, password: &#x27;password123&#x27; }).subscribe(response &#x3D;&gt; {
+ *   console.log(response);
+ * });
+ * &#x60;&#x60;&#x60;
+ */
 @Injectable({
 	providedIn: &#x27;root&#x27;,
 })
@@ -299,15 +333,29 @@ export class LoginService {
 	private registerUrl &#x3D; environment.registerUrl;
 	constructor(private http: HttpClient) {}
 
+	/**
+	 * Logs in a user with the provided email and password.
+	 * 
+	 * @param email - The email address of the user.
+	 * @param password - The password of the user.
+	 * @returns An observable of the authentication response.
+	 */
 	login(email: string, password: string): Observable&lt;AuthResponse&gt; {
 		return this.http.post&lt;AuthResponse&gt;(&#x60;${this.loginUrl}&#x60;, {
 			email,
 			password,
 		});
 	}
+
+	/**
+	 * Registers a new user with the provided user data.
+	 * 
+	 * @param userData - Partial user data containing at least email and password.
+	 * @returns An observable of the authentication response.
+	 */
 	register(userData: Partial&lt;User&gt;): Observable&lt;AuthResponse&gt; {
 		return this.http.post&lt;AuthResponse&gt;(
-			&#x60;${this.register}&#x60;,
+			&#x60;${this.registerUrl}&#x60;,
 			userData
 		);
 	}

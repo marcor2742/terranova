@@ -1,10 +1,33 @@
-$primary-color: #004c7e;
+$primary-color: #09122c;
+$secondary-color: #872341;
+$tertiary-color: #be3144;
+$quaternary-color: #f2c57c;
+$accent-color: #4caf50;
+$warning-color: #ffa500;
+$error-color: #ff3d3d;
+
+// Responsive breakpoints
+$mobile: 576px;
+$tablet: 768px;
+
+@mixin mobile {
+	@media (max-width: #{$mobile}) {
+		@content;
+	}
+}
+
+@mixin tablet {
+	@media (min-width: #{$mobile + 1}) and (max-width: #{$tablet}) {
+		@content;
+	}
+}
+
 @mixin rounded-corners($radius) {
-  border-radius: $radius;
-  -webkit-border-radius: $radius;
-  -moz-border-radius: $radius;
+	border-radius: $radius;
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
 }
 
 .button {
-  @include rounded-corners(5px);
+	@include rounded-corners(5px);
 }

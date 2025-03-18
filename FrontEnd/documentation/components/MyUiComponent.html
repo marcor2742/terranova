@@ -79,146 +79,182 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content miscellaneous-functions">
+               <div class="content component">
                    <div class="content-data">
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Miscellaneous</li>
-  <li class="breadcrumb-item">Functions</li>
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  MyUiComponent</li>
 </ol>
 
-<section data-compodoc="block-index">
-    <h3 id="index">Index</h3>
-    <table class="table table-sm table-bordered index-table">
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>projects/my-ui/src/lib/my-ui.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
         <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
             <tr>
-                <td class="col-md-4">
-                    <ul class="index-list">
-                        <li>
-                            <a href="#injectBrnButtonConfig" title="libs/ui/ui-button-helm/src/lib/hlm-button.token.ts" ><b>injectBrnButtonConfig</b>&nbsp;&nbsp;&nbsp;(libs/.../hlm-button.token.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#provideBrnButtonConfig" title="libs/ui/ui-button-helm/src/lib/hlm-button.token.ts" ><b>provideBrnButtonConfig</b>&nbsp;&nbsp;&nbsp;(libs/.../hlm-button.token.ts)</a>
-                        </li>
-                    </ul>
-                </td>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>lib-myUi</code></td>
             </tr>
+
+
+
+
+            <tr>
+                <td class="col-md-3">styles</td>
+                <td class="col-md-9"><code></code></td>
+            </tr>
+
+            <tr>
+                <td class="col-md-3">template</td>
+                <td class="col-md-9"><pre class="line-numbers"><code class="language-html">&lt;p&gt;
+  my-ui works!
+&lt;/p&gt;
+</code></pre></td>
+            </tr>
+
+
+
+
+
+
+
+
+
         </tbody>
     </table>
 </section>
 
-    <h3>libs/ui/ui-button-helm/src/lib/hlm-button.token.ts</h3>
-    <section data-compodoc="block-methods">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="injectBrnButtonConfig"></a>
-                    <span class="name">
-                        <span ><b>injectBrnButtonConfig</b></span>
-                        <a href="#injectBrnButtonConfig"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>injectBrnButtonConfig()</code>
-                </td>
-            </tr>
 
 
 
 
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/BrnButtonConfig.html" target="_self" >BrnButtonConfig</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="provideBrnButtonConfig"></a>
-                    <span class="name">
-                        <span ><b>provideBrnButtonConfig</b></span>
-                        <a href="#provideBrnButtonConfig"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>provideBrnButtonConfig(config: Partial)</code>
-                </td>
-            </tr>
 
 
 
 
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>config</td>
-                                            <td>
-                                                        <code>Partial</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
+</div>
 
 
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>ValueProvider</code>
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component } from &#x27;@angular/core&#x27;;
 
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</section>
+@Component({
+  selector: &#x27;lib-myUi&#x27;,
+  imports: [],
+  template: &#x60;
+    &lt;p&gt;
+      my-ui works!
+    &lt;/p&gt;
+  &#x60;,
+  styles: &#x60;&#x60;
+})
+export class MyUiComponent {
+
+}
+</code></pre>
+    </div>
+
+
+    <div class="tab-pane fade " id="styleData">
+            <pre class="line-numbers"><code class="language-scss">
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><p>  my-ui works!</p></div>'
+    var COMPONENTS = [{'name': 'AppComponent', 'selector': 'app-root'},{'name': 'ButtonComponent', 'selector': 'my-ui-button'},{'name': 'ConfirmationModalComponent', 'selector': 'app-confirmation-modal'},{'name': 'LoginPageComponent', 'selector': 'app-login-page'},{'name': 'MyUiComponent', 'selector': 'lib-myUi'}];
+    var DIRECTIVES = [{'name': 'HlmButtonDirective', 'selector': '[hlmBtn]'}];
+    var ACTUAL_COMPONENT = {'name': 'MyUiComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                    </div><div class="search-results">
@@ -246,8 +282,8 @@
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-functions';
-            var COMPODOC_CURRENT_PAGE_URL = 'functions.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'MyUiComponent.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

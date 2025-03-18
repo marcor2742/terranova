@@ -155,7 +155,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                <a href="#getUsernameByEmail" >getUsernameByEmail</a>
+                            </li>
+                            <li>
+                                <a href="#getUserPartial" >getUserPartial</a>
+                            </li>
+                            <li>
                                 <a href="#userExists" >userExists</a>
+                            </li>
+                            <li>
+                                <a href="#userInfo" >userInfo</a>
                             </li>
                         </ul>
                     </td>
@@ -180,7 +189,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/user-getter.service.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/user-getter.service.ts:44</a></div>
                             </td>
                         </tr>
 
@@ -227,6 +236,178 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getUsernameByEmail"></a>
+                    <span class="name">
+                        <span ><b>getUsernameByEmail</b></span>
+                        <a href="#getUsernameByEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getUsernameByEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">src/app/user-getter.service.ts:101</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Retrieves the username associated with the provided email</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Email of the user to retrieve the username for</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Observable&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>Observable containing the username and possible error messages</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserPartial"></a>
+                    <span class="name">
+                        <span ><b>getUserPartial</b></span>
+                        <a href="#getUserPartial"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getUserPartial(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, fields: string[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">src/app/user-getter.service.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Retrieves specific user fields to minimize payload size</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>ID of the user to retrieve</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>fields</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>Array of field names to include in response</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/PartialUserResponse.html" target="_self" >Observable&lt;PartialUserResponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>Observable containing requested user fields and possible error messages</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="userExists"></a>
                     <span class="name">
                         <span ><b>userExists</b></span>
@@ -243,14 +424,16 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">src/app/user-getter.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">src/app/user-getter.service.ts:53</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
+                        <div class="io-description"><p>Check if a user with provided credentials exist</p>
+</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -261,6 +444,7 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
+                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -275,6 +459,12 @@
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>Email to check if a corresponding user exists</li>
+</ul>
+
+                                            </td>
                                         </tr>
                                         <tr>
                                                 <td>username</td>
@@ -287,6 +477,12 @@
                                             </td>
 
 
+                                            <td>
+                                                    <ul>
+<li>Username to check if a corresponding user exists</li>
+</ul>
+
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -296,8 +492,46 @@
 
                         </div>
                             <div class="io-description">
-                                
+                                <p>Observable<UserExist> - Observable that returns the user existence</p>
+
                             </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userInfo"></a>
+                    <span class="name">
+                        <span ><b>userInfo</b></span>
+                        <a href="#userInfo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>userInfo()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">src/app/user-getter.service.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/UserGetter.html" target="_self" >Observable&lt;UserGetter&gt;</a></code>
+
+                        </div>
                 </td>
             </tr>
         </tbody>
@@ -333,7 +567,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">src/app/user-getter.service.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">src/app/user-getter.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -365,7 +599,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">src/app/user-getter.service.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">src/app/user-getter.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -380,9 +614,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
 import { environment } from &#x27;../environments/environment&#x27;;
-import { HttpClient } from &#x27;@angular/common/http&#x27;;
+import { HttpClient, HttpParams } from &#x27;@angular/common/http&#x27;;
 import { Observable } from &#x27;rxjs&#x27;;
 import { User } from &#x27;./user&#x27;;
+
 /**
  * Response interface for user existence check
  * @property userExists - Indicates if a user with the given email/username exists
@@ -390,23 +625,53 @@ import { User } from &#x27;./user&#x27;;
 interface UserExist {
 	userExists: boolean;
 }
+
+/**
+ * Simple respone for user infomation
+ * @property user - the user returned by the response
+ * @property errors - Optional errors if something goes wrong
+ */
 interface UserGetter {
-	user: User
-	errors?: string
+	user: User;
+	errors?: string;
+}
+
+/**
+ * Response interface for partial user data requests
+ * @property userData - Selected user fields
+ * @property errors - Array of error messages if issues occur
+ */
+interface PartialUserResponse {
+	userData: Partial&lt;User&gt;;
+	errors?: string[];
 }
 
 @Injectable({
 	providedIn: &#x27;root&#x27;,
 })
+/**
+ * Service to handle user information
+ * Checks with the Auth API for the user existance and info
+ */
 export class UserGetterService {
 	private userInfoUrl: string &#x3D; environment.userInfoUrl;
 	private userCheckerUrl: string &#x3D; environment.userCheckerUrl;
 	constructor(private http: HttpClient) {}
 
+	/**
+	 * Check if a user with provided credentials exist
+	 * @param email - Email to check if a corresponding user exists
+	 * @param username - Username to check if a corresponding user exists
+	 * @returns Observable&lt;UserExist&gt; - Observable that returns the user existence
+	 */
 	userExists(
 		email: string | null,
 		username: string | null
 	): Observable&lt;UserExist&gt; {
+		return new Observable&lt;UserExist&gt;((observer) &#x3D;&gt; {
+			observer.next({ userExists: false });
+			observer.complete();
+		});
 		if (email) {
 			return this.http.get&lt;UserExist&gt;(&#x60;${this.userCheckerUrl}/${email}&#x60;);
 		} else if (username) {
@@ -419,6 +684,42 @@ export class UserGetterService {
 				observer.complete();
 			});
 		}
+	}
+
+	userInfo(): Observable&lt;UserGetter&gt; {
+		return this.http.get&lt;UserGetter&gt;(&#x60;${this.userInfoUrl}&#x60;);
+	}
+
+	/**
+	 * Retrieves specific user fields to minimize payload size
+	 * @param userId - ID of the user to retrieve
+	 * @param fields - Array of field names to include in response
+	 * @returns Observable containing requested user fields and possible error messages
+	 */
+	getUserPartial(
+		userId: string,
+		fields: string[]
+	): Observable&lt;PartialUserResponse&gt; {
+		const params &#x3D; new HttpParams().set(&#x27;fields&#x27;, fields.join(&#x27;,&#x27;));
+		return this.http.get&lt;PartialUserResponse&gt;(
+			&#x60;${this.userInfoUrl}/${userId}&#x60;,
+			{ params }
+		);
+	}
+
+	/**
+	 * Retrieves the username associated with the provided email
+	 * @param email - Email of the user to retrieve the username for
+	 * @returns Observable containing the username and possible error messages
+	 */
+	getUsernameByEmail(email: string): Observable&lt;{ username: string; errors?: string[] }&gt; {
+		return new Observable&lt;{username:string; errors?:string[]}&gt;((observer) &#x3D;&gt; {
+			observer.next({ username : &#x27;lollo&#x27; });
+			observer.complete();
+		});
+		return this.http.get&lt;{ username: string; errors?: string[] }&gt;(
+			&#x60;${this.userInfoUrl}/usernameByEmail/${email}&#x60;
+		);
 	}
 }
 </code></pre>

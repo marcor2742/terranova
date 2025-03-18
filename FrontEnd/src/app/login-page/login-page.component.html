@@ -86,6 +86,7 @@
 			</div>
 		</div>
 
+		<!-- In your button group div -->
 		<div class="button-group">
 			<my-ui-button
 				*ngIf="!registerDiv()"
@@ -94,6 +95,7 @@
 				size="lg"
 				[disabled]="!loginForm.valid"
 				(buttonClick)="UpdateData()"
+				class="visible-button"
 			></my-ui-button>
 
 			<my-ui-button
@@ -103,6 +105,7 @@
 				size="lg"
 				[disabled]="!loginForm.valid"
 				(buttonClick)="UpdateData()"
+				class="visible-button"
 			></my-ui-button>
 		</div>
 	</form>
@@ -110,6 +113,7 @@
 	<p>Form Status: {{ loginForm.status }}</p>
 	<!-- Email Confirmation Modal -->
 	<app-confirmation-modal
+		*ngIf="showEmailConfirmation"
 		[show]="showEmailConfirmation"
 		title="Account Found"
 		[message]="
