@@ -88,3 +88,7 @@ Dockerfile*
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# environment
+.env
+.env.*
