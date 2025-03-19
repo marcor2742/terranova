@@ -76,10 +76,6 @@ Thumbs.db
 # MSBuild Binary and Structured Log
 *.binlog
 
-# Docker
-docker-compose.override.yml
-docker-compose.*
-Dockerfile*
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -110,3 +106,4 @@ src/environments/environment*.ts
 .vscode/
 .sublime-project
 .sublime-workspace
+.fake
