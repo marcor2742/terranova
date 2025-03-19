@@ -10,3 +10,12 @@ https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?v
 		- user login
 		- user role
 	https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio
+
+	default validation IdentityUser
+	https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-9.0
+
+Middleware
+https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-9.0
+
+Authentication
+https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-9.0
