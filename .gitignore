@@ -76,10 +76,6 @@ Thumbs.db
 # MSBuild Binary and Structured Log
 *.binlog
 
-# Docker
-docker-compose.override.yml
-docker-compose.*
-Dockerfile*
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -92,3 +88,27 @@ nunit-*.xml
 # environment
 .env
 .env.*
+
+# Angular specific
+.angular/
+.angular-cache/
+coverage/
+dist/
+tmp/
+temp/
+out-tsc/
+node_modules/
+
+# Angular build artifacts
+*.ngfactory.ts
+*.ngsummary.json
+
+# Angular environment files
+src/environments/environment*.ts
+
+# Angular IDE specific
+.idea/
+.vscode/
+.sublime-project
+.sublime-workspace
+.fake
