@@ -18,11 +18,21 @@ builder.Services.AddSwaggerGen();
 // Services from Identity Core
 builder.Services
     .AddIdentityApiEndpoints<IdentityUserExtended>(options => {
-        //options.IdentityApiEndpointRoutes.DisableAccountEndpoint("register");
+        //options.IdentityApiEndpointRoutes.DisableAccountEndpoint("register"); //overwrite /register (doesn't work)
 
-        options.User.RequireUniqueEmail = true; // Email deve essere unica
+        //options.User.RequireUniqueEmail = true; // moved
     })
     .AddEntityFrameworkStores<IdentityUserContext>();
+
+builder.Services.Configure<IdentityOptions>(options =>
+    {
+        options.User.RequireUniqueEmail = true; //for some reason email is not unique by default
+        options.Password.RequireDigit = false; //docs.md line 14 for documentation
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        //options.RequiewsUniqueChars = 2; //default is 1 (disabled), with 2 it requires 2 different characters
+    });
 
 var connString = builder.Configuration.GetConnectionString("DevDB");
 if (connString != null)
@@ -34,6 +44,10 @@ if (connString != null)
 builder.Services.AddDbContext<IdentityUserContext>(options =>
     options.UseSqlServer(connString));
 
+builder.Services.AddAuthentication();
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,6 +57,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+#region Config. CORS
 app.UseCors(options =>
 {
     options.WithOrigins("http://localhost:56057");
@@ -50,6 +65,7 @@ app.UseCors(options =>
     options.AllowAnyHeader();
     options.AllowAnyMethod();
 });
+#endregion
 
 app.UseHttpsRedirection();
 
@@ -96,7 +112,8 @@ app.MapPost("/api/registerextended", async (
         return Results.Ok(new { message = "Utente registrato con successo" });
     }
 
-    return Results.BadRequest(new { errors = result.Errors });
+    //return Results.BadRequest(new { errors = result.Errors });
+    return Results.BadRequest(result);
 });
 
 // Angular
