@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
@@ -32,8 +34,15 @@ builder.Services.Configure<IdentityOptions>(options =>
         //options.RequiewsUniqueChars = 2; //default is 1 (disabled), with 2 it requires 2 different characters
     });
 
+var connString = builder.Configuration.GetConnectionString("DevDB");
+if (connString != null)
+{
+    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "default_password";
+    connString = connString.Replace("#{DB_PASSWORD}", dbPassword);
+}
+
 builder.Services.AddDbContext<IdentityUserContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DevDB")));
+    options.UseSqlServer(connString));
 
 builder.Services.AddAuthentication();
 
