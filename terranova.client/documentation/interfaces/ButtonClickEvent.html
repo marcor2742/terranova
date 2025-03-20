@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>front-end documentation</title>
+        <title>terranova.client documentation</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -64,7 +64,7 @@
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
-                    <a href="../" class="navbar-brand">front-end documentation</a>
+                    <a href="../" class="navbar-brand">terranova.client documentation</a>
                     <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
                </div>
         </div>
@@ -285,75 +285,91 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, EventEmitter, Input, Output, AfterContentInit, ElementRef } from &#x27;@angular/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  Component,
+  EventEmitter,
+  Output,
+  AfterContentInit,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  Inject,
+  TemplateRef,
+  ContentChild,
+  input
+} from &#x27;@angular/core&#x27;;
 import { HlmButtonModule } from &#x27;@spartan-ng/ui-button-helm&#x27;;
-import { CommonModule } from &#x27;@angular/common&#x27;;
+import { CommonModule, isPlatformBrowser } from &#x27;@angular/common&#x27;;
 
 export type ButtonVariant &#x3D;
-    | &#x27;link&#x27;
-    | &#x27;default&#x27;
-    | &#x27;destructive&#x27;
-    | &#x27;outline&#x27;
-    | &#x27;secondary&#x27;
-    | &#x27;ghost&#x27;
-    | null
-    | undefined;
+	| &#x27;link&#x27;
+	| &#x27;default&#x27;
+	| &#x27;destructive&#x27;
+	| &#x27;outline&#x27;
+	| &#x27;secondary&#x27;
+	| &#x27;ghost&#x27;
+	| null
+	| undefined;
 export type ButtonSize &#x3D; &#x27;default&#x27; | &#x27;sm&#x27; | &#x27;lg&#x27; | &#x27;icon&#x27;;
 
 export interface ButtonClickEvent {
-    id?: string;
-    value?: any;
-    timestamp: number;
+	id?: string;
+	value?: any;
+	timestamp: number;
 }
-
 @Component({
-    selector: &#x27;my-ui-button&#x27;,
-    standalone: true,
-    imports: [CommonModule, HlmButtonModule],
-    templateUrl: &#x27;./button.component.html&#x27;,
-    styleUrl: &#x27;./button.component.scss&#x27;,
+	selector: &#x27;my-ui-button&#x27;,
+	standalone: true,
+	imports: [CommonModule, HlmButtonModule],
+	templateUrl: &#x27;./button.component.html&#x27;,
+	styleUrl: &#x27;./button.component.scss&#x27;,
 })
-export class ButtonComponent implements AfterContentInit {
-    constructor(private elementRef: ElementRef) {}
+export class ButtonComponent implements OnInit {
+	constructor(
+		public elementRef: ElementRef,
+		@Inject(PLATFORM_ID) private platformId: Object
+	) {}
 
-    @Input() text &#x3D; &#x27;Press me&#x27;;
-    @Input() variant: ButtonVariant &#x3D; &#x27;default&#x27;;
-    @Input() size: ButtonSize &#x3D; &#x27;default&#x27;;
-    @Input() disabled &#x3D; false;
-    @Input() loading &#x3D; false;
-    @Input() fullWidth &#x3D; false;
-    @Input() id?: string;
-    @Input() value?: any;
+	readonly text &#x3D; input(&#x27;Press me&#x27;);
+	readonly variant &#x3D; input&lt;ButtonVariant&gt;(&#x27;default&#x27;);
+	readonly size &#x3D; input&lt;ButtonSize&gt;(&#x27;default&#x27;);
+	readonly disabled &#x3D; input(false);
+	readonly loading &#x3D; input(false);
+	readonly fullWidth &#x3D; input(false);
+	readonly id &#x3D; input&lt;string&gt;();
+	readonly value &#x3D; input&lt;any&gt;();
 
-    @Output() buttonClick &#x3D; new EventEmitter&lt;ButtonClickEvent&gt;();
-    
-    hasContent &#x3D; false;
+	@Output() buttonClick &#x3D; new EventEmitter&lt;ButtonClickEvent&gt;();
 
-	ngAfterContentInit() {
-        // Check for projected content
-        setTimeout(() &#x3D;&gt; {
-            const buttonEl &#x3D; this.elementRef.nativeElement.querySelector(&#x27;button&#x27;);
-            if (buttonEl) {
-                const hasProjectedContent &#x3D; Array.from(buttonEl.childNodes as Node[]).some((node: Node) &#x3D;&gt; {
-                    // Skip text nodes or empty nodes
-                    return node.nodeType !&#x3D;&#x3D; Node.TEXT_NODE || 
-                           ((node as Text).textContent || &#x27;&#x27;).trim() !&#x3D;&#x3D; &#x27;&#x27;;
-                });
-                this.hasContent &#x3D; hasProjectedContent;
-            }
-        });
-    }
+	@ContentChild(TemplateRef) contentTemplate!: TemplateRef&lt;any&gt;;
 
-    onClick(event: MouseEvent): void {
-        if (this.disabled || this.loading) return;
+	hasContent &#x3D; false;
 
-        this.buttonClick.emit({
-            id: this.id,
-            value: this.value,
-            timestamp: Date.now(),
-        });
-    }
-}</code></pre>
+	ngOnInit() {
+		// Using a simpler approach that works with SSR
+		if (isPlatformBrowser(this.platformId)) {
+			// In the browser, we can check after the next render cycle
+			setTimeout(() &#x3D;&gt; {
+				// This is safer than checking DOM content directly
+				const button &#x3D;
+					this.elementRef.nativeElement.querySelector(&#x27;button&#x27;);
+				// We&#x27;ll consider it has content if there&#x27;s anything other than the loading icon
+				this.hasContent &#x3D; !!this.contentTemplate;
+			});
+		}
+	}
+
+	onClick(event: MouseEvent): void {
+		if (this.disabled() || this.loading()) return;
+
+		this.buttonClick.emit({
+			id: this.id(),
+			value: this.value(),
+			timestamp: Date.now(),
+		});
+	}
+}
+</code></pre>
     </div>
 </div>
 

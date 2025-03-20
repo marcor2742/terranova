@@ -15,7 +15,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
         <nav>
             <ul class="list">
                 <li class="title">
-                    <a href="index.html" data-type="index-link">front-end documentation</a>
+                    <a href="index.html" data-type="index-link">terranova.client documentation</a>
                 </li>
 
                 <li class="divider"></li>
@@ -31,6 +31,11 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                         <li class="link">
                             <a href="index.html" data-type="chapter-link">
                                 <span class="icon ion-ios-paper"></span>README
+                            </a>
+                        </li>
+                        <li class="link">
+                            <a href="changelog.html"  data-type="chapter-link">
+                                <span class="icon ion-ios-paper"></span>CHANGELOG
                             </a>
                         </li>
                                 <li class="link">
@@ -55,6 +60,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </div>
                         </a>
                         <ul class="links collapse " ${ isNormalMode ? 'id="modules-links"' : 'id="xs-modules-links"' }>
+                            <li class="link">
+                                <a href="modules/AppRoutingModule.html" data-type="entity-link" >AppRoutingModule</a>
+                            </li>
                             <li class="link">
                                 <a href="modules/HlmButtonModule.html" data-type="entity-link" >HlmButtonModule</a>
                                 <li class="chapter inner">
