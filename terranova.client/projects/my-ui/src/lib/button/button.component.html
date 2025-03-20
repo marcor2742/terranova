@@ -1,15 +1,15 @@
 <button
   hlmBtn
-  [variant]="variant"
-  [size]="size"
-  [disabled]="disabled"
-  [class.w-full]="fullWidth"
+  [variant]="variant()"
+  [size]="size()"
+  [disabled]="disabled()"
+  [class.w-full]="fullWidth()"
   [class.my-ui-btn]="true"
-  [class.my-ui-btn-outline]="variant === 'outline'"
-  [class.my-ui-btn-lg]="size === 'lg'"
+  [class.my-ui-btn-outline]="variant() === 'outline'"
+  [class.my-ui-btn-lg]="size() === 'lg'"
   (click)="onClick($event)"
 >
-  <span *ngIf="loading" class="mr-2">
+  <span *ngIf="loading()" class="mr-2">
     <!-- Loading spinner -->
     <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -17,5 +17,5 @@
     </svg>
   </span>
   <ng-content></ng-content>
-  <ng-container *ngIf="!hasContent">{{ text }}</ng-container>
+  <ng-container *ngIf="!hasContent">{{ text() }}</ng-container>
 </button>
