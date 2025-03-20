@@ -79,9 +79,35 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content package-dependencies">
+               <div class="content getting-started">
                    <div class="content-data">
 
+<p>This file explains how Visual Studio created the project.</p>
+<p>The following tools were used to generate this project:</p>
+<ul>
+<li>Angular CLI (ng)</li>
+</ul>
+<p>The following steps were used to generate this project:</p>
+<ul>
+<li>Create Angular project with ng: <code>ng new terranova.client --defaults --skip-install --skip-git --no-standalone </code>.</li>
+<li>Add <code>proxy.conf.js</code> to proxy calls to the backend ASP.NET server.</li>
+<li>Add <code>aspnetcore-https.js</code> script to install https certs.</li>
+<li>Update <code>package.json</code> to call <code>aspnetcore-https.js</code> and serve with https.</li>
+<li>Update <code>angular.json</code> to point to <code>proxy.conf.js</code>.</li>
+<li>Update <code>app.component.ts</code> component to fetch and display weather information.</li>
+<li>Modify <code>app.component.spec.ts</code> with updated tests.</li>
+<li>Update <code>app.module.ts</code> to import the HttpClientModule.</li>
+<li>Create project file (<code>terranova.client.esproj</code>).</li>
+<li>Create <code>launch.json</code> to enable debugging.</li>
+<li>Update package.json to add <code>jest-editor-support</code>.</li>
+<li>Update package.json to add <code>run-script-os</code>.</li>
+<li>Add <code>karma.conf.js</code> for unit tests.</li>
+<li>Update <code>angular.json</code> to point to <code>karma.conf.js</code>.</li>
+<li>Add project to solution.</li>
+<li>Update proxy endpoint to be the backend server endpoint.</li>
+<li>Add project to the startup projects list.</li>
+<li>Write this file.</li>
+</ul>
 
 
 
@@ -96,53 +122,6 @@
 
 
 
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item">Dependencies</li>
-    </ol>
-    <ul class="dependencies-list">
-        <li>
-            <b>@angular/cdk</b> : 19.2.3</li>
-        <li>
-            <b>@angular/common</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/compiler</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/core</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/forms</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/platform-browser</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/platform-browser-dynamic</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/platform-server</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/router</b> : ^19.2.2</li>
-        <li>
-            <b>@angular/ssr</b> : ^19.2.3</li>
-        <li>
-            <b>@spartan-ng/brain</b> : 0.0.1-alpha.424</li>
-        <li>
-            <b>@tailwindcss/postcss</b> : ^4.0.14</li>
-        <li>
-            <b>class-variance-authority</b> : ^0.7.1</li>
-        <li>
-            <b>clsx</b> : ^2.1.1</li>
-        <li>
-            <b>express</b> : ^4.21.2</li>
-        <li>
-            <b>jest-editor-support</b> : *</li>
-        <li>
-            <b>postcss</b> : ^8.5.3</li>
-        <li>
-            <b>run-script-os</b> : *</li>
-        <li>
-            <b>rxjs</b> : ~7.8.2</li>
-        <li>
-            <b>tslib</b> : ^2.8.1</li>
-        <li>
-            <b>zone.js</b> : ~0.15.0</li>
-    </ul>
 
 
 
@@ -175,8 +154,8 @@
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 0;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'package-dependencies';
-            var COMPODOC_CURRENT_PAGE_URL = 'dependencies.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'changelog.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>front-end documentation</title>
+        <title>terranova.client documentation</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -64,7 +64,7 @@
 
         <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
                <div class="d-flex">
-                    <a href="../" class="navbar-brand">front-end documentation</a>
+                    <a href="../" class="navbar-brand">terranova.client documentation</a>
                     <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
                </div>
         </div>
@@ -303,10 +303,6 @@ export class UserGetterService {
 		email: string | null,
 		username: string | null
 	): Observable&lt;UserExist&gt; {
-		return new Observable&lt;UserExist&gt;((observer) &#x3D;&gt; {
-			observer.next({ userExists: false });
-			observer.complete();
-		});
 		if (email) {
 			return this.http.get&lt;UserExist&gt;(&#x60;${this.userCheckerUrl}/${email}&#x60;);
 		} else if (username) {
@@ -348,10 +344,6 @@ export class UserGetterService {
 	 * @returns Observable containing the username and possible error messages
 	 */
 	getUsernameByEmail(email: string): Observable&lt;{ username: string; errors?: string[] }&gt; {
-		return new Observable&lt;{username:string; errors?:string[]}&gt;((observer) &#x3D;&gt; {
-			observer.next({ username : &#x27;lollo&#x27; });
-			observer.complete();
-		});
 		return this.http.get&lt;{ username: string; errors?: string[] }&gt;(
 			&#x60;${this.userInfoUrl}/usernameByEmail/${email}&#x60;
 		);
