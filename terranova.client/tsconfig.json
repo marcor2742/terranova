@@ -16,7 +16,13 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022"
+    "module": "ES2022",
+	"paths": {
+		"@spartan-ng/ui-button-helm": [
+			"./libs/ui/ui-button-helm/src/index.ts"
+		],
+		"my-ui": ["./projects/my-ui/src/public-api.ts"]
+	}
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -1,15 +1,15 @@
 import {
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	AfterContentInit,
-	ElementRef,
-	OnInit,
-	PLATFORM_ID,
-	Inject,
-	TemplateRef,
-	ContentChild,
+  Component,
+  EventEmitter,
+  Output,
+  AfterContentInit,
+  ElementRef,
+  OnInit,
+  PLATFORM_ID,
+  Inject,
+  TemplateRef,
+  ContentChild,
+  input
 } from '@angular/core';
 import { HlmButtonModule } from '@spartan-ng/ui-button-helm';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -43,14 +43,14 @@ export class ButtonComponent implements OnInit {
 		@Inject(PLATFORM_ID) private platformId: Object
 	) {}
 
-	@Input() text = 'Press me';
-	@Input() variant: ButtonVariant = 'default';
-	@Input() size: ButtonSize = 'default';
-	@Input() disabled = false;
-	@Input() loading = false;
-	@Input() fullWidth = false;
-	@Input() id?: string;
-	@Input() value?: any;
+	readonly text = input('Press me');
+	readonly variant = input<ButtonVariant>('default');
+	readonly size = input<ButtonSize>('default');
+	readonly disabled = input(false);
+	readonly loading = input(false);
+	readonly fullWidth = input(false);
+	readonly id = input<string>();
+	readonly value = input<any>();
 
 	@Output() buttonClick = new EventEmitter<ButtonClickEvent>();
 
@@ -73,11 +73,11 @@ export class ButtonComponent implements OnInit {
 	}
 
 	onClick(event: MouseEvent): void {
-		if (this.disabled || this.loading) return;
+		if (this.disabled() || this.loading()) return;
 
 		this.buttonClick.emit({
-			id: this.id,
-			value: this.value,
+			id: this.id(),
+			value: this.value(),
 			timestamp: Date.now(),
 		});
 	}
