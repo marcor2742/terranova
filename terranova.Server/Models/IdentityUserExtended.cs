@@ -8,5 +8,9 @@ namespace terranova.Server.Models
         [PersonalData]
         [Column(TypeName = "nvarchar(150)")]
         public string? FullName { get; set; }
+
+        //propic url
+        //bio
+        //consensi forse fatto con entity types
     }
 }
