@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using terranova.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+#region builder.Configuration and builder.Services
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddControllers();
@@ -44,12 +47,26 @@ if (connString != null)
 builder.Services.AddDbContext<IdentityUserContext>(options =>
     options.UseSqlServer(connString));
 
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme =
+        x.DefaultChallengeScheme =
+        x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(y => 
+    {
+        y.SaveToken = false;
+        y.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JWT_Secret"]!)),
+        };
+    });
 
-
+#endregion
 
 var app = builder.Build();
 
+#region middelewares
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -69,30 +86,18 @@ app.UseCors(options =>
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
+#endregion
 
 app
     .MapGroup("/api")
     .MapIdentityApi<IdentityUserExtended>();
 
-//app.MapPost("/api/signup",(
-//    UserManager<IdentityUserExtended> userManager,
-//[FromBody] UserRegistrationModel UserRegistrationModel
-//    ) =>
-//{
-//IdentityUserExtended user = new IdentityUserExtended
-//{
-//UserName = UserRegistrationModel.Email,
-//Email = UserRegistrationModel.Email,
-//FullName = UserRegistrationModel.FullName
-//        };
-//return "User signed up";
-//    });
-
-
-
+#region api
 app.MapPost("/api/registerextended", async (
     UserManager<IdentityUserExtended> userManager,
     [FromBody] UserRegistrationModel model) =>
@@ -115,6 +120,9 @@ app.MapPost("/api/registerextended", async (
     //return Results.BadRequest(new { errors = result.Errors });
     return Results.BadRequest(result);
 });
+
+
+#endregion
 
 // Angular
 app.UseDefaultFiles();
