@@ -1,28 +1,34 @@
 const { env } = require('process');
 
-// Your API server is on port 5299
-const apiTarget = 'http://localhost:5299';
+// Force IPv4 instead of IPv6
+const apiTarget = 'http://127.0.0.1:5299';
 
-// Keep the original ASP.NET target for any ASP.NET specific endpoints
-const aspNetTarget = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-  env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7073';
+// Change this to IPv4 as well
+const aspNetTarget = env.ASPNETCORE_HTTPS_PORT ? `https://127.0.0.1:${env.ASPNETCORE_HTTPS_PORT}` :
+  env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.replace('localhost', '127.0.0.1') : 'https://127.0.0.1:7073';
 
 const PROXY_CONFIG = [
   {
-    // Add all your API endpoints here
     context: [
-      "/login",
-      "/register",
-      "/user",
-      "/user/me",
-      "/auth"
+	  "/api/login",
+      "/api/register",
+      "/api/user",
+      "/api/user/me",
+      "/api/auth"
     ],
     target: apiTarget,
     secure: false,
-    changeOrigin: true
+    changeOrigin: true,
+    // Add this to force IPv4
+    hostRewrite: '127.0.0.1',
+    // Add this to disable IPv6
+    configure: (proxy) => {
+      proxy.on('proxyReq', function(proxyReq, req, res) {
+        proxyReq.setHeader('host', '127.0.0.1:5299');
+      });
+    }
   },
   {
-    // Keep the original weatherforecast endpoint for ASP.NET
     context: [
       "/weatherforecast",
     ],
