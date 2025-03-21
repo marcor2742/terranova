@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using terranova.Server.Models;
 
@@ -58,7 +60,8 @@ builder.Services.AddAuthentication(x =>
         y.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JWT_Secret"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JWT_Secret"]!)),
         };
     });
 
@@ -121,6 +124,32 @@ app.MapPost("/api/registerextended", async (
     return Results.BadRequest(result);
 });
 
+app.MapPost("/api/loginextended", async (
+    UserManager<IdentityUserExtended> userManager,
+    [FromBody] UserLoginningModel model) =>
+{
+    var user = await userManager.FindByEmailAsync(model.Email);
+    if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+    {
+        var signInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:JWT_Secret"]!));
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new Claim[]
+            {
+                new Claim("UserID", user.Id.ToString()),
+            }),
+            Expires = DateTime.UtcNow.AddDays(1), //AddMinutes(20),
+            SigningCredentials = new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+        var token = tokenHandler.WriteToken(securityToken);
+        //return Results.Ok(new { message = "Login effettuato con successo" });
+        return Results.Ok(new {token});
+    }
+    return Results.BadRequest(new { message = "Email o password errati" });
+});
+
 
 #endregion
 
@@ -142,4 +171,10 @@ public class UserRegistrationModel
     [Required(ErrorMessage = "Username is required")]
     public string Username { get; set; } = string.Empty;
     public string? FullName { get; set; } // opzionale
+}
+
+public class UserLoginningModel
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }
