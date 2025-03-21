@@ -11,9 +11,7 @@ import {
 	ValidatorFn,
 	Validators,
 } from '@angular/forms';
-import { first } from 'rxjs';
-import { UserGetterService } from '../user-getter.service';
-import { response } from 'express';
+import { UserGetterService } from '../services/user-getter.service'
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ButtonComponent } from 'my-ui';
 @Component({

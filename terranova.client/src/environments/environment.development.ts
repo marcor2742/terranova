@@ -1,8 +1,10 @@
 export const environment = {
   production: false,
-  authUrl: '/auth',
-  loginUrl: '/login',
-  registerUrl: '/register',
-  userInfoUrl: '/user/me',
-  userCheckerUrl: '/user',
+  authUrl: '/api/auth',
+  loginUrl: '/api/login',
+  registerUrl: '/api/register',
+  userInfoUrl: '/api/user/me',
+  userCheckerUrl: '/api/user',
+  cocktailGetUrl: '/api/cocktail',
+  logoutUrl: '/api/logout',
 };

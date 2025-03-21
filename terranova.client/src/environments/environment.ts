@@ -5,4 +5,7 @@ export const environment = {
 	registerUrl: 'localhost:8000/register',
 	userInfoUrl: 'localhost:8000/user/me',
 	userCheckerUrl: 'localhost:8000/user',
+	cocktailGetUrl: '/cocktail',
+	logoutUrl: 'localhost:8000/logout',
+
 };

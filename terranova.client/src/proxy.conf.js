@@ -19,9 +19,7 @@ const PROXY_CONFIG = [
     target: apiTarget,
     secure: false,
     changeOrigin: true,
-    // Add this to force IPv4
     hostRewrite: '127.0.0.1',
-    // Add this to disable IPv6
     configure: (proxy) => {
       proxy.on('proxyReq', function(proxyReq, req, res) {
         proxyReq.setHeader('host', '127.0.0.1:5299');

@@ -1,0 +1,32 @@
+<div hlmCard>
+  @if (cocktail().isLoading()) {
+    <div>Loading cocktail...</div>
+  } @else if (cocktail().error()) {
+    <div>Error: {{ cocktail().error() }}</div>
+  } @else if (cocktail().value()) {
+    <div hlmCardHeader>
+      <div hlmCardTitle>{{ cocktail.name }}</div>
+      <div hlmCardDescription>{{ cocktail.description }}</div>
+    </div>
+    
+    <div hlmCardContent>
+      <!-- Basic content always shown -->
+      <div class="cocktail-basics">
+        <!-- Display basic cocktail info -->
+      </div>
+      
+      @if (showAll()) {
+        <!-- Extra details shown only when showAll is true -->
+        <div class="cocktail-details">
+          <h4>Ingredients:</h4>
+          <ul>
+            @for (ingredient of cocktail().value.Cocktail.ingredients; track ingredient) {
+              <li>{{ ingredient.name }} - {{ ingredient.quantity }} {{ ingredient.measure }}</li>
+            }
+          </ul>
+          <!-- Additional details -->
+        </div>
+      }
+    </div>
+  }
+</div>
