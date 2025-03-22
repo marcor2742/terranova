@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+	HttpClient,
+	HttpParams,
+	httpResource,
+	HttpResourceRef,
+} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Classes/user';
-
-/**
- * Response interface for user existence check
- * @property userExists - Indicates if a user with the given email/username exists
- */
-interface UserExist {
-	userExists: boolean;
-}
 
 /**
  * Simple respone for user infomation
@@ -44,29 +41,24 @@ export class UserGetterService {
 	private userCheckerUrl: string = environment.userCheckerUrl;
 	constructor(private http: HttpClient) {}
 
-	/**
-	 * Check if a user with provided credentials exist
-	 * @param email - Email to check if a corresponding user exists
-	 * @param username - Username to check if a corresponding user exists
-	 * @returns Observable<UserExist> - Observable that returns the user existence
-	 */
-	userExists(
-		email: string | null,
-		username: string | null
-	): Observable<UserExist> {
-		if (email) {
-			return this.http.get<UserExist>(`${this.userCheckerUrl}/${email}`);
-		} else if (username) {
-			return this.http.get<UserExist>(
-				`${this.userCheckerUrl}/${username}`
-			);
-		} else {
-			return new Observable<UserExist>((observer) => {
-				observer.next({ userExists: false });
-				observer.complete();
-			});
-		}
-	}
+	// /**
+	//  * Check if a user with provided credentials exist
+	//  * @param email - Email to check if a corresponding user exists
+	//  * @param username - Username to check if a corresponding user exists
+	//  * @returns Observable<UserExist> - Observable that returns the user existence
+	//  */
+	// userExistsResource(
+	// 	email: string | null,
+	// 	username: string | null
+	// ): HttpResourceRef<UserExistsResponse | undefined> {
+	// 	return httpResource<UserExistsResponse | undefined>({
+	// 		url: this.userCheckerUrl,
+	// 		params: {
+	// 			...(email ? { email } : {}),
+	// 			...(username ? { username } : {}),
+	// 		},
+	// 	});
+	// }
 
 	userInfo(): Observable<UserGetter> {
 		return this.http.get<UserGetter>(`${this.userInfoUrl}`);
@@ -89,14 +81,17 @@ export class UserGetterService {
 		);
 	}
 
-	/**
-	 * Retrieves the username associated with the provided email
-	 * @param email - Email of the user to retrieve the username for
-	 * @returns Observable containing the username and possible error messages
-	 */
-	getUsernameByEmail(email: string): Observable<{ username: string; errors?: string[] }> {
-		return this.http.get<{ username: string; errors?: string[] }>(
-			`${this.userInfoUrl}/usernameByEmail/${email}`
-		);
-	}
+	// /**
+	//  * Retrieves the username associated with the provided email
+	//  * @param email - Email of the user to retrieve the username for
+	//  * @returns Observable containing the username and possible error messages
+	//  */
+	// getUsernameByEmail(
+	// 	email: string
+	// ): HttpResourceRef<UsernameResponse | undefined> {
+	// 	return httpResource<UsernameResponse>({
+	// 		url: `${this.userInfoUrl}`,
+	// 		params: { email },
+	// 	});
+	// }
 }

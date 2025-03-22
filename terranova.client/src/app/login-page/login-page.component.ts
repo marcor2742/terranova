@@ -1,19 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { inject } from '@angular/core';
-import {
-	AbstractControl,
-	FormBuilder,
-	FormGroup,
-	ReactiveFormsModule,
-	ValidationErrors,
-	Validator,
-	ValidatorFn,
-	Validators,
-} from '@angular/forms';
-import { UserGetterService } from '../services/user-getter.service'
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserGetterService } from '../services/user-getter.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ButtonComponent } from 'my-ui';
+import { httpResource } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
+/**
+ * Response interface for user existence check
+ * @property userExists - Indicates if a user with the given email/username exists
+ */
+type UserExistsResponse = {
+	userExists: boolean;
+};
+
+
+interface UsernameResponse {
+	username: string;
+	errors?: string;
+}
+
 @Component({
 	selector: 'app-login-page',
 	standalone: true,
@@ -29,23 +36,93 @@ import { ButtonComponent } from 'my-ui';
 export class LoginPageComponent {
 	private formBuilder = inject(FormBuilder);
 	private userGetterService = inject(UserGetterService);
-	private isRegistering: boolean = false;
-	usernameExist: boolean = false;
-	usernameChecked: string = '';
-	emailExists: boolean = false;
-	emailError: string = '';
-	showEmailConfirmation: boolean = false;
-	foundUsername: string = '';
+	private userExistUrl = environment.userCheckerUrl;
+	private userInfoUrl = environment.userInfoUrl;
+	// Form signals
+	username = signal<string>('');
+	email = signal<string>('');
+
+	// UI state signals
+	usernameChecked = signal<string>('');
+	emailError = signal<string>('');
+	showEmailConfirmation = signal<boolean>(false);
+	foundUsername = signal<string>('');
+
+	// Create resources that react to the input signals
+	userExistsResource = computed(() => {
+		const currentUsername = this.username();
+		if (currentUsername && currentUsername.length >= 4) {
+			return httpResource<UserExistsResponse>({
+				url: `${this.userExistUrl}`,
+				params: { username: currentUsername },
+			});
+		}
+		return null;
+	});
+
+	emailExistsResource = computed(() => {
+		const currentEmail = this.email();
+		if (currentEmail && this.isValidEmail(currentEmail)) {
+			return httpResource<UserExistsResponse>({
+				url: `${this.userExistUrl}`,
+				params: { email: currentEmail },
+			});
+		}
+		return null;
+	});
+
+	usernameByEmailResource = computed(() => {
+		const currentEmail = this.email();
+		const emailResource = this.emailExistsResource();
+
+		if (emailResource?.value()?.userExists) {
+			return httpResource<UsernameResponse>({
+				url: `${this.userInfoUrl}`,
+				params: { email: currentEmail },
+			});
+		}
+		return null;
+	});
+
+	// Derived state
+	usernameExist = computed(() => {
+		const resource = this.userExistsResource();
+		return resource?.value()?.userExists || false;
+	});
+
+	emailExists = computed(() => {
+		const resource = this.emailExistsResource();
+		return resource?.value()?.userExists || false;
+	});
+
+	isRegistering = computed(() => {
+		return !this.usernameExist() && this.usernameChecked() !== '';
+	});
+
 	loginForm = this.formBuilder.group({
 		username: ['', [Validators.required, Validators.minLength(4)]],
 		password: ['', Validators.required],
 		email: ['', Validators.email],
 	});
+
+	constructor() {
+		// Setup form value change listeners
+		this.loginForm.get('username')?.valueChanges.subscribe((value) => {
+			this.username.set(value || '');
+		});
+
+		this.loginForm.get('email')?.valueChanges.subscribe((value) => {
+			this.email.set(value || '');
+		});
+	}
+
+	isValidEmail(email: string): boolean {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	}
+
 	dataAvailable(): boolean {
-		const usernameValue: string =
-			this.loginForm.get('username')?.value || '';
-		const passwordValue: string =
-			this.loginForm.get('password')?.value || '';
+		const usernameValue = this.username();
+		const passwordValue = this.loginForm.get('password')?.value || '';
 		return !!(
 			usernameValue &&
 			passwordValue &&
@@ -53,83 +130,15 @@ export class LoginPageComponent {
 			passwordValue.trim() !== ''
 		);
 	}
-	checkIfUserExist(): void {
-		const username: string | null =
-			this.loginForm.get('username')?.value || '';
-		const email: string | null = this.loginForm.get('email')?.value || '';
 
-		if (!username && !email && !this.loginForm.get('username')?.errors)
-			return;
-		this.userGetterService.userExists(email, username).subscribe({
-			next: (response) => {
-				if (username) {
-					this.usernameChecked = username;
-					this.usernameExist = response.userExists;
-					if (!this.usernameExist) {
-						this.isRegistering = true;
-					}
-				}
-			},
-		});
-	}
-	checkEmailExists(): void {
-		const email = this.loginForm.get('email')?.value;
-
-		if (email && !this.loginForm.get('email')?.errors) {
-			this.userGetterService.userExists(email, null).subscribe({
-				next: (response) => {
-					this.emailExists = response.userExists;
-
-					if (this.emailExists) {
-						// Email exists, get the username but don't auto-fill
-						this.userGetterService
-							.getUsernameByEmail(email)
-							.subscribe({
-								next: (usernameResponse) => {
-									if (usernameResponse.username) {
-										// Show confirmation dialog instead of auto-filling
-										this.foundUsername =
-											usernameResponse.username;
-										this.showEmailConfirmation = true;
-										console.log('email already present');
-									}
-								},
-								error: (error) => {
-									console.error(
-										'Error retrieving username:',
-										error
-									);
-									this.emailError =
-										'Error retrieving account information.';
-								},
-							});
-					} else {
-						// Email doesn't exist, which is fine for registration
-						this.emailError = '';
-
-					}
-				},
-				error: (error) => {
-					console.error('Error checking email existence:', error);
-					this.emailError = 'Error checking email.';
-				},
-			});
-		}
-	}
-
-	/**
-	 * Handle user confirming they are the account holder
-	 */
 	confirmEmailUser(): void {
 		// Set the username from the found account
 		this.loginForm.patchValue({
-			username: this.foundUsername,
+			username: this.foundUsername(),
 		});
-		this.usernameChecked = this.foundUsername;
-		this.usernameExist = true;
 
 		// Hide the confirmation dialog
-		this.showEmailConfirmation = false;
+		this.showEmailConfirmation.set(false);
 
 		// Focus on the password field
 		setTimeout(() => {
@@ -137,12 +146,9 @@ export class LoginPageComponent {
 		}, 100);
 	}
 
-	/**
-	 * Handle user canceling the email confirmation
-	 */
 	cancelEmailConfirmation(): void {
 		// Hide the confirmation dialog
-		this.showEmailConfirmation = false;
+		this.showEmailConfirmation.set(false);
 
 		// Clear the email field
 		this.loginForm.patchValue({
@@ -150,8 +156,9 @@ export class LoginPageComponent {
 		});
 
 		// Show error message
-		this.emailError =
-			'This email is already in use. Please use a different email.';
+		this.emailError.set(
+			'This email is already in use. Please use a different email.'
+		);
 
 		// Focus back on the email field
 		setTimeout(() => {
@@ -169,7 +176,8 @@ export class LoginPageComponent {
 			this.loginForm.markAllAsTouched();
 		}
 	}
+
 	registerDiv(): boolean {
-		return !this.usernameExist && this.usernameChecked !== '';
-	  }
+		return this.isRegistering();
+	}
 }

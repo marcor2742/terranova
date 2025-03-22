@@ -9,7 +9,6 @@
 				id="username"
 				type="text"
 				formControlName="username"
-				(blur)="checkIfUserExist()"
 			/>
 			<div
 				*ngIf="
@@ -29,15 +28,15 @@
 			<!-- User existence feedback -->
 			<div
 				*ngIf="
-					usernameChecked &&
-					usernameChecked === loginForm.get('username')?.value
+					usernameChecked() &&
+					usernameChecked() === loginForm.get('username')?.value
 				"
 				class="user-status"
 			>
-				<div *ngIf="usernameExist" class="exists">
+				<div *ngIf="usernameExist()" class="exists">
 					User exists. Please enter password to login.
 				</div>
-				<div *ngIf="!usernameExist" class="not-exists">
+				<div *ngIf="!usernameExist()" class="not-exists">
 					Username not found. Please complete registration.
 				</div>
 			</div>
@@ -49,7 +48,6 @@
 				id="email"
 				type="email"
 				formControlName="email"
-				(blur)="checkEmailExists()"
 			/>
 			<div
 				*ngIf="
@@ -63,8 +61,8 @@
 				</div>
 			</div>
 			<!-- Email existence feedback -->
-			<div *ngIf="emailError" class="error email-exists">
-				{{ emailError }}
+			<div *ngIf="emailError()" class="error email-exists">
+				{{ emailError() }}
 			</div>
 		</div>
 
@@ -113,8 +111,8 @@
 	<p>Form Status: {{ loginForm.status }}</p>
 	<!-- Email Confirmation Modal -->
 	<app-confirmation-modal
-		*ngIf="showEmailConfirmation"
-		[show]="showEmailConfirmation"
+		*ngIf="showEmailConfirmation()"
+		[show]="showEmailConfirmation()"
 		title="Account Found"
 		[message]="
 			'An account with the email ' +
@@ -122,7 +120,7 @@
 			' already exists.'
 		"
 		description="Would you like to sign in as"
-		[highlightedText]="foundUsername"
+		[highlightedText]="foundUsername()"
 		confirmText="Yes, that's me"
 		cancelText="No, use different email"
 		(confirmed)="confirmEmailUser()"
