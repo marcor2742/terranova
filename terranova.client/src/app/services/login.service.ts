@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -43,7 +43,7 @@ interface AuthResponse {
 export class LoginService {
 	private loginUrl = environment.loginUrl;
 	private registerUrl = environment.registerUrl;
-	constructor(private http: HttpClient) {}
+	private http = inject(HttpClient);
 
 	/**
 	 * Logs in a user with the provided email and password.

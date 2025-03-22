@@ -1,0 +1,134 @@
+@use "sass:color";
+@use "../app.component.scss" as app;
+
+.cocktail-card {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	position: relative;
+	min-height: 400px;
+	overflow: hidden;
+	border-radius: var(--radius);
+	background-color: app.$secondary-color;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.photo-side {
+	position: relative;
+	background-size: cover;
+	background-position: center;
+
+	.photo-overlay {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 1rem;
+		background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+
+		.photo-title {
+			color: white;
+			font-size: 1.5rem;
+			font-weight: bold;
+			text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+		}
+	}
+}
+
+.content-side {
+	padding: 1.5rem;
+	overflow-y: auto;
+}
+
+/* Zigzag divider */
+.zigzag-divider {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  transform: translateX(-50%);
+  z-index: 10;
+  
+  &:before, &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-repeat: repeat-y;
+  }
+  
+  /* Left side zigzag */
+  &:before {
+    left: 0;
+    width: 12px;
+    background-image: linear-gradient(135deg, transparent 12px, app.$secondary-color 0);
+    background-size: 12px 24px;
+  }
+  
+  /* Right side zigzag */
+  &:after {
+    right: 0;
+    width: 12px;
+    background-image: linear-gradient(-135deg, transparent 12px, app.$secondary-color 0);
+    background-size: 12px 24px;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .zigzag-divider {
+    width: 16px;
+    
+    &:before, &:after {
+      width: 8px;
+      background-size: 8px 16px;
+    }
+  }
+}
+
+@media (min-width: 577px) and (max-width: 991px) {
+  .zigzag-divider {
+    width: 20px;
+    
+    &:before, &:after {
+      width: 10px;
+      background-size: 10px 20px;
+    }
+  }
+}
+
+.ingredients-list {
+	list-style: none;
+	padding: 0;
+	margin: 1rem 0;
+
+	li {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 0.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+	}
+
+	.ingredient-name {
+		font-weight: 500;
+	}
+
+	.ingredient-amount {
+		// Use a muted color from your palette - assuming this exists
+		color: color.adjust(app.$primary-color, $lightness: 20%);
+	}
+}
+
+.instructions-card {
+	margin-top: 1.5rem;
+	background-color: color.adjust(app.$secondary-color, $lightness: 10%);
+}
+
+.error-container {
+	grid-column: 1 / span 2;
+	padding: 2rem;
+	text-align: center;
+	// Use an error/destructive color from your palette - assuming this exists
+	color: app.$error-color;
+}

@@ -12,17 +12,24 @@ type Weightmeasure = 'gr' | 'kg' | 'lb' | 'oz' | 'mg';
 
 export class ingredient {
 	constructor(
-		name: string,
-		quantity: number,
-		measure: Volumemeasure | Weightmeasure
+		public name: string,
+		public quantity: number,
+		public measure: Volumemeasure | Weightmeasure
 	) {}
 }
 
 export class Cocktail {
 	constructor(
-		id: number,
-		Name: string,
-		Description: string,
-		ingredients: Array<ingredient>
+		public id: number,
+		public Name: string,
+		public Description: string,
+		public ingredients: Array<ingredient>,
+		public Instructions: string,
+		public ImageUrl: string
 	) {}
 }
+
+export type FullCocktail = {
+	Cocktail: Cocktail;
+	errors?: string;
+};
