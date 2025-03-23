@@ -40,6 +40,7 @@
     "@angular-devkit/build-angular": "^19.2.3",
     "@angular/cli": "^19.2.3",
     "@angular/compiler-cli": "^19.2.2",
+    "@angular/localize": "^19.2.2",
     "@compodoc/compodoc": "^1.1.26",
     "@spartan-ng/cli": "^0.0.1-alpha.424",
     "@types/express": "^5.0.0",

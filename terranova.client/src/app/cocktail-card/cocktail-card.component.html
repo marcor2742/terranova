@@ -26,7 +26,7 @@
       <div hlmCardContent>
         @if (showAll()) {
           <div class="cocktail-details">
-            <h4>Ingredients:</h4>
+			<h4 i18n="@@ingredientsHeading">Ingredients:</h4>
             <ul class="ingredients-list">
               @for (ingredient of cocktail.value().Cocktail.ingredients; track $index) {
                 <li>
@@ -36,7 +36,7 @@
               }
             </ul>
             <div class="instructions-card" hlmCard>
-              <div hlmCardTitle>How to prepare:</div>
+				<div hlmCardTitle i18n="@@preparationHeading">How to prepare:</div>
               <div hlmCardContent>
                 {{cocktail.value().Cocktail.Instructions}}
               </div>

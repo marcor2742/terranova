@@ -39,7 +39,8 @@ export class CocktailCardComponent {
 	readonly showSkeleton = input<boolean>(false);
 	readonly cardWidth = input<string>('2500px');
 	readonly cardHeight = input<string>('20px');
-	readonly cocktailUrl = environment.cocktailGetUrl + '/' + this.cockId();
+	readonly locale = input<string>('en-US');
+	readonly cocktailUrl = environment.cocktailGetUrl + '/' + this.cockId() + '/' + this.locale();
 
 	cocktail = {
 		isLoading: () => false,
