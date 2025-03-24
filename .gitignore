@@ -98,6 +98,8 @@ tmp/
 temp/
 out-tsc/
 node_modules/
+obj/
+bin/
 
 # Angular build artifacts
 *.ngfactory.ts
