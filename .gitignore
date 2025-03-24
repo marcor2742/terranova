@@ -112,3 +112,6 @@ src/environments/environment*.ts
 .sublime-project
 .sublime-workspace
 .fake
+
+#secrets
+appsettings.json
