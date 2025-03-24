@@ -2,7 +2,7 @@
 https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-9.0&tabs=visual-studio
 	entity types
 		- user
-		- role (admin, logged, gdpr?)
+		- role (admin, logged)
 		  - role claim
 		  - user claim
 		- user token (jwt)
@@ -47,4 +47,19 @@ jwt
 	schemes (registered authentication handlers and their configuration options)
 	https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-9.0
 		all schemas
-		https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authenticationoptions?view=aspnetcore-9.0aaaa
+		https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.authenticationoptions?view=aspnetcore-9.0
+
+authorization
+https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-9.0
+	role
+		- admin
+		- logged
+	Claim: information of the user
+		- gdpr
+		- UserID
+		- Age
+	--> Policy: criteria defined with roles, claims and logic connecting them
+			- adminOnly
+			- loggedOnly
+			- cookieOnly
+			- loggedAndOver18

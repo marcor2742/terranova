@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,8 @@ namespace terranova.Server.Controllers
 
     public class UserLoginningModel
     {
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string? Username { get; set; }
         public string Password { get; set; } = string.Empty;
     }
 
@@ -29,13 +31,14 @@ namespace terranova.Server.Controllers
     {
         public static IEndpointRouteBuilder MapIdentityUserEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/registerextended", CreateUser);
+            app.MapPost("/registerextended", CreateUser); //.AllowAnonymous();
 
             app.MapPost("/loginextended", SignIn);
 
             return app;
         }
 
+        [AllowAnonymous]
         private static async Task<IResult> CreateUser(UserManager<IdentityUserExtended> userManager,
             [FromBody] UserRegistrationModel model) 
         {
@@ -57,11 +60,23 @@ namespace terranova.Server.Controllers
             return Results.BadRequest(result);
         }
 
+        [AllowAnonymous]
         private static async Task<IResult> SignIn(UserManager<IdentityUserExtended> userManager,
                 [FromBody] UserLoginningModel model,
                 IOptions<AppSettings> appSettings)
         {
-            var user = await userManager.FindByEmailAsync(model.Email);
+            IdentityUserExtended? user = null;
+
+            //check if email or username is provided
+            if (!string.IsNullOrEmpty(model.Email))
+            {
+                user = await userManager.FindByEmailAsync(model.Email);
+            }
+            else if (!string.IsNullOrEmpty(model.Username))
+            {
+                user = await userManager.FindByNameAsync(model.Username);
+            }
+
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
                 var signInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.JWT_Secret));
@@ -71,7 +86,7 @@ namespace terranova.Server.Controllers
                     {
                 new Claim("UserID", user.Id.ToString()),
                     }),
-                    Expires = DateTime.UtcNow.AddDays(1), //AddMinutes(20),
+                    Expires = DateTime.UtcNow.AddDays(1), //or AddMinutes(20),
                     SigningCredentials = new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();
