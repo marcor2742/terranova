@@ -98,6 +98,9 @@ tmp/
 temp/
 out-tsc/
 node_modules/
+obj/Debug
+obj/
+bin/
 
 # Angular build artifacts
 *.ngfactory.ts
@@ -112,3 +115,6 @@ src/environments/environment*.ts
 .sublime-project
 .sublime-workspace
 .fake
+
+#secrets
+appsettings.json
