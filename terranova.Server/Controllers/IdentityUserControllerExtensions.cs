@@ -18,6 +18,7 @@ namespace terranova.Server.Controllers
         [Required(ErrorMessage = "Username is required")]
         public string Username { get; set; } = string.Empty;
         public string? FullName { get; set; } // opzionale
+        public string Role { get; set; } = string.Empty; //non case sensitive
     }
 
     public class UserLoginningModel
@@ -46,10 +47,12 @@ namespace terranova.Server.Controllers
             {
                 UserName = model.Username,
                 Email = model.Email,
-                FullName = model.FullName
+                FullName = model.FullName,
             };
 
             var result = await userManager.CreateAsync(user, model.Password);
+
+            await userManager.AddToRoleAsync(user, model.Role);
 
             if (result.Succeeded)
             {
@@ -79,13 +82,51 @@ namespace terranova.Server.Controllers
 
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
+                var roles = await userManager.GetRolesAsync(user);
+                var claims = new List<Claim>
+                {
+                    new Claim("UserID", user.Id.ToString()),
+                };
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                    claims.Add(new Claim("Language", user.Language.ToString()!)); //default is English
+                    claims.Add(new Claim("MeasurementSystem", user.MeasurementSystem.ToString()!)); //default is Metric
+                }
+
+                if (user.BirthDate.HasValue)
+                {
+                    DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+                    int age = today.Year - user.BirthDate.Value.Year;
+
+                    if (user.BirthDate.Value.Month > today.Month ||
+                        (user.BirthDate.Value.Month == today.Month &&
+                         user.BirthDate.Value.Day > today.Day))
+                    {
+                        age--;
+                    }
+
+                    claims.Add(new Claim("Age", age.ToString()));
+                    claims.Add(new Claim(age >= 18 ? "Over18" : "Under18", "true"));
+                }
+
+                if (user.AlcoholContentPreference.HasValue)
+                {
+                    claims.Add(new Claim("AlcoholContentPreference", user.AlcoholContentPreference.ToString()!));
+                }
+                if (user.GlassPreference != null)
+                {
+                    claims.Add(new Claim("GlassPreference", user.GlassPreference));
+                }
+                if (user.BaseIngredientPreference != null)
+                {
+                    claims.Add(new Claim("BaseIngredientPreference", user.BaseIngredientPreference));
+                }
+
                 var signInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.JWT_Secret));
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                new Claim("UserID", user.Id.ToString()),
-                    }),
+                    Subject = new ClaimsIdentity(claims),
                     Expires = DateTime.UtcNow.AddDays(1), //or AddMinutes(20),
                     SigningCredentials = new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
                 };
