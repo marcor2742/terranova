@@ -17,6 +17,7 @@ namespace terranova.Server.Extensions
 
                         //options.User.RequireUniqueEmail = true; // moved
                     })
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<IdentityUserContext>();
 
             return services;
@@ -65,6 +66,14 @@ namespace terranova.Server.Extensions
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAuthenticatedUser()
                     .Build();
+
+                options.AddPolicy("CanPurchaseAlcohol", policy =>
+                {
+                    policy.RequireClaim("Over18", "true");
+                });
+                options.AddPolicy("Over21", policy =>
+                    policy.RequireAssertion(context =>
+                    Int32.Parse(context.User.Claims.First(x => x.Type == "Age").Value) >= 21));
             });
             return services;
         }

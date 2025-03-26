@@ -50,7 +50,8 @@ app.MapGroup("/api")
 
 app.MapGroup("/api")
     .MapIdentityUserEndpoints() //do not pass builder.Configuration for security reasons
-    .MapAccountEndpoints();
+    .MapAccountEndpoints()
+    .MapAuthorizationEndpoints();
 
 #endregion
 
