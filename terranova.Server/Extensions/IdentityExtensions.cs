@@ -63,6 +63,8 @@ namespace terranova.Server.Extensions
                         Encoding.UTF8.GetBytes(config["AppSettings:JWT_Secret"]!)),
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             //enable fallback policy to require authentication for all endpoints with jwt
