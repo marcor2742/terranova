@@ -192,9 +192,9 @@ namespace terranova.Server.Controllers
                 // Genera un nuovo access token
                 var roles = await userManager.GetRolesAsync(user);
                 var claims = new List<Claim>
-        {
-            new Claim("UserID", user.Id.ToString()),
-        };
+                {
+                    new Claim("UserID", user.Id.ToString()),
+                };
 
                 foreach (var role in roles)
                 {
@@ -262,9 +262,6 @@ namespace terranova.Server.Controllers
         {
             [Required]
             public string RefreshToken { get; set; } = string.Empty;
-
-            [Required]
-            public string UserId { get; set; } = string.Empty;
         }
 
 
