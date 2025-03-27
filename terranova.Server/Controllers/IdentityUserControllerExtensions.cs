@@ -36,6 +36,8 @@ namespace terranova.Server.Controllers
 
             app.MapPost("/loginextended", SignIn);
 
+            app.MapPost("/refreshextended", RefreshToken);
+
             return app;
         }
 
@@ -127,16 +129,152 @@ namespace terranova.Server.Controllers
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddDays(1), //or AddMinutes(20),
+                    Expires = DateTime.UtcNow.AddMinutes(20),
                     SigningCredentials = new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
                 };
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var securityToken = tokenHandler.CreateToken(tokenDescriptor);
                 var token = tokenHandler.WriteToken(securityToken);
+
+                // refresh token
+                var refreshToken = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+                           claims: new[] { new Claim("UserId", user.Id) },
+                           expires: DateTime.UtcNow.AddDays(7),
+                           signingCredentials: new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
+                       ));
+                await userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", refreshToken);
+
                 //return Results.Ok(new { message = "Login effettuato con successo" });
-                return Results.Ok(new { token });
+                return Results.Ok(new { token, refreshToken });
             }
             return Results.BadRequest(new { message = "Email o password errati" });
         }
+
+        [AllowAnonymous]
+        private static async Task<IResult> RefreshToken(
+           UserManager<IdentityUserExtended> userManager,
+           [FromBody] RefreshTokenRequest request,
+           IOptions<AppSettings> appSettings)
+        {
+            if (string.IsNullOrEmpty(request.RefreshToken))
+            {
+                return Results.BadRequest(new { message = "Refresh token è obbligatorio" });
+            }
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(request.RefreshToken);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId");
+                if (userIdClaim == null)
+                {
+                    return Results.BadRequest(new { message = "Refresh token non valido" });
+                }
+                var userId = userIdClaim.Value;
+                var user = await userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return Results.BadRequest(new { message = "Utente non trovato" });
+                }
+
+                // Verifica il refresh token
+                var storedToken = await userManager.GetAuthenticationTokenAsync(
+                    user,
+                    "Default",
+                    "RefreshToken"
+                );
+
+                if (request.RefreshToken != storedToken)
+                {
+                    return Results.BadRequest(new { message = "Refresh token non valido" });
+                }
+
+                // Genera un nuovo access token
+                var roles = await userManager.GetRolesAsync(user);
+                var claims = new List<Claim>
+        {
+            new Claim("UserID", user.Id.ToString()),
+        };
+
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                    claims.Add(new Claim("Language", user.Language.ToString()!));
+                    claims.Add(new Claim("MeasurementSystem", user.MeasurementSystem.ToString()!));
+                }
+
+                if (user.BirthDate.HasValue)
+                {
+                    DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+                    int age = today.Year - user.BirthDate.Value.Year;
+
+                    if (user.BirthDate.Value.Month > today.Month ||
+                        (user.BirthDate.Value.Month == today.Month &&
+                         user.BirthDate.Value.Day > today.Day))
+                    {
+                        age--;
+                    }
+
+                    claims.Add(new Claim("Age", age.ToString()));
+                    claims.Add(new Claim(age >= 18 ? "Over18" : "Under18", "true"));
+                }
+
+                if (user.AlcoholContentPreference.HasValue)
+                {
+                    claims.Add(new Claim("AlcoholContentPreference", user.AlcoholContentPreference.ToString()!));
+                }
+                if (user.GlassPreference != null)
+                {
+                    claims.Add(new Claim("GlassPreference", user.GlassPreference));
+                }
+                if (user.BaseIngredientPreference != null)
+                {
+                    claims.Add(new Claim("BaseIngredientPreference", user.BaseIngredientPreference));
+                }
+
+                var signInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.JWT_Secret));
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddMinutes(20),
+                    SigningCredentials = new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                var newToken = tokenHandler.WriteToken(securityToken);
+
+                // nuovo refresh token
+                var newRefreshToken = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
+                           claims: new[] { new Claim("UserId", user.Id) },
+                           expires: DateTime.UtcNow.AddDays(7),
+                           signingCredentials: new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
+                       ));
+                await userManager.SetAuthenticationTokenAsync(user, "Default", "RefreshToken", newRefreshToken);
+
+                return Results.Ok(new { token = newToken, refreshToken = newRefreshToken });
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new { message = $"Errore durante il refresh: {ex.Message}" });
+            }
+        }
+        public class RefreshTokenRequest
+        {
+            [Required]
+            public string RefreshToken { get; set; } = string.Empty;
+
+            [Required]
+            public string UserId { get; set; } = string.Empty;
+        }
+
+
+
+
+
+
+
+
+
+
     }
 }

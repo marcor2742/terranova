@@ -18,7 +18,13 @@ namespace terranova.Server.Extensions
                         //options.User.RequireUniqueEmail = true; // moved
                     })
                     .AddRoles<IdentityRole>()
-                    .AddEntityFrameworkStores<IdentityUserContext>();
+                    .AddEntityFrameworkStores<IdentityUserContext>()
+                    .AddDefaultTokenProviders();
+
+            //services.Configure<DataProtectionTokenProviderOptions>(options =>
+            //{
+            //    options.TokenLifespan = TimeSpan.FromDays(7); //refresh token lifespan
+            //});
 
             return services;
         }
