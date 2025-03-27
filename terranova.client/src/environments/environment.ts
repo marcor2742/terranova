@@ -7,5 +7,6 @@ export const environment = {
 	userCheckerUrl: 'localhost:8000/user',
 	cocktailGetUrl: '/cocktail',
 	logoutUrl: 'localhost:8000/logout',
-
+	refreshUrl: 'localhost:8000/api/refresh',
+	searchUrl: 'localhost:8000/search',
 };

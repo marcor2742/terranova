@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserGetterService } from '../services/user-getter.service';
+import { LoginService } from '../services/login.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { ButtonComponent } from 'my-ui';
 import { httpResource } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-
+import { Router } from 'express';
+import { AuthService } from '../services/jwthandler.service';
 /**
  * Response interface for user existence check
  * @property userExists - Indicates if a user with the given email/username exists
@@ -35,9 +36,11 @@ interface UsernameResponse {
 })
 export class LoginPageComponent {
 	private formBuilder = inject(FormBuilder);
-	private userGetterService = inject(UserGetterService);
+	private LoginService = inject(LoginService);
 	private userExistUrl = environment.userCheckerUrl;
 	private userInfoUrl = environment.userInfoUrl;
+	private AuthService = inject(AuthService);
+	private router = inject(Router);
 	// Form signals
 	username = signal<string>('');
 	email = signal<string>('');
@@ -179,5 +182,47 @@ export class LoginPageComponent {
 
 	registerDiv(): boolean {
 		return this.isRegistering();
+	}
+
+	register(): void {
+		const userData = {
+			username: this.loginForm.get('username')?.value || '',
+			password: this.loginForm.get('password')?.value || '',
+			email: this.loginForm.get('email')?.value || '',
+		};
+		if (!userData.email || !userData.username || !userData.password) {
+			console.error('Missing required fields');
+			return;
+		}
+		this.LoginService.register(userData).subscribe((response) => {
+			if (response.succeded) {
+				this.login();
+			} else {
+				console.error('Registration failed:', response.error);
+			}
+		});
+	}
+	login(): void {
+		const data = {
+			username: this.loginForm.get('username')?.value || '',
+			password: this.loginForm.get('password')?.value || '',
+			email: this.loginForm.get('email')?.value || '',
+		};
+		if (!data.password || (!data.username && !data.email)) {
+			console.error('Missing required fields');
+			return;
+		}
+		this.LoginService.login(data.email, data.username, data.password).subscribe({
+			next: (response) => {
+				if (response) {
+					const { token, refreshToken } = response;
+					this.AuthService.setTokens(token, refreshToken);
+					const userId = response.userId;
+					localStorage.setItem('userId', userId);
+					this.router.navigate(['/home']);
+				}
+			}
+		});
+			
 	}
 }

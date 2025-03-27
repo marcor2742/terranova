@@ -4,5 +4,7 @@ import { CocktailCardComponent } from './cocktail-card/cocktail-card.component';
 export const routes: Routes = [
 	{ path: "login", component: LoginPageComponent },
 	{ path: "card", component: CocktailCardComponent },
-	{ path: "", redirectTo: "login", pathMatch: "full" },
+	{path: "home", loadChildren: () => import('./home/home.component').then(m => m.HomeComponent)},
+	{ path: "", redirectTo: "home", pathMatch: "full" },
+
 ];

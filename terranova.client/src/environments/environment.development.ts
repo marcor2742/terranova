@@ -7,4 +7,6 @@ export const environment = {
   userCheckerUrl: '/api/user',
   cocktailGetUrl: '/api/cocktail',
   logoutUrl: '/api/logout',
+  refreshUrl: '/api/refresh',
+  searchUrl: '/api/search',
 };

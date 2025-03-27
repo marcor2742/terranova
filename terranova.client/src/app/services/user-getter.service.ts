@@ -71,12 +71,11 @@ export class UserGetterService {
 	 * @returns Observable containing requested user fields and possible error messages
 	 */
 	getUserPartial(
-		userId: string,
 		fields: string[]
 	): Observable<PartialUserResponse> {
 		const params = new HttpParams().set('fields', fields.join(','));
 		return this.http.get<PartialUserResponse>(
-			`${this.userInfoUrl}/${userId}`,
+			`${this.userInfoUrl}`,
 			{ params }
 		);
 	}

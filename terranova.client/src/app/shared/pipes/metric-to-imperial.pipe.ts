@@ -1,15 +1,21 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { MeasureUnit } from '../../Classes/cocktail';
 
+
+type Conversion = {
+	  unit: string;
+	  factor: number;
+};
 @Pipe({
   name: 'metricToImperial',
   standalone: true
 })
 export class MetricToImperialPipe implements PipeTransform {
   // Conversion factors
-  private readonly conversions = {
+  private readonly conversions: { [key: string]: Conversion } = {
     'ml': { unit: 'fl oz', factor: 0.033814 },
     'cl': { unit: 'fl oz', factor: 0.33814 },
-	"cc": { unit: 'fl oz', factor: 0.033814 },
+	'cc': { unit: 'fl oz', factor: 0.033814 },
     'l': { unit: 'qt', factor: 1.05669 },
     'g': { unit: 'oz', factor: 0.035274 },
     'kg': { unit: 'lb', factor: 2.20462 },
@@ -18,24 +24,31 @@ export class MetricToImperialPipe implements PipeTransform {
   };
 
   // Imperial-using locales
-  private readonly imperialLocales = ['en-US', 'en-GB'];
+  private preference: MeasureUnit;
+
+  constructor() {
+    const storedPreference = localStorage.getItem('MeasureUnit');
+    this.preference = storedPreference ? (storedPreference as MeasureUnit) : 'metric';
+    if (!storedPreference) {
+      localStorage.setItem('MeasureUnit', 'metric');
+    }
+  }
 
   transform(
     value: number, 
-    unit: string, 
-    locale: string = document.documentElement.lang || 'en-US',
+    unit: string,
+    locale: string = this.preference,
     keepOriginal: boolean = false
   ): string {
     // Only convert for imperial-using locales
-    if (!this.imperialLocales.includes(locale)) {
+    if (locale === 'metric') {
       return `${this.formatNumber(value, locale)} ${unit}`;
     }
 
     // Get conversion info for this unit
-    const conversion:string = this.conversions[unit.toLowerCase()];
+    const conversion: Conversion | undefined = this.conversions[unit.toLowerCase()];
     
-    // If we don't have conversion info or explicitly want to keep original
-    if (!conversion || keepOriginal) {
+    if (!conversion && !keepOriginal) {
       return `${this.formatNumber(value, locale)} ${unit}`;
     }
 

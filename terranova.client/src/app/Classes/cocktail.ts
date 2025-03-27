@@ -8,8 +8,10 @@ type Volumemeasure =
 	| 'pint'
 	| 'quart'
 	| 'gallon';
+	
 type Weightmeasure = 'gr' | 'kg' | 'lb' | 'oz' | 'mg';
 
+export type MeasureUnit = 'imperial' | 'metric';
 export class ingredient {
 	constructor(
 		public name: string,
@@ -33,3 +35,5 @@ export type FullCocktail = {
 	Cocktail: Cocktail;
 	errors?: string;
 };
+
+export type CockResoults = "small" | "medium" | "large"
