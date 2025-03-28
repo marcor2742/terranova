@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace terranova.Server.Migrations
+namespace terranova.Server.Migrations.IdentityUser
 {
     /// <inheritdoc />
-    public partial class SecondMigration : Migration
+    public partial class auth : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

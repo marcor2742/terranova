@@ -49,7 +49,9 @@ app.MapGroup("/api")
     .MapIdentityApi<IdentityUserExtended>();
 
 app.MapGroup("/api")
-    .MapIdentityUserEndpoints(); //do not pass builder.Configuration for security reasons
+    .MapIdentityUserEndpoints() //do not pass builder.Configuration for security reasons
+    .MapAccountEndpoints()
+    .MapAuthorizationEndpoints();
 
 #endregion
 

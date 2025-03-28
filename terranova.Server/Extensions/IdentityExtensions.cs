@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -16,7 +17,14 @@ namespace terranova.Server.Extensions
 
                         //options.User.RequireUniqueEmail = true; // moved
                     })
-                    .AddEntityFrameworkStores<IdentityUserContext>();
+                    .AddRoles<IdentityRole>()
+                    .AddEntityFrameworkStores<IdentityUserContext>()
+                    .AddDefaultTokenProviders();
+
+            //services.Configure<DataProtectionTokenProviderOptions>(options =>
+            //{
+            //    options.TokenLifespan = TimeSpan.FromDays(7); //refresh token lifespan
+            //});
 
             return services;
         }
@@ -53,7 +61,27 @@ namespace terranova.Server.Extensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(config["AppSettings:JWT_Secret"]!)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
                 };
+            });
+            //enable fallback policy to require authentication for all endpoints with jwt
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.AddPolicy("CanPurchaseAlcohol", policy =>
+                {
+                    policy.RequireClaim("Over18", "true");
+                });
+                options.AddPolicy("Over21", policy =>
+                    policy.RequireAssertion(context =>
+                    Int32.Parse(context.User.Claims.First(x => x.Type == "Age").Value) >= 21));
             });
             return services;
         }
