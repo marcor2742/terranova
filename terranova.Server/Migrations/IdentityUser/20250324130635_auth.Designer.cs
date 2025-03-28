@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using terranova.Server.Models;
 
@@ -11,9 +12,11 @@ using terranova.Server.Models;
 namespace terranova.Server.Migrations.IdentityUser
 {
     [DbContext(typeof(IdentityUserContext))]
-    partial class IdentityUserContextModelSnapshot : ModelSnapshot
+    [Migration("20250324130635_auth")]
+    partial class auth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,31 +236,7 @@ namespace terranova.Server.Migrations.IdentityUser
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
-                    b.Property<int?>("AlcoholContentPreference")
-                        .HasColumnType("int");
-
-                    b.Property<string>("BaseIngredientPreference")
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<DateOnly?>("BirthDate")
-                        .HasColumnType("date");
-
                     b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("GlassPreference")
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<int?>("Language")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MeasurementSystem")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PropicUrl")
                         .HasColumnType("nvarchar(150)");
 
                     b.HasDiscriminator().HasValue("IdentityUserExtended");
