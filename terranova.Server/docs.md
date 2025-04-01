@@ -123,3 +123,5 @@ db
 https://drawsql.app/teams/meta-pasbarbari/diagrams/drinks
 Add-Migration "auth" -Context IdentityUserContext
 Update-Database -Context IdentityUserContext
+
+creator in dbo.Cocktails è un riferimento a IdentityUser ma nel database è impostato? //penso di no
