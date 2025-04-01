@@ -10,6 +10,10 @@ namespace terranova.Server.Extensions
         {
             services.AddDbContext<IdentityUserContext>(options => 
                 options.UseSqlServer(config.GetConnectionString("DevDB")));
+
+            services.AddDbContext<CocktailsDbContext>(options =>
+                options.UseSqlServer(config.GetConnectionString("DevDB")));
+
             return services;
         }
     }
