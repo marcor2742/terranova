@@ -19,6 +19,29 @@ namespace terranova.Server.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<IdentityUser>()
+                .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
+
+            //relation of cocktail - glass, instructions, creator (userId)
+            modelBuilder.Entity<Cocktail>()
+                .HasOne(c => c.Glass)
+                .WithMany()
+                .HasForeignKey(c => c.GlassKey)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Cocktail>()
+                .HasOne(c => c.Instructions)
+                .WithMany()
+                .HasForeignKey(c => c.InstructionsKey)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Cocktail>()
+                .HasOne<IdentityUser>()
+                .WithMany()
+                .HasForeignKey(c => c.Creator)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Configuration for Many-to-Many relationship of cocktailIngredient
             modelBuilder.Entity<CocktailIngredient>()
                 .HasKey(ci => new { ci.CocktailKey, ci.IngredientsKey });
@@ -32,13 +55,6 @@ namespace terranova.Server.Models
                 .HasOne(ci => ci.Ingredient)
                 .WithMany(i => i.CocktailIngredients)
                 .HasForeignKey(ci => ci.IngredientsKey);
-
-            modelBuilder.Entity<Cocktail>()
-                .HasOne<IdentityUser>()
-                .WithMany()
-                .HasForeignKey(c => c.Creator)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
