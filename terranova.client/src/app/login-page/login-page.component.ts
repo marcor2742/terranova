@@ -6,7 +6,7 @@ import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirm
 import { ButtonComponent } from 'my-ui';
 import { httpResource } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Router } from 'express';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/jwthandler.service';
 /**
  * Response interface for user existence check

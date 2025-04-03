@@ -1,5 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
-@use 'tailwindcss';
+@tailwind base;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+:root {
+	--primary-color: #09122c;
+	--secondary-color: #872341;
+	--tertiary-color: #be3144;
+	--quaternary-color: #f2c57c;
+	--accent-color: #4caf50;
+	--warning-color: #ffa500;
+	--error-color: #ff3d3d;
+	--border-color: linear-gradient(var(--primary-color), var(--accent-color));
+	--content-color: linear-gradient(
+		var(--tertiary-color),
+		var(--quaternary-color)
+	);
+}
+
+// Responsive breakpoints
+
+// $palette2
+body.summer-theme {
+	--primary-color: #c4e1f6;
+	--secondary-color: #feee91;
+	--tertiary-color: #ffbd73;
+	--quaternary-color: #ff9d3d;
+	--accent-color: #4caf50;
+	--warning-color: #ffa500;
+	--error-color: #ff3d3d;
+	--border-color: linear-gradient(var(--primary-color), var(--accent-color));
+	--content-color: linear-gradient(
+		var(--tertiary-color),
+		var(--quaternary-color)
+	);
+}
+
+/* Apply base styles to body */
+body {
+	margin: 0;
+	padding: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		Helvetica, Arial, sans-serif;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	transition: background-color 0.3s, color 0.3s;
+}

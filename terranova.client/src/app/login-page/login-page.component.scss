@@ -1,5 +1,5 @@
 @use "sass:color";
-@use "../app.component.scss";
+@use "../app.component.scss" as app;
 
 $text-light: white;
 $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -8,7 +8,7 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 
 // Main container
 .box {
-	background: linear-gradient(145deg, app.$primary-color, app.$secondary-color);
+	background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
 	border-radius: 12px;
 	box-shadow: $box-shadow;
 	color: $text-light;
@@ -77,8 +77,8 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 		width: 100%;
 
 		&:focus {
-			border-color: app.$accent-color;
-			box-shadow: 0 0 0 2px rgba(app.$accent-color, 0.3);
+			border-color: var(--accent-color);
+			box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.3);
 			outline: none;
 		}
 
@@ -98,19 +98,19 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 	padding: 8px;
 
 	&.exists {
-		background-color: rgba(app.$accent-color, 0.1);
-		color: app.$accent-color;
+		background-color: rgba(var(--accent-color), 0.1);
+		color: var(--accent-color);
 	}
 
 	&.not-exists {
-		background-color: rgba(app.$warning-color, 0.1);
-		color: app.$warning-color;
+		background-color: rgba(var(--warning-color), 0.1);
+		color: var(--warning-color);
 	}
 }
 
 // Error messages
 .error {
-	color: app.$error-color;
+	color: var(--error-color);
 	font-size: 13px;
 	font-weight: normal;
 	margin-top: 6px;
@@ -186,7 +186,7 @@ p {
 
 // Data display section
 .data-display {
-	background-color: app.$secondary-color;
+	background-color: var(--secondary-color);
 	border-radius: 12px;
 	box-shadow: $box-shadow;
 	color: $text-light;
@@ -202,7 +202,7 @@ p {
 	}
 
 	h3 {
-		border-bottom: 2px solid app.$accent-color;
+		border-bottom: 2px solid var(--accent-color);
 		font-size: 22px;
 		margin-top: 0;
 		padding-bottom: 10px;
@@ -213,7 +213,7 @@ p {
 		opacity: 1;
 
 		strong {
-			color: app.$accent-color;
+			color: var(--accent-color);
 		}
 	}
 }

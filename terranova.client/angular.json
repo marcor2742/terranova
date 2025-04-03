@@ -23,7 +23,6 @@
 			"i18n": {
 				"sourceLocale": "en-US",
 				"locales": {
-					"es": "src/locale/messages.es.xlf",
 					"it": "src/locale/messages.it.xlf"
 				}
 			},
@@ -44,6 +43,11 @@
                             {
                                 "glob": "**/*",
                                 "input": "public",
+                                "output": "/assets/"
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "src/assets",
                                 "output": "/assets/"
                             }
                         ],

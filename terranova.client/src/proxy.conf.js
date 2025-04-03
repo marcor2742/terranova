@@ -10,11 +10,12 @@ const aspNetTarget = env.ASPNETCORE_HTTPS_PORT ? `https://127.0.0.1:${env.ASPNET
 const PROXY_CONFIG = [
   {
     context: [
-	  "/api/login",
-      "/api/register",
+	  "/api/loginextended",
+      "/api/registerextended",
       "/api/user",
-      "/api/user/me",
-      "/api/auth"
+      "/api/UserProfile",
+      "/api/auth",
+	  '/api/refreshextended',
     ],
     target: apiTarget,
     secure: false,

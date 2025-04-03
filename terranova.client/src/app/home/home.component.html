@@ -1,6 +1,37 @@
-<div class="navbar">
-<div class="sidebar">
-dfsdfsdf
-</div>
-<app-searchbar></app-searchbar>
+<div class="page-container">
+	<!-- Top Navigation Bar -->
+	<header class="top-bar">
+		<div class="logo">Lollo&Marco's Cock shop</div>
+		<div class="search-container">
+			<app-searchbar></app-searchbar>
+		</div>
+		<div class="top-nav-actions">
+			<button class="theme-toggle" (click)="toggleTheme()">
+				{{ themeService.isDarkTheme() ? "◻️" : "◼️" }}
+			</button>
+			<button class="menu-toggle" (click)="toggleSidebar()">
+				<span class="material-icons">menu</span>
+			</button>
+		</div>
+	</header>
+
+	<!-- Main Content Area with Sidebar -->
+	<div class="main-container">
+		<!-- Sidebar - expandable -->
+		<aside class="sidebar" [class.expanded]="sidebarExpanded()">
+			<nav class="sidebar-nav">
+				<ul>
+					<li><a routerLink="/dashboard">Dashboard</a></li>
+					<li><a routerLink="/cocktails">Cocktails</a></li>
+					<li><a routerLink="/favorites">Favorites</a></li>
+					<li><a routerLink="/settings">Settings</a></li>
+				</ul>
+			</nav>
+		</aside>
+
+		<!-- Main Content -->
+		<main class="content">
+			<div>sessp</div>
+		</main>
+	</div>
 </div>

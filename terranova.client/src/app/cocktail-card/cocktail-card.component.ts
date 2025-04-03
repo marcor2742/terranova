@@ -18,6 +18,7 @@ import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
 import { httpResource } from '@angular/common/http';
 import { FullCocktail, ingredient } from '../Classes/cocktail';
 import { environment } from '../../environments/environment.development';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-cocktail-card',
@@ -29,6 +30,7 @@ import { environment } from '../../environments/environment.development';
 		HlmCardDescriptionDirective,
 		HlmCardContentDirective,
 		HlmSkeletonComponent,
+		TranslateModule,
 	],
 	templateUrl: './cocktail-card.component.html',
 	styleUrl: './cocktail-card.component.scss',

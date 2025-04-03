@@ -1,0 +1,26 @@
+.search-container {
+  margin-bottom: 20px;
+  background-color: #ccc;
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 50%;
+    font-size: 16px;
+    
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+  }
+}
+
+.form-field {
+  margin-bottom: 15px;
+}
+
+.grayscale-100 {
+  margin-top: 20px;
+}

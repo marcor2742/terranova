@@ -8,7 +8,7 @@
 	min-height: 400px;
 	overflow: hidden;
 	border-radius: var(--radius);
-	background-color: app.$secondary-color;
+	background-color: var(--secondary-color);
 	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 

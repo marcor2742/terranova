@@ -1,20 +1,30 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '../services/jwthandler.service';
+import { environment } from '../../environments/environment';
+import { TokenStoreService } from '../services/token-store.service';
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
-	const authService = inject(AuthService);
-	// Get token from in-memory signal (which falls back to localStorage on init)
-	const token = authService.getAccessToken();
+  const tokenStore = inject(TokenStoreService);
+  const authUrls: string[] = [
+    environment.loginUrl,
+    environment.refreshUrl,
+    environment.registerUrl,
+  ];
 
-	if (token) {
-		const clonedRequest = req.clone({
-			setHeaders: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		return next(clonedRequest);
-	}
+  if (authUrls.some((url) => req.url.includes(url))) {
+    return next(req);
+  }
 
-	return next(req);
+  // Get token from token store
+  const token = tokenStore.getAccessToken();
+
+  if (token) {
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  }
+
+  return next(req);
 };

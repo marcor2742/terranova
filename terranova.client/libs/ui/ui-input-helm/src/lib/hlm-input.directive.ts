@@ -1,4 +1,16 @@
-import { Directive, type DoCheck, Injector, computed, effect, inject, input, signal, untracked } from '@angular/core';
+import {
+	Directive,
+	type DoCheck,
+	ElementRef,
+	Injector,
+	computed,
+	effect,
+	inject,
+	input,
+	output,
+	signal,
+	untracked,
+} from '@angular/core';
 import { FormGroupDirective, NgControl, NgForm } from '@angular/forms';
 import { hlm } from '@spartan-ng/brain/core';
 import { BrnFormFieldControl } from '@spartan-ng/brain/form-field';
@@ -25,7 +37,7 @@ export const inputVariants = cva(
 			size: 'default',
 			error: 'auto',
 		},
-	},
+	}
 );
 type InputVariants = VariantProps<typeof inputVariants>;
 
@@ -34,6 +46,8 @@ type InputVariants = VariantProps<typeof inputVariants>;
 	standalone: true,
 	host: {
 		'[class]': '_computedClass()',
+		'(input)': 'onInputChange($event)',
+		'(blur)': 'onInputBlur($event)',
 	},
 	providers: [
 		{
@@ -51,29 +65,41 @@ export class HlmInputDirective implements BrnFormFieldControl, DoCheck {
 		error: signal(this.error()),
 	}));
 
+	public readonly valueChange = output<string>();
+	private elementRef = inject(ElementRef);
 	public readonly userClass = input<ClassValue>('', { alias: 'class' });
 	protected readonly _computedClass = computed(() =>
-		hlm(inputVariants({ size: this.size(), error: this.state().error() }), this.userClass()),
+		hlm(
+			inputVariants({ size: this.size(), error: this.state().error() }),
+			this.userClass()
+		)
 	);
 
 	private readonly _injector = inject(Injector);
 
-	public readonly ngControl: NgControl | null = this._injector.get(NgControl, null);
+	public readonly ngControl: NgControl | null = this._injector.get(
+		NgControl,
+		null
+	);
 
 	private readonly _errorStateTracker: ErrorStateTracker;
 
 	private readonly _defaultErrorStateMatcher = inject(ErrorStateMatcher);
 	private readonly _parentForm = inject(NgForm, { optional: true });
-	private readonly _parentFormGroup = inject(FormGroupDirective, { optional: true });
+	private readonly _parentFormGroup = inject(FormGroupDirective, {
+		optional: true,
+	});
 
-	public readonly errorState = computed(() => this._errorStateTracker.errorState());
+	public readonly errorState = computed(() =>
+		this._errorStateTracker.errorState()
+	);
 
 	constructor() {
 		this._errorStateTracker = new ErrorStateTracker(
 			this._defaultErrorStateMatcher,
 			this.ngControl,
 			this._parentFormGroup,
-			this._parentForm,
+			this._parentForm
 		);
 
 		effect(() => {
@@ -84,6 +110,20 @@ export class HlmInputDirective implements BrnFormFieldControl, DoCheck {
 				}
 			});
 		});
+	}
+
+	ngOnInit() {
+		// Listen for value changes from NgControl if available
+		if (this.ngControl && this.ngControl.valueChanges) {
+			this.ngControl.valueChanges.subscribe((value) => {
+				this.valueChange.emit(value);
+			});
+		}
+	}
+	// Handle native input events
+	onInputChange(event: Event) {
+		const value = (event.target as HTMLInputElement).value;
+		this.valueChange.emit(value);
 	}
 
 	ngDoCheck() {

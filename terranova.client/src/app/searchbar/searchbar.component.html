@@ -1,2 +1,37 @@
-<input hlmInput placeholder="Search" i18n-placeholder="@@searchPlaceholder"/>
-<app-searchresoult **ngFor="let item of list" version="small" cocktail="item"></app-searchresoult>
+<div class="search-container">
+	<form [formGroup]="searchForm">
+		<div class="form-field">
+			<input
+				id="searchTerm"
+				type="text"
+				formControlName="searchTerm"
+				placeholder="{{ 'SearchPlaceholder' | translate }}"
+				class="w-1/2 opacity-15 bg-white"
+			/>
+		</div>
+	</form>
+</div>
+
+<div class="grayscale-100" *ngIf="!SearchResource.isLoading()">
+	<ng-container *ngFor="let item of SearchResource.value()">
+		<app-searchresoult
+			[ResoultSize]="ResoultSize()"
+			[Cocktail]="item"
+		></app-searchresoult>
+		<mat-divider
+			*ngIf="
+				SearchResource.value.length > 1 &&
+				item !==
+					SearchResource.value()[SearchResource.value().length - 1]
+			"
+		></mat-divider>
+	</ng-container>
+</div>
+
+<!-- Debug section -->
+<div class="debug" *ngIf="false">
+	<p>Current search term: {{ searchForm.get("searchTerm")?.value }}</p>
+	<p>Search params signal: {{ searchParams() }}</p>
+	<p>Resource loading: {{ SearchResource.isLoading() }}</p>
+	<p>Results: {{ SearchResource.value().length }}</p>
+</div>
