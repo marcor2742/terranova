@@ -11,6 +11,7 @@ namespace terranova.Server.Models
         public DbSet<CocktailIngredient> CocktailsIngredients { get; set; }
         public DbSet<Glass> Glasses { get; set; }
         public DbSet<Instructions> Instructions { get; set; }
+        public DbSet<Measure> Measures { get; set; }
 
         public CocktailsDbContext(DbContextOptions<CocktailsDbContext> options)
             : base(options) { }
@@ -44,7 +45,7 @@ namespace terranova.Server.Models
 
             // Configuration for Many-to-Many relationship of cocktailIngredient
             modelBuilder.Entity<CocktailIngredient>()
-                .HasKey(ci => new { ci.CocktailKey, ci.IngredientsKey });
+                .HasKey(ci => new { ci.CocktailKey, ci.IngredientsKey, ci.MeasureKey });
 
             modelBuilder.Entity<CocktailIngredient>()
                 .HasOne(ci => ci.Cocktail)
@@ -55,6 +56,11 @@ namespace terranova.Server.Models
                 .HasOne(ci => ci.Ingredient)
                 .WithMany(i => i.CocktailIngredients)
                 .HasForeignKey(ci => ci.IngredientsKey);
+
+            modelBuilder.Entity<CocktailIngredient>()
+                .HasOne(ci => ci.Measure)
+                .WithMany(m => m.CocktailIngredients)
+                .HasForeignKey(ci => ci.MeasureKey);
         }
     }
 }

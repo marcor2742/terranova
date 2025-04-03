@@ -48,14 +48,23 @@
         public List<CocktailIngredient> CocktailIngredients { get; set; } = new();
     }
 
+    public class Measure
+    {
+        public long Id { get; set; }
+        public string? Imperial { get; set; }
+        public string? Metric { get; set; }
+
+        public List<CocktailIngredient> CocktailIngredients { get; set; } = new();
+    }
+
     public class CocktailIngredient
     {
         public long CocktailKey { get; set; }
         public long IngredientsKey { get; set; }
-        public string? MeasureIM { get; set; }
-        public string? MeasureMT { get; set; }
+        public long MeasureKey { get; set; }
 
         public Cocktail? Cocktail { get; set; }
         public Ingredient? Ingredient { get; set; }
+        public Measure? Measure { get; set; }
     }
 }
