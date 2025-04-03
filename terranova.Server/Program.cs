@@ -11,6 +11,7 @@ using terranova.Server.Controllers;
 using terranova.Server.Data;
 using terranova.Server.Extensions;
 using terranova.Server.Models;
+using terranova.Server.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,11 +57,16 @@ app.MapGroup("/api")
 
 #endregion
 
+#region seeders
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<CocktailsDbContext>();
     CocktailSeeder.Seed(context);  // Usa il metodo Seed che hai già definito
 }
+
+await RoleSeeder.SeedRoles(app.Services);
+await RoleSeeder.SeedAdminUser(app.Services);
+#endregion
 
 // Angular
 app.UseDefaultFiles();
