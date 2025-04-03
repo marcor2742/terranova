@@ -116,3 +116,12 @@ per ora i ruoli sono hardcodati nel db
 salvo la data di nascita ma poi devo ancora calcolare l'età
 aggiungi un post per le preferenze nel file controllers/AccountEndpoints.cs
 il ruolo admin deve essere anche user e premium in automatico
+
+
+
+db
+https://drawsql.app/teams/meta-pasbarbari/diagrams/drinks
+Add-Migration "auth" -Context IdentityUserContext
+Update-Database -Context IdentityUserContext
+
+creator in dbo.Cocktails è un riferimento a IdentityUser ma nel database è impostato? //penso di no
