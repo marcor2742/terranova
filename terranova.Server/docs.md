@@ -63,7 +63,7 @@ i drink aggiunti dall'utente vengono salvati nel db generale insieme ad un campo
 •	User: Utenti registrati con funzionalità base
 •	Premium: Utenti con funzionalità aggiuntive (opzionale, per future estensioni)
 
-2. Claim (Informazioni dell'utente)
+2. Claim (Informazioni dell'utente) https://learn.microsoft.com/it-it/dotnet/api/system.security.claims.claimsprincipal?view=net-9.0#methods
 Claims di Base
 •	UserID: Identificativo univoco dell'utente
 •	Email: Email dell'utente per comunicazioni
@@ -112,10 +112,10 @@ Policy Composite
 •	Per permettere agli utenti di creare e salvare ricette personali
 
 
-per ora i ruoli sono hardcodati nel db
 salvo la data di nascita ma poi devo ancora calcolare l'età
 aggiungi un post per le preferenze nel file controllers/AccountEndpoints.cs
-il ruolo admin deve essere anche user e premium in automatico
+gli endpoint originali non sono bloccati
+gli endpoint devono essere accessibili agli admin di default
 
 
 
@@ -123,5 +123,7 @@ db
 https://drawsql.app/teams/meta-pasbarbari/diagrams/drinks
 Add-Migration "auth" -Context IdentityUserContext
 Update-Database -Context IdentityUserContext
+	metodi di UserManager https://learn.microsoft.com/it-it/dotnet/api/microsoft.aspnetcore.identity.usermanager-1?view=aspnetcore-9.0#methods
 
 creator in dbo.Cocktails è un riferimento a IdentityUser ma nel database è impostato? //penso di no
+api/logoutextended rimuove semplicemente il refresh token dal db

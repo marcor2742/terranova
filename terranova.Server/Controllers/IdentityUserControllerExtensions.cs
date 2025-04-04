@@ -38,6 +38,8 @@ namespace terranova.Server.Controllers
 
             app.MapPost("/refreshextended", RefreshToken);
 
+            app.MapPost("/logoutextended", Logout); // remove refresh token from db
+
             return app;
         }
 
@@ -264,6 +266,24 @@ namespace terranova.Server.Controllers
             public string RefreshToken { get; set; } = string.Empty;
         }
 
+        //remove refresh token from db
+        private static async Task<IResult> Logout(
+            UserManager<IdentityUserExtended> userManager,
+            ClaimsPrincipal user)
+        {
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+            {
+                return Results.BadRequest(new { message = "Utente non trovato" });
+            }
+            var identityUser = await userManager.FindByIdAsync(userId);
+            if (identityUser == null)
+            {
+                return Results.BadRequest(new { message = "Utente non trovato" });
+            }
+            await userManager.SetAuthenticationTokenAsync(identityUser, "Default", "RefreshToken", null);
+            return Results.Ok(new { message = "Logout effettuato con successo" });
+        }
 
 
 
