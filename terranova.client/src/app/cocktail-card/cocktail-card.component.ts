@@ -16,7 +16,7 @@ import {
 } from '@spartan-ng/ui-card-helm';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
 import { httpResource } from '@angular/common/http';
-import { FullCocktail, ingredient } from '../Classes/cocktail';
+import { FullCocktail, Ingredient } from '../Classes/cocktail';
 import { environment } from '../../environments/environment.development';
 import { TranslateModule } from '@ngx-translate/core';
 

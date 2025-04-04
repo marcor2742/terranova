@@ -1,31 +1,74 @@
-<div class="search-container">
-	<form [formGroup]="searchForm">
-		<div class="form-field">
-			<input
-				id="searchTerm"
-				type="text"
-				formControlName="searchTerm"
-				placeholder="{{ 'SearchPlaceholder' | translate }}"
-				class="w-1/2 opacity-15 bg-white"
-			/>
-		</div>
-	</form>
-</div>
+<div class="search-wrapper">
+	<div class="search-container">
+		<form [formGroup]="searchForm" class="search-form">
+			<p-button
+				icon="pi pi-search"
+				styleClass="search-button p-button-rounded p-button-text"
+				type="submit"
+			></p-button>
 
-<div class="grayscale-100" *ngIf="!SearchResource.isLoading()">
-	<ng-container *ngFor="let item of SearchResource.value()">
-		<app-searchresoult
-			[ResoultSize]="ResoultSize()"
-			[Cocktail]="item"
-		></app-searchresoult>
-		<mat-divider
-			*ngIf="
-				SearchResource.value.length > 1 &&
-				item !==
-					SearchResource.value()[SearchResource.value().length - 1]
-			"
-		></mat-divider>
-	</ng-container>
+			<div class="form-field">
+				<input
+					id="searchTerm"
+					type="text"
+					formControlName="searchTerm"
+					placeholder="{{ 'SearchPlaceholder' | translate }}"
+					class="search-input"
+				/>
+			</div>
+
+			<!-- <p-button icon="pi pi-filter" styleClass="filter-button p-button-rounded p-button-text" (click)="openFilterPanel()"></p-button> -->
+		</form>
+	</div>
+
+	<div
+		class="search-results"
+		*ngIf="
+			searchForm.get('searchTerm')?.value &&
+			(SearchResource.isLoading() || SearchResource.value().length > 0)
+		"
+	>
+		<p-card styleClass="search-results-card">
+			<!-- Loading skeletons -->
+			<div *ngIf="SearchResource.isLoading()">
+				<div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
+					<div class="skeleton-content">
+						<p-skeleton
+							height="2rem"
+							width="60%"
+							styleClass="mb-2"
+						></p-skeleton>
+						<p-skeleton
+							height="1rem"
+							width="80%"
+							styleClass="mb-1"
+						></p-skeleton>
+						<p-skeleton
+							height="1rem"
+							width="70%"
+							styleClass="mb-1"
+						></p-skeleton>
+					</div>
+					<p-divider *ngIf="i < 3"></p-divider>
+				</div>
+			</div>
+
+			<!-- Actual results -->
+			<ng-container *ngIf="!SearchResource.isLoading()">
+				<ng-container
+					*ngFor="let item of SearchResource.value(); let i = index"
+				>
+					<app-searchresoult
+						[ResoultSize]="ResoultSize()"
+						[Cocktail]="item"
+					></app-searchresoult>
+					<p-divider
+						*ngIf="i < SearchResource.value().length - 1"
+					></p-divider>
+				</ng-container>
+			</ng-container>
+		</p-card>
+	</div>
 </div>
 
 <!-- Debug section -->

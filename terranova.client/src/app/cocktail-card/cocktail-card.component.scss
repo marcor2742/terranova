@@ -61,7 +61,7 @@
   &:before {
     left: 0;
     width: 12px;
-    background-image: linear-gradient(135deg, transparent 12px, app.$secondary-color 0);
+    background-image: linear-gradient(135deg, transparent 12px, var(--secondary-color), 0);
     background-size: 12px 24px;
   }
   
@@ -69,7 +69,7 @@
   &:after {
     right: 0;
     width: 12px;
-    background-image: linear-gradient(-135deg, transparent 12px, app.$secondary-color 0);
+    background-image: linear-gradient(-135deg, transparent 12px, var(--secondary-color), 0);
     background-size: 12px 24px;
   }
 }
@@ -116,13 +116,14 @@
 
 	.ingredient-amount {
 		// Use a muted color from your palette - assuming this exists
-		color: color.adjust(app.$primary-color, $lightness: 20%);
+		color: var(--primary-color);
+        opacity: 0.8;
 	}
 }
 
 .instructions-card {
 	margin-top: 1.5rem;
-	background-color: color.adjust(app.$secondary-color, $lightness: 10%);
+	background-color: (var(--secondary-color), 0.8);
 }
 
 .error-container {
@@ -130,5 +131,5 @@
 	padding: 2rem;
 	text-align: center;
 	// Use an error/destructive color from your palette - assuming this exists
-	color: app.$error-color;
+	color: var(--error-color);
 }

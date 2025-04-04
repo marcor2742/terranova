@@ -1,5 +1,8 @@
 import { sample } from "rxjs";
 
+/**
+ * Defines the different volume measurement units available for ingredients
+ */
 type Volumemeasure =
 	| 'cc'
 	| 'ml'
@@ -11,10 +14,20 @@ type Volumemeasure =
 	| 'quart'
 	| 'gallon';
 	
+/**
+ * Defines the different weight measurement units available for ingredients
+ */
 type Weightmeasure = 'gr' | 'kg' | 'lb' | 'oz' | 'mg';
 
+/**
+ * Measurement system preference for users
+ */
 export type MeasureUnit = 'imperial' | 'metric';
-export class ingredient {
+
+/**
+ * Represents a cocktail ingredient with name, quantity, and measurement unit
+ */
+export class Ingredient {
 	constructor(
 		public name: string,
 		public quantity: number,
@@ -22,41 +35,58 @@ export class ingredient {
 	) {}
 }
 
+/**
+ * Represents a cocktail with all its properties
+ */
 export class Cocktail {
 	constructor(
 		public id: number,
 		public Name: string,
 		public Description: string,
-		public ingredients: Array<ingredient>,
+		public ingredients: Array<Ingredient>,
 		public Instructions: string,
 		public ImageUrl: string
 	) {}
 }
 
+/**
+ * Response structure for a full cocktail with potential errors
+ */
 export type FullCocktail = {
 	Cocktail: Cocktail;
 	errors?: string;
 };
 
-export type CockResoults = "small" | "medium" | "large"
+/**
+ * Defines the size options for displaying cocktail results
+ */
+export type CockResoults = "small" | "medium" | "large";
 
+/**
+ * Returns a sample cocktail for testing purposes
+ * @returns A pre-populated Cocktail instance
+ */
 export function getSampleCocktail(): Cocktail {
 	return new Cocktail(
 		1,
 		'Mojito',
 		'A refreshing Cuban cocktail with rum, mint, and lime.',
 		[
-			new ingredient('White rum', 60, 'ml'),
-			new ingredient('Fresh lime juice', 30, 'ml'),
-			new ingredient('Sugar', 2, 'tsp'),
-			new ingredient('Mint leaves', 8, 'oz'),
-			new ingredient('Soda water', 100, 'ml'),
+			new Ingredient('White rum', 60, 'ml'),
+			new Ingredient('Fresh lime juice', 30, 'ml'),
+			new Ingredient('Sugar', 2, 'tsp'),
+			new Ingredient('Mint leaves', 8, 'oz'),
+			new Ingredient('Soda water', 100, 'ml'),
 		],
 		'Mix all ingredients in a glass and stir well.',
 		'https://example.com/mojito.jpg'
 	);
 }
 
+/**
+ * Returns a sample list of cocktails for testing purposes
+ * @returns An array of pre-populated Cocktail instances
+ */
 export function getSampleCocktailList(): Cocktail[] {
 	return [
 		new Cocktail(
@@ -64,11 +94,11 @@ export function getSampleCocktailList(): Cocktail[] {
 			'Mojito',
 			'A refreshing Cuban cocktail with rum, mint, and lime.',
 			[
-				new ingredient('White rum', 60, 'ml'),
-				new ingredient('Fresh lime juice', 30, 'ml'),
-				new ingredient('Sugar', 2, 'tsp'),
-				new ingredient('Mint leaves', 8, 'oz'),
-				new ingredient('Soda water', 100, 'ml'),
+				new Ingredient('White rum', 60, 'ml'),
+				new Ingredient('Fresh lime juice', 30, 'ml'),
+				new Ingredient('Sugar', 2, 'tsp'),
+				new Ingredient('Mint leaves', 8, 'oz'),
+				new Ingredient('Soda water', 100, 'ml'),
 			],
 			'Mix all ingredients in a glass and stir well.',
 			'https://example.com/mojito.jpg'
@@ -78,9 +108,9 @@ export function getSampleCocktailList(): Cocktail[] {
 			'Daiquiri',
 			'A classic cocktail made with rum, lime juice, and sugar.',
 			[
-				new ingredient('White rum', 50, 'ml'),
-				new ingredient('Fresh lime juice', 25, 'ml'),
-				new ingredient('Sugar', 1, 'tsp'),
+				new Ingredient('White rum', 50, 'ml'),
+				new Ingredient('Fresh lime juice', 25, 'ml'),
+				new Ingredient('Sugar', 1, 'tsp'),
 			],
 			'Simplify by shaking all ingredients with ice and straining into a chilled glass.',
 			'https://example.com/daiquiri.jpg'
