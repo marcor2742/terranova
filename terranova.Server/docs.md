@@ -117,6 +117,7 @@ aggiungi un post per le preferenze nel file controllers/AccountEndpoints.cs
 gli endpoint originali non sono bloccati
 gli endpoint devono essere accessibili agli admin di default
 
+!info!!!!!!!!/api/addProfileInfo lasciando "" aggiorna a vuoto e non lascia quello vecchio.
 
 
 db
