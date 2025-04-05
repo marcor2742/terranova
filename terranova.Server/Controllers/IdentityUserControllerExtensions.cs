@@ -78,10 +78,18 @@ namespace terranova.Server.Controllers
             if (!string.IsNullOrEmpty(model.Email))
             {
                 user = await userManager.FindByEmailAsync(model.Email);
+                if (string.IsNullOrEmpty(model.Password) && user == null)
+                {
+                    return Results.BadRequest(new { message = "Register" });
+                }
             }
             else if (!string.IsNullOrEmpty(model.Username))
             {
                 user = await userManager.FindByNameAsync(model.Username);
+                if (string.IsNullOrEmpty(model.Password) && user == null)
+                {
+                    return Results.BadRequest(new { message = "Register" });
+                }
             }
 
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))

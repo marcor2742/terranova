@@ -118,7 +118,7 @@ gli endpoint originali non sono bloccati
 gli endpoint devono essere accessibili agli admin di default
 
 !info!!!!!!!!/api/addProfileInfo lasciando "" aggiorna a vuoto e non lascia quello vecchio.
-
+aggiunto in /api/loginextended se l'email non è nel db allora risponde "register"
 
 db
 https://drawsql.app/teams/meta-pasbarbari/diagrams/drinks
