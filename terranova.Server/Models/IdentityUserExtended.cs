@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace terranova.Server.Models
@@ -29,7 +30,7 @@ namespace terranova.Server.Models
     public class IdentityUserExtended : IdentityUser
     {
         [PersonalData]
-        [Column(TypeName = "nvarchar(150)")]
+        [StringLength(150, ErrorMessage = "Name cannot be more than 150 char long")]
         public string? FullName { get; set; }
 
         [PersonalData]
@@ -57,19 +58,18 @@ namespace terranova.Server.Models
         }
 
         [PersonalData]
-        [Column(TypeName = "nvarchar(150)")]
+        [StringLength(150, ErrorMessage = "Glass preference cannot be more than 150 characters long")]
         public string? GlassPreference { get; set; }
 
         [PersonalData]
-        [Column(TypeName = "nvarchar(150)")]
+        [StringLength(150, ErrorMessage = "Base ingredient preference cannot be more than 150 characters long")]
         public string? BaseIngredientPreference { get; set; }
 
         [PersonalData]
-        [Column(TypeName = "nvarchar(150)")]
+        [StringLength(150, ErrorMessage = "Bio cannot be more than 150 char long")]
         public string? Bio { get; set; }
 
         [PersonalData]
-        [Column(TypeName = "nvarchar(150)")]
         public string? PropicUrl { get; set; }
     }
 }
