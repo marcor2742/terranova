@@ -1,0 +1,54 @@
+@use "../app.component" as app;
+
+.cocktail-item {
+  display: flex;
+  align-items: flex-start;
+  @include app.responsive-padding(10, 10, 10, 10);
+}
+
+.cocktail-icon {
+  @include app.responsive-margin(0, 12, 0, 0);
+  font-size: 1.5rem;
+  color: var(--text-color);
+  min-width: 32px;
+  text-align: center;
+}
+
+.cocktail-details {
+  flex: 1;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .cocktail-category {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    margin-top: 8px;
+  }
+}
+
+/* For proper icon alignment */
+:host ::ng-deep .pi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+/* Specific icon colors */
+:host ::ng-deep .pi-alcoholic-drink {
+  color: var(--tertiary-color);
+}
+
+:host ::ng-deep .pi-non-alcoholic-drink {
+  color: var(--quaternary-color);
+}

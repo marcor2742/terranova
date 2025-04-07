@@ -35,13 +35,21 @@ export class Ingredient {
 	) {}
 }
 
+export type Glass = {
+	name: string;
+	measure: number; //always in ml
+}
+
 /**
  * Represents a cocktail with all its properties
  */
 export class Cocktail {
 	constructor(
 		public id: number,
+		public Alcoholic: boolean,
 		public Name: string,
+		public Category: string,
+		public Glass: Glass,
 		public Description: string,
 		public ingredients: Array<Ingredient>,
 		public Instructions: string,
@@ -69,7 +77,13 @@ export type CockResoults = "small" | "medium" | "large";
 export function getSampleCocktail(): Cocktail {
 	return new Cocktail(
 		1,
+		true,
 		'Mojito',
+		'A refreshing Cuban cocktail with rum, mint, and lime.',
+		{
+			name: 'Highball glass',
+			measure: 300,
+		},
 		'A refreshing Cuban cocktail with rum, mint, and lime.',
 		[
 			new Ingredient('White rum', 60, 'ml'),
@@ -91,21 +105,31 @@ export function getSampleCocktailList(): Cocktail[] {
 	return [
 		new Cocktail(
 			1,
+			true,
 			'Mojito',
+			'Cocktail',
+			{
+				name: 'Highball glass',
+				measure: 300,
+			},
 			'A refreshing Cuban cocktail with rum, mint, and lime.',
 			[
 				new Ingredient('White rum', 60, 'ml'),
 				new Ingredient('Fresh lime juice', 30, 'ml'),
 				new Ingredient('Sugar', 2, 'tsp'),
-				new Ingredient('Mint leaves', 8, 'oz'),
-				new Ingredient('Soda water', 100, 'ml'),
 			],
 			'Mix all ingredients in a glass and stir well.',
 			'https://example.com/mojito.jpg'
 		),
 		new Cocktail(
 			2,
+			true,
 			'Daiquiri',
+			'Cocktail',
+			{
+				name: 'Cocktail glass',
+				measure: 150,
+			},
 			'A classic cocktail made with rum, lime juice, and sugar.',
 			[
 				new Ingredient('White rum', 50, 'ml'),
