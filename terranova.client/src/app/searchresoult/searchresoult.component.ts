@@ -1,9 +1,14 @@
-import { Component, input, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { CockResoults, Cocktail } from '../Classes/cocktail';
 import { TranslateModule } from '@ngx-translate/core';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { CommonModule } from '@angular/common';
+
+export interface Searchres {
+	id: number;
+	add: "add" | "only";
+}
 
 /**
  * Component for displaying a single cocktail search result
@@ -26,4 +31,12 @@ export class SearchresoultComponent {
 	 * The cocktail data to display
 	 */
 	@Input() Cocktail!: Cocktail;
+
+	@Input() CocktailAlreadySelected: boolean = false;
+
+	@Output() cocktailSelected = new EventEmitter<Searchres>();
+
+	navigateToCocktail(Searchres: Searchres) {
+		this.cocktailSelected.emit(Searchres);
+	}
 }

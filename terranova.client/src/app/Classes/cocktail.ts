@@ -49,11 +49,10 @@ export class Cocktail {
 		public Alcoholic: boolean,
 		public Name: string,
 		public Category: string,
-		public Glass: Glass,
-		public Description: string,
-		public ingredients: Array<Ingredient>,
-		public Instructions: string,
-		public ImageUrl: string
+		public Glass?: Glass,
+		public ingredients?: Array<Ingredient>,
+		public Instructions?: string,
+		public ImageUrl?: string
 	) {}
 }
 
@@ -84,7 +83,6 @@ export function getSampleCocktail(): Cocktail {
 			name: 'Highball glass',
 			measure: 300,
 		},
-		'A refreshing Cuban cocktail with rum, mint, and lime.',
 		[
 			new Ingredient('White rum', 60, 'ml'),
 			new Ingredient('Fresh lime juice', 30, 'ml'),
@@ -112,7 +110,6 @@ export function getSampleCocktailList(): Cocktail[] {
 				name: 'Highball glass',
 				measure: 300,
 			},
-			'A refreshing Cuban cocktail with rum, mint, and lime.',
 			[
 				new Ingredient('White rum', 60, 'ml'),
 				new Ingredient('Fresh lime juice', 30, 'ml'),
@@ -130,7 +127,6 @@ export function getSampleCocktailList(): Cocktail[] {
 				name: 'Cocktail glass',
 				measure: 150,
 			},
-			'A classic cocktail made with rum, lime juice, and sugar.',
 			[
 				new Ingredient('White rum', 50, 'ml'),
 				new Ingredient('Fresh lime juice', 25, 'ml'),

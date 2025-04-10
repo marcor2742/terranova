@@ -61,6 +61,7 @@
 					<app-searchresoult
 						[ResoultSize]="ResoultSize()"
 						[Cocktail]="item"
+						(cocktailSelected)="GotoCocktail($event)"
 					></app-searchresoult>
 					<p-divider
 						*ngIf="i < SearchResource.value().length - 1"
