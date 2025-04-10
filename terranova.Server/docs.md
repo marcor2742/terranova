@@ -125,6 +125,7 @@ https://drawsql.app/teams/meta-pasbarbari/diagrams/drinks
 Add-Migration "auth" -Context IdentityUserContext
 Update-Database -Context IdentityUserContext
 	metodi di UserManager https://learn.microsoft.com/it-it/dotnet/api/microsoft.aspnetcore.identity.usermanager-1?view=aspnetcore-9.0#methods
+	sql query https://learn.microsoft.com/en-us/ef/core/querying/sql-queries?tabs=sqlserver#composing-with-linq
 
 creator in dbo.Cocktails è un riferimento a IdentityUser ma nel database è impostato? //penso di no
 api/logoutextended rimuove semplicemente il refresh token dal db
