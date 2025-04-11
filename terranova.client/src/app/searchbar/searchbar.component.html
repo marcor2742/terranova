@@ -1,0 +1,85 @@
+<div class="search-wrapper">
+	<div class="search-container">
+		<form [formGroup]="searchForm" class="search-form">
+			<p-button
+				icon="pi pi-search"
+				styleClass="search-button p-button-rounded p-button-text"
+				type="submit"
+			></p-button>
+
+			<div class="form-field">
+				<input
+					id="searchTerm"
+					type="text"
+					formControlName="searchTerm"
+					placeholder="{{ 'SearchPlaceholder' | translate }}"
+					class="search-input"
+				/>
+			</div>
+		</form>
+	</div>
+
+	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value">
+		<p-card styleClass="search-results-card">
+			<!-- Loading skeletons -->
+			<div *ngIf="SearchResource.isLoading()">
+				<div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
+					<div class="skeleton-content">
+						<p-skeleton
+							height="2rem"
+							width="60%"
+							styleClass="mb-2"
+						></p-skeleton>
+						<p-skeleton
+							height="1rem"
+							width="80%"
+							styleClass="mb-1"
+						></p-skeleton>
+						<p-skeleton
+							height="1rem"
+							width="70%"
+							styleClass="mb-1"
+						></p-skeleton>
+					</div>
+					<p-divider *ngIf="i < 3"></p-divider>
+				</div>
+			</div>
+
+			<!-- Actual results -->
+			<ng-container *ngIf="!SearchResource.isLoading()">
+				<ng-container
+					*ngFor="let item of SearchResource.value(); let i = index"
+				>
+					<app-searchresoult
+						[ResoultSize]="ResoultSize()"
+						[Cocktail]="item"
+						(cocktailSelected)="GotoCocktail($event)"
+					></app-searchresoult>
+					<p-divider
+						*ngIf="i < SearchResource.value().length - 1"
+					></p-divider>
+				</ng-container>
+
+				<!-- Load more button -->
+				<div class="search-more-container" *ngIf="hasMoreResults()">
+					<p-button
+						label="{{ 'LoadMore' | translate }}"
+						icon="pi pi-plus"
+						styleClass="p-button-text"
+						[loading]="SearchResource.isLoading()"
+						(onClick)="loadMoreResults()"
+					></p-button>
+				</div>
+			</ng-container>
+
+			<!-- Initial loading -->
+			<div class="loading-container" *ngIf="SearchResource.isLoading()">
+				<p-skeleton
+					height="2rem"
+					width="40%"
+					styleClass="mb-2"
+				></p-skeleton>
+			</div>
+		</p-card>
+	</div>
+</div>

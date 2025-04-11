@@ -1,3 +1,9 @@
+if (typeof window !== 'undefined') {
+	throw new Error('This module should only be used on the server side!');
+  }
+// This module is intended for server-side usage only.  
+
+
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
