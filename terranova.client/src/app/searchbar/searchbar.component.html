@@ -22,7 +22,7 @@
 	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value">
 		<p-card styleClass="search-results-card">
 			<!-- Loading skeletons -->
-			<div *ngIf="SearchResource.isLoading()">
+			<div *ngIf="cocktails.isLoading()">
 				<div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
 					<div class="skeleton-content">
 						<p-skeleton
@@ -46,9 +46,9 @@
 			</div>
 
 			<!-- Actual results -->
-			<ng-container *ngIf="!SearchResource.isLoading()">
+			<ng-container *ngIf="!cocktails.isLoading()">
 				<ng-container
-					*ngFor="let item of SearchResource.value(); let i = index"
+					*ngFor="let item of cocktails.value(); let i = index"
 				>
 					<app-searchresoult
 						[ResoultSize]="ResoultSize()"
@@ -56,7 +56,7 @@
 						(cocktailSelected)="GotoCocktail($event)"
 					></app-searchresoult>
 					<p-divider
-						*ngIf="i < SearchResource.value().length - 1"
+						*ngIf="i < cocktails.value().length - 1"
 					></p-divider>
 				</ng-container>
 
@@ -66,14 +66,14 @@
 						label="{{ 'LoadMore' | translate }}"
 						icon="pi pi-plus"
 						styleClass="p-button-text"
-						[loading]="SearchResource.isLoading()"
+						[loading]="cocktails.isLoading()"
 						(onClick)="loadMoreResults()"
 					></p-button>
 				</div>
 			</ng-container>
 
 			<!-- Initial loading -->
-			<div class="loading-container" *ngIf="SearchResource.isLoading()">
+			<div class="loading-container" *ngIf="cocktails.isLoading()">
 				<p-skeleton
 					height="2rem"
 					width="40%"

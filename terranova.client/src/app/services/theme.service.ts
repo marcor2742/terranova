@@ -1,101 +1,143 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
 
-/**
- * Service for managing application themes
- * Handles theme switching, persistence, and state management
- */
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class ThemeService {
-	/** Local storage key for saving theme preference */
-	private readonly THEME_KEY = 'selected-theme';
-	/** Identifier for the dark theme */
-	private readonly DARK_THEME = 'dark-theme';
-	/** Identifier for the summer theme */
-	private readonly SUMMER_THEME = 'summer-theme';
-
-	/** Signal for the current theme */
-	currentTheme = signal<string>(this.DARK_THEME);
-	/** Tracks if the theme has been properly initialized */
-	private initialized = false;
-
-	/**
-	 * Creates a new ThemeService instance
-	 * @param platformId - Angular's platform identifier for SSR compatibility
-	 */
-	constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-		// Load saved theme preference from localStorage
-		if (isPlatformBrowser(this.platformId)) {
-			this.loadSavedTheme();
-		}
-	}
-
-	/**
-	 * Loads the saved theme from local storage or uses default
-	 */
-	private loadSavedTheme(): void {
-		const savedTheme =
-			localStorage.getItem(this.THEME_KEY) || this.DARK_THEME;
-		this.setTheme(savedTheme);
-	}
-
-	/**
-	 * Sets the application theme
-	 * @param theme - The theme identifier to apply
-	 */
-	setTheme(theme: string): void {
-		// Update internal state
-		this.currentTheme.set(theme);
-
-		if (isPlatformBrowser(this.platformId)) {
-			// Remove all theme classes
-			document.body.classList.remove(this.DARK_THEME, this.SUMMER_THEME);
-
-			// Add the selected theme class for the summer theme
-			if (theme === this.SUMMER_THEME) {
-				document.body.classList.add(this.SUMMER_THEME);
-			}
-
-			// Save theme preference in localStorage
-			localStorage.setItem(this.THEME_KEY, theme);
-
-			// Set initialized flag
-			this.initialized = true;
-
-			// Force a repaint to update CSS variables
-			document.body.style.display = 'none';
-			// This triggers a reflow
-			void document.body.offsetHeight;
-			document.body.style.display = '';
-		}
-	}
-
-	/**
-	 * Toggles between available themes
-	 */
-	toggleTheme(): void {
-		const newTheme =
-			this.currentTheme() === this.DARK_THEME
-				? this.SUMMER_THEME
-				: this.DARK_THEME;
-		this.setTheme(newTheme);
-	}
-
-	/**
-	 * Checks if the dark theme is currently active
-	 * @returns True if the dark theme is active, false otherwise
-	 */
-	isDarkTheme(): boolean {
-		return this.currentTheme() === this.DARK_THEME;
-	}
-
-	/**
-	 * Checks if the theme system has been fully initialized
-	 * @returns True if initialized, false otherwise
-	 */
-	isInitialized(): boolean {
-		return this.initialized;
-	}
+  private readonly THEME_KEY = 'selected-theme';
+  private readonly DARK_THEME = 'dark-theme';
+  private readonly SUMMER_THEME = 'summer-theme';
+  
+  // Don't initialize the signal at class level
+  private _currentTheme?: ReturnType<typeof signal<string>>;
+  private initialized = false;
+  private _activeTheme = this.DARK_THEME;
+  
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    if (isPlatformBrowser(this.platformId)) {
+      this._currentTheme = signal<string>(this.DARK_THEME);
+      this.loadSavedTheme();
+    }
+  }
+  
+  private loadSavedTheme(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedTheme = localStorage.getItem(this.THEME_KEY) || this.DARK_THEME;
+      this.setTheme(savedTheme);
+    }
+  }
+  
+  setTheme(theme: string): void {
+    this._activeTheme = theme;
+    
+    if (isPlatformBrowser(this.platformId) && this._currentTheme) {
+      this._currentTheme.set(theme);
+      document.body.classList.remove(this.DARK_THEME, this.SUMMER_THEME);
+      
+      if (theme === this.SUMMER_THEME) {
+        document.body.classList.add(this.SUMMER_THEME);
+      }
+      
+      localStorage.setItem(this.THEME_KEY, theme);
+      this.initialized = true;
+      
+      document.body.style.display = 'none';
+      void document.body.offsetHeight;
+      document.body.style.display = '';
+    }
+  }
+  
+  getCurrentTheme(): string {
+    return this._activeTheme;
+  }
+  
+  toggleTheme(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const newTheme = this._activeTheme === this.DARK_THEME 
+        ? this.SUMMER_THEME 
+        : this.DARK_THEME;
+      this.setTheme(newTheme);
+    }
+  }
+  
+  isDarkTheme(): boolean {
+    return this._activeTheme === this.DARK_THEME;
+  }
+  
+  isInitialized(): boolean {
+    return this.initialized;
+  }
 }
+
+// import { isPlatformBrowser } from '@angular/common';
+// import { Injectable, Inject, PLATFORM_ID, signal } from '@angular/core';
+
+// @Injectable({
+//   providedIn: 'root',
+// })
+// export class ThemeService {
+//   private readonly THEME_KEY = 'selected-theme';
+//   private readonly DARK_THEME = 'dark-theme';
+//   private readonly SUMMER_THEME = 'summer-theme';
+  
+//   // Don't initialize the signal at class level
+//   private _currentTheme?: ReturnType<typeof signal<string>>;
+//   private initialized = false;
+//   private _activeTheme = this.DARK_THEME;
+  
+//   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+//     if (isPlatformBrowser(this.platformId)) {
+//       this._currentTheme = signal<string>(this.DARK_THEME);
+//       this.loadSavedTheme();
+//     }
+//   }
+  
+//   private loadSavedTheme(): void {
+//     if (isPlatformBrowser(this.platformId)) {
+//       const savedTheme = localStorage.getItem(this.THEME_KEY) || this.DARK_THEME;
+//       this.setTheme(savedTheme);
+//     }
+//   }
+  
+//   setTheme(theme: string): void {
+//     this._activeTheme = theme;
+    
+//     if (isPlatformBrowser(this.platformId) && this._currentTheme) {
+//       this._currentTheme.set(theme);
+//       document.body.classList.remove(this.DARK_THEME, this.SUMMER_THEME);
+      
+//       if (theme === this.SUMMER_THEME) {
+//         document.body.classList.add(this.SUMMER_THEME);
+//       }
+      
+//       localStorage.setItem(this.THEME_KEY, theme);
+//       this.initialized = true;
+      
+//       document.body.style.display = 'none';
+//       void document.body.offsetHeight;
+//       document.body.style.display = '';
+//     }
+//   }
+  
+//   getCurrentTheme(): string {
+//     return this._activeTheme;
+//   }
+  
+//   toggleTheme(): void {
+//     if (isPlatformBrowser(this.platformId)) {
+//       const newTheme = this._activeTheme === this.DARK_THEME 
+//         ? this.SUMMER_THEME 
+//         : this.DARK_THEME;
+//       this.setTheme(newTheme);
+//     }
+//   }
+  
+//   isDarkTheme(): boolean {
+//     return this._activeTheme === this.DARK_THEME;
+//   }
+  
+//   isInitialized(): boolean {
+//     return this.initialized;
+//   }
+// }
