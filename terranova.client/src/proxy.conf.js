@@ -10,18 +10,17 @@ const aspNetTarget = env.ASPNETCORE_HTTPS_PORT ? `https://127.0.0.1:${env.ASPNET
 const PROXY_CONFIG = [
   {
     context: [
-	  "/api/login",
-      "/api/register",
+	  "/api/loginextended",
+      "/api/registerextended",
       "/api/user",
-      "/api/user/me",
-      "/api/auth"
+      "/api/UserProfile",
+      "/api/auth",
+	  '/api/refreshextended',
     ],
     target: apiTarget,
     secure: false,
     changeOrigin: true,
-    // Add this to force IPv4
     hostRewrite: '127.0.0.1',
-    // Add this to disable IPv6
     configure: (proxy) => {
       proxy.on('proxyReq', function(proxyReq, req, res) {
         proxyReq.setHeader('host', '127.0.0.1:5299');

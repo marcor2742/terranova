@@ -1,0 +1,35 @@
+<div class="cocktail-item">
+	<div class="cocktail-icon">
+		<img
+			*ngIf="Cocktail().Alcoholic === true"
+			src="./assets/icons/drink.svg"
+			alt="Alcoholic drink"
+			width="24"
+			height="24"
+		/>
+		<img
+			*ngIf="Cocktail().Alcoholic === false"
+			src="./assets/icons/no_drink.svg"
+			alt="Non-alcoholic drink"
+			width="24"
+			height="24"
+		/>
+	</div>
+
+	<div class="cocktail-details">
+		<h3>{{ Cocktail().Name }}</h3>
+		<p class="cocktail-category">
+			{{ Cocktail().Category }} · {{ Cocktail().Alcoholic }}
+		</p>
+		<i
+			class="pi pi-arrow-right"
+			(click)="navigateToCocktail({ id: Cocktail().id, add: 'only' })"
+			title="View Details"
+		></i>
+		<i
+			class="pi pi-plus"
+			(click)="navigateToCocktail({ id: Cocktail().id, add: 'add' })"
+			title="Add Cocktail"
+		></i>
+	</div>
+</div>
