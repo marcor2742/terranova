@@ -12,14 +12,14 @@
 			class="photo-side"
 			[style.background-image]="
 				'url(' +
-				(cocktail.value().Cocktail.ImageUrl ||
+				(cocktail.value()?.Cocktail?.ImageUrl ||
 					'/assets/default-cocktail.jpg') +
 				')'
 			"
 		>
 			<div class="photo-overlay">
 				<div hlmCardTitle class="photo-title">
-					{{ cocktail.value().Cocktail.Name }}
+					{{ cocktail.value()?.Cocktail?.Name }}
 				</div>
 			</div>
 		</div>
@@ -30,9 +30,9 @@
 		<!-- Content side -->
 		<div class="content-side">
 			<div hlmCardHeader>
-				<div hlmCardTitle>{{ cocktail.value().Cocktail.Name }}</div>
+				<div hlmCardTitle>{{ cocktail.value()?.Cocktail?.Name }}</div>
 				<div hlmCardDescription>
-					{{ cocktail.value().Cocktail.Description }}
+					{{ cocktail.value()?.Cocktail?.Category }}
 				</div>
 			</div>
 
@@ -42,7 +42,7 @@
 					<h4>{{ "ingredientsHeading" | translate }}</h4>
 					<ul class="ingredients-list">
 						@for (ingredient of
-						cocktail.value().Cocktail.ingredients; track $index) {
+						cocktail.value()?.Cocktail?.ingredients || []; track $index) {
 						<li>
 							<span class="ingredient-name">{{
 								ingredient.name
@@ -59,7 +59,7 @@
 							{{ "preparationHeading" | translate }}
 						</div>
 						<div hlmCardContent>
-							{{ cocktail.value().Cocktail.Instructions }}
+							{{ cocktail.value()?.Cocktail?.Instructions }}
 						</div>
 					</div>
 				</div>
