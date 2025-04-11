@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {
 	HlmCardContentDirective,
 	HlmCardDescriptionDirective,
@@ -35,6 +35,9 @@ export class CocktailCardComponent {
 	readonly cardHeight = input<string>('20px');
 	readonly locale = input<string>('en-US');
 	readonly cocktailUrl = environment.searchUrl + '/' + this.cockId() + '/';
+
+	readonly IsRemovable = input<boolean>(false);
+	readonly removeCocktail = output<number>();
 
 	cocktail = httpResource<FullCocktail>(this.cocktailUrl);
 

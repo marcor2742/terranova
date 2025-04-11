@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { CockResoults, Cocktail } from '../Classes/cocktail';
 import { TranslateModule } from '@ngx-translate/core';
@@ -25,16 +25,16 @@ export class SearchresoultComponent {
 	 * Controls the size of the displayed result
 	 * Can be 'small', 'medium', or 'large'
 	 */
-	@Input() ResoultSize: CockResoults = 'small';
+	readonly ResoultSize = input<CockResoults>('small');
 
 	/**
 	 * The cocktail data to display
 	 */
-	@Input() Cocktail!: Cocktail;
+	readonly Cocktail = input.required<Cocktail>();
 
-	@Input() CocktailAlreadySelected: boolean = false;
+	readonly CocktailAlreadySelected = input<boolean>(false);
 
-	@Output() cocktailSelected = new EventEmitter<Searchres>();
+	readonly cocktailSelected = output<Searchres>();
 
 	navigateToCocktail(Searchres: Searchres) {
 		this.cocktailSelected.emit(Searchres);

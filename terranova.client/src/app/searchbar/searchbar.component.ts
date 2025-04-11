@@ -1,11 +1,10 @@
 import {
 	Component,
 	input,
+	output,
 	Resource,
 	signal,
 	OnInit,
-	Output,
-	EventEmitter,
 } from '@angular/core';
 import { environment } from '../../environments/environment';
 import {
@@ -66,7 +65,7 @@ export class SearchbarComponent implements OnInit {
 	/** Maximum number of results to display */
 	MaxResoults = input<number>(5);
 
-	@Output() cocktailSelected = new EventEmitter<Searchres>();
+	readonly cocktailSelected = output<Searchres>();
 	/** URL for search API endpoint */
 	searchUrl = environment.searchUrl;
 

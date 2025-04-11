@@ -46,6 +46,7 @@ export class HomeComponent {
 	}
 
 	selectCocktail(id: number) {
+
 		this.selectedCocktails.set([...this.selectedCocktails(), id]);
 		if (this.selectedCocktails().length > 0) {
 			this.showCocktailDetails.set(true);

@@ -3,7 +3,7 @@
     <header class="top-bar">
         <div class="logo">Lollo&Marco's Cock shop</div>
         <div class="search-container">
-            <app-searchbar></app-searchbar>
+            <app-searchbar (cocktailSelected)="selectCocktail($event.id)"></app-searchbar>
         </div>
         <div class="top-nav-actions">
             <button class="theme-toggle" (click)="toggleTheme()">
@@ -50,6 +50,8 @@
 				<app-cocktail-card 
 				  [cockId]="cockID"
 				  [showAll]="true"
+                  [IsRemovable]="true"
+                  (removeCocktail)="removeCocktail($event)"
 				></app-cocktail-card>
 			  </div>
 			</div>

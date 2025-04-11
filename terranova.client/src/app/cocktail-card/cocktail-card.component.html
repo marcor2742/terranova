@@ -42,7 +42,8 @@
 					<h4>{{ "ingredientsHeading" | translate }}</h4>
 					<ul class="ingredients-list">
 						@for (ingredient of
-						cocktail.value()?.Cocktail?.ingredients || []; track $index) {
+						cocktail.value()?.Cocktail?.ingredients || []; track
+						$index) {
 						<li>
 							<span class="ingredient-name">{{
 								ingredient.name
