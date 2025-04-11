@@ -54,7 +54,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 		// Force a second application to ensure theme takes effect
 		if (isPlatformBrowser(this.platformId)) {
 			setTimeout(() => {
-				const currentTheme = this.themeService.currentTheme();
+				const currentTheme = this.themeService.getCurrentTheme();
 				this.themeService.setTheme(currentTheme);
 			}, 0);
 		}
