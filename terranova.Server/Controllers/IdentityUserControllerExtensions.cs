@@ -11,23 +11,6 @@ using terranova.Server.Models;
 
 namespace terranova.Server.Controllers
 {
-    public class UserRegistrationModel
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Username is required")]
-        public string Username { get; set; } = string.Empty;
-        public string? FullName { get; set; } // opzionale
-        public string Role { get; set; } = string.Empty; //non case sensitive
-    }
-
-    public class UserLoginningModel
-    {
-        public string? Email { get; set; }
-        public string? Username { get; set; }
-        public string Password { get; set; } = string.Empty;
-    }
-
     public static class IdentityUserControllerExtensions
     {
         public static IEndpointRouteBuilder MapIdentityUserEndpoints(this IEndpointRouteBuilder app)
@@ -232,14 +215,22 @@ namespace terranova.Server.Controllers
             await userManager.SetAuthenticationTokenAsync(identityUser, "Default", "RefreshToken", null);
             return Results.Ok(new { message = "Logout effettuato con successo" });
         }
+    }
 
+    public class UserRegistrationModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Username is required")]
+        public string Username { get; set; } = string.Empty;
+        public string? FullName { get; set; } // opzionale
+        public string Role { get; set; } = string.Empty; //non case sensitive
+    }
 
-
-
-
-
-
-
-
+    public class UserLoginningModel
+    {
+        public string? Email { get; set; }
+        public string? Username { get; set; }
+        public string Password { get; set; } = string.Empty;
     }
 }
