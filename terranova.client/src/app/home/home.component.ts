@@ -3,7 +3,7 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
-import { Cocktail } from '../Classes/cocktail';
+import { CocktailCardComponent } from "../cocktail-card/cocktail-card.component";
 
 /**
  * Main home component of the application
@@ -12,7 +12,7 @@ import { Cocktail } from '../Classes/cocktail';
 @Component({
 	selector: 'app-home',
 	standalone: true,
-	imports: [SearchbarComponent, RouterLink, CommonModule],
+	imports: [SearchbarComponent, RouterLink, CommonModule, CocktailCardComponent],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
 	encapsulation: ViewEncapsulation.None,
@@ -23,7 +23,7 @@ export class HomeComponent {
 	 */
 	sidebarExpanded = signal<boolean>(true);
 
-	selectedCocktails = signal<Cocktail[]>([]);
+	selectedCocktails = signal<number[]>([]);
 	showCocktailDetails = signal<boolean>(false);
 
 	/**
@@ -45,8 +45,8 @@ export class HomeComponent {
 		this.themeService.toggleTheme();
 	}
 
-	selectCocktail(Cocktail: Cocktail) {
-		this.selectedCocktails.set([...this.selectedCocktails(), Cocktail]);
+	selectCocktail(id: number) {
+		this.selectedCocktails.set([...this.selectedCocktails(), id]);
 		if (this.selectedCocktails().length > 0) {
 			this.showCocktailDetails.set(true);
 		} else {
@@ -56,10 +56,10 @@ export class HomeComponent {
 	removeCocktail(id: number) {
 		if (
 			this.selectedCocktails().length > 0 &&
-			this.selectedCocktails().find((c) => c.id === id)
+			this.selectedCocktails().find((c) => c === id)
 		) {
 			this.selectedCocktails.set(
-				this.selectedCocktails().filter((c) => c.id !== id)
+				this.selectedCocktails().filter((c) => c !== id)
 			);
 		}
 		if (this.selectedCocktails().length <= 0) {

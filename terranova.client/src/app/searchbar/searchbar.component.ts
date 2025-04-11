@@ -1,6 +1,17 @@
-import { Component, input, Resource, signal, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+	Component,
+	input,
+	Resource,
+	signal,
+	OnInit,
+	Output,
+	EventEmitter,
+} from '@angular/core';
 import { environment } from '../../environments/environment';
-import { Searchres, SearchresoultComponent } from '../searchresoult/searchresoult.component';
+import {
+	Searchres,
+	SearchresoultComponent,
+} from '../searchresoult/searchresoult.component';
 import { CockResoults, Cocktail, Ingredient } from '../Classes/cocktail';
 import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
@@ -46,6 +57,9 @@ export class SearchbarComponent implements OnInit {
 	/** Current search parameters */
 	searchParams = signal<string>('');
 
+	currentPage = signal<number>(1);
+	hasMoreResults = signal<boolean>(true);
+
 	/** Size of the result display */
 	ResoultSize = input<CockResoults>('small');
 
@@ -64,7 +78,11 @@ export class SearchbarComponent implements OnInit {
 		() => ({
 			url: 'https://my-json-server.typicode.com/Bombatomica64/randomjson/cocktails',
 			method: 'GET',
-			params: { search: this.searchParams(), max: this.MaxResoults() },
+			params: {
+				searchString: this.searchParams(),
+				pageSize: this.MaxResoults(),
+				page: this.currentPage(),
+			},
 		}),
 		{
 			defaultValue: [
@@ -131,9 +149,16 @@ export class SearchbarComponent implements OnInit {
 		});
 	}
 
+	/**
+	 * Load more results by increasing the page number
+	 */
+	loadMoreResults() {
+		this.currentPage.set(this.currentPage() + 1);
+		// The resource will automatically reload with the new page
+	}
+
 	GotoCocktail(Searchres: Searchres) {
 		// Emit the selected cocktail
 		this.cocktailSelected.emit(Searchres);
 	}
-
 }

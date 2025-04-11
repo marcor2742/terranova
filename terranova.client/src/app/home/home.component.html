@@ -46,7 +46,12 @@
                 </div>
             </div>
 			<div class="cocktail-full" *ngIf="showCocktailDetails()">
-
+			  <div class="selected-cocktail-list" *ngFor="let cockID of selectedCocktails()">
+				<app-cocktail-card 
+				  [cockId]="cockID"
+				  [showAll]="true"
+				></app-cocktail-card>
+			  </div>
 			</div>
         </main>
     </div>

@@ -16,18 +16,10 @@
 					class="search-input"
 				/>
 			</div>
-
-			<!-- <p-button icon="pi pi-filter" styleClass="filter-button p-button-rounded p-button-text" (click)="openFilterPanel()"></p-button> -->
 		</form>
 	</div>
 
-	<div
-		class="search-results"
-		*ngIf="
-			searchForm.get('searchTerm')?.value &&
-			(SearchResource.isLoading() || SearchResource.value().length > 0)
-		"
-	>
+	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value">
 		<p-card styleClass="search-results-card">
 			<!-- Loading skeletons -->
 			<div *ngIf="SearchResource.isLoading()">
@@ -67,15 +59,27 @@
 						*ngIf="i < SearchResource.value().length - 1"
 					></p-divider>
 				</ng-container>
+
+				<!-- Load more button -->
+				<div class="search-more-container" *ngIf="hasMoreResults()">
+					<p-button
+						label="{{ 'LoadMore' | translate }}"
+						icon="pi pi-plus"
+						styleClass="p-button-text"
+						[loading]="SearchResource.isLoading()"
+						(onClick)="loadMoreResults()"
+					></p-button>
+				</div>
 			</ng-container>
+
+			<!-- Initial loading -->
+			<div class="loading-container" *ngIf="SearchResource.isLoading()">
+				<p-skeleton
+					height="2rem"
+					width="40%"
+					styleClass="mb-2"
+				></p-skeleton>
+			</div>
 		</p-card>
 	</div>
-</div>
-
-<!-- Debug section -->
-<div class="debug" *ngIf="false">
-	<p>Current search term: {{ searchForm.get("searchTerm")?.value }}</p>
-	<p>Search params signal: {{ searchParams() }}</p>
-	<p>Resource loading: {{ SearchResource.isLoading() }}</p>
-	<p>Results: {{ SearchResource.value().length }}</p>
 </div>
