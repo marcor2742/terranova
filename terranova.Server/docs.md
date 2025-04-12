@@ -129,4 +129,5 @@ Update-Database -Context IdentityUserContext
 
 api/logoutextended rimuove semplicemente il refresh token dal db
 nel db se un ingrediente non ha unità di misura viene creata comunque una riga nella table Measures, ma vuota. che faccio lascio?
-!warning!!!!!!!!!!!!!!!!! gli ingredienti aggiunti poi verrebbero poi passati al frontend (come controllo se sia un ingrediente serio? mando solo quelli anche senza il drink con un creatore?). Anche alla cancellazione del drink, l'ingredienti rimangono, le unità di misura ora vengono cancellate e riscritte per ogni modifica
+!warning!!!!!!!!!!!!!!!!! gli ingredienti aggiunti poi verrebbero poi passati al frontend (come controllo se sia un ingrediente serio? mando solo quelli anche senza il drink con un creatore?). 
+!info!!!!!!!!!!!!!!Anche alla cancellazione del drink, l'ingredienti rimangono, le unità di misura ora vengono cancellate e riscritte per ogni modifica. quindi il frontend deve mandare obbligatoriamente di nuovo tutti gli ingredienti, al contrario di tutte le altre informazione se non si vuole che vengano cambiate

@@ -1,8 +1,31 @@
 ﻿using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using terranova.Server.Models;
 
 namespace terranova.Server.Extensions
 {
+    public class DefaultResponsesOperationFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            if (operation.Responses == null)
+            {
+                operation.Responses = new OpenApiResponses();
+            }
+
+            var httpMethod = context.ApiDescription.HttpMethod?.ToUpperInvariant();
+
+            operation.Responses.TryAdd("200", new OpenApiResponse { Description = "Success" });
+            operation.Responses.TryAdd("201", new OpenApiResponse { Description = "Created" });
+            operation.Responses.TryAdd("204", new OpenApiResponse { Description = "No Content" });
+            operation.Responses.TryAdd("400", new OpenApiResponse { Description = "Bad Request" });
+            operation.Responses.TryAdd("401", new OpenApiResponse { Description = "Unauthorized" });
+            operation.Responses.TryAdd("403", new OpenApiResponse { Description = "Forbidden" });
+            operation.Responses.TryAdd("404", new OpenApiResponse { Description = "Not Found" });
+        }
+    }
+
+
     public static class SwaggerExtensions
     {
         public static IServiceCollection AddSwaggerExplorer(this IServiceCollection services)
