@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using terranova.Server.Models;
 
 namespace terranova.Server.Controllers
@@ -29,13 +30,15 @@ namespace terranova.Server.Controllers
                .WithDescription("Elimina un cocktail con ID specifico")
                .WithOpenApi();
 
+            //aggiungi il creator e quindi per modificare e cancellare devi esserlo.
+
             //outputta tutti
             return app;
         }
 
         [AllowAnonymous]
         private static async Task<IResult> SearchById(
-            int id,
+            long id,
             CocktailsDbContext dbContext)
         {
             var cocktail = await dbContext.Cocktails
@@ -54,9 +57,15 @@ namespace terranova.Server.Controllers
         }
 
         private static async Task<IResult> CreateCocktail(
+            ClaimsPrincipal user,
             CocktailRequest cocktailData,
             CocktailsDbContext dbContext)
         {
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+            {
+                return Results.BadRequest(new { message = "User not found" });
+            }
             // Verifica che il nome sia fornito
             if (string.IsNullOrWhiteSpace(cocktailData.Name))
             {
@@ -97,14 +106,15 @@ namespace terranova.Server.Controllers
                 Name = cocktailData.Name,
                 Category = cocktailData.Category,
                 Iba = cocktailData.Iba,
-                IsAlcoholic = cocktailData.IsAlcoholic,
+                IsAlcoholic = cocktailData.IsAlcoholic ?? true,
                 ImageUrl = cocktailData.ImageUrl,
                 ImageSource = cocktailData.ImageSource,
                 ImageAttribution = cocktailData.ImageAttribution,
                 Tags = cocktailData.Tags,
                 DateModified = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 GlassKey = glass?.Id ?? 0,
-                InstructionsKey = instructions.Id
+                InstructionsKey = instructions.Id,
+                Creator = userId
             };
 
             dbContext.Cocktails.Add(cocktail);
@@ -157,21 +167,34 @@ namespace terranova.Server.Controllers
         }
 
         private static async Task<IResult> UpdateCocktail(
-            int id,
+            long id,
+            ClaimsPrincipal user,
             CocktailRequest cocktailData,
             CocktailsDbContext dbContext)
         {
-            // Verifica che il nome sia fornito
-            //if (string.IsNullOrWhiteSpace(cocktailData.Name))
-            //{
-            //    return Results.BadRequest("Il nome del cocktail è obbligatorio");
-            //}
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+            {
+                return Results.BadRequest(new { message = "User not found" });
+            }
+
+                // Verifica che il nome sia fornito
+                //if (string.IsNullOrWhiteSpace(cocktailData.Name))
+                //{
+                //    return Results.BadRequest("Il nome del cocktail è obbligatorio");
+                //}
 
             // Cerca il cocktail esistente
             var cocktail = await dbContext.Cocktails.FindAsync(id);
             if (cocktail == null)
             {
                 return Results.NotFound();
+            }
+
+            var isAdmin = user.IsInRole("Admin");
+            if (cocktail.Creator != userId && !isAdmin)
+            {
+                return Results.Forbid();
             }
 
             // Trova o crea il bicchiere
@@ -202,15 +225,45 @@ namespace terranova.Server.Controllers
             }
 
             // Aggiorna cocktail esistente
-            cocktail.Name = cocktailData.Name;
-            cocktail.Category = cocktailData.Category;
-            cocktail.Iba = cocktailData.Iba;
-            cocktail.IsAlcoholic = cocktailData.IsAlcoholic;
-            cocktail.ImageUrl = cocktailData.ImageUrl;
-            cocktail.ImageSource = cocktailData.ImageSource;
-            cocktail.ImageAttribution = cocktailData.ImageAttribution;
-            cocktail.Tags = cocktailData.Tags;
+            if (cocktailData.Name != null)
+            {
+                cocktail.Name = cocktailData.Name;
+            }
+            if (cocktailData.Category != null)
+            {
+                cocktail.Category = cocktailData.Category;
+            }
+            if (cocktailData.Iba != null)
+            {
+                cocktail.Iba = cocktailData.Iba;
+            }
+            if (cocktailData.IsAlcoholic.HasValue)
+            {
+                cocktail.IsAlcoholic = cocktailData.IsAlcoholic.Value;
+            }
+            if (cocktailData.ImageUrl != null)
+            {
+                cocktail.ImageUrl = cocktailData.ImageUrl;
+            }
+            if (cocktailData.ImageSource != null)
+            {
+                cocktail.ImageSource = cocktailData.ImageSource;
+            }
+            if (cocktailData.ImageAttribution != null)
+            {
+                cocktail.ImageAttribution = cocktailData.ImageAttribution;
+            }
+            if (cocktailData.Tags != null)
+            {
+                cocktail.Tags = cocktailData.Tags;
+            }
             cocktail.DateModified = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+            if (glass != null)
+            {
+                cocktail.GlassKey = glass.Id;
+            }
+
 
             if (glass != null)
             {
@@ -224,8 +277,18 @@ namespace terranova.Server.Controllers
             {
                 // Rimuovi le vecchie relazioni
                 var existingIngredients = dbContext.CocktailsIngredients
-                    .Where(ci => ci.CocktailKey == cocktail.Id);
+                    .Where(ci => ci.CocktailKey == cocktail.Id)
+                    .Include(ci => ci.Measure);
+
                 dbContext.CocktailsIngredients.RemoveRange(existingIngredients);
+                foreach (var ci in existingIngredients)
+                {
+                    if (ci.Measure != null)
+                    {
+                        dbContext.Measures.Remove(ci.Measure);
+                    }
+                }
+
                 await dbContext.SaveChangesAsync();
 
                 // Aggiungi i nuovi ingredienti
@@ -273,39 +336,48 @@ namespace terranova.Server.Controllers
 
 
         private static async Task<IResult> DeleteCocktail(
-            int id,
+            long id,
+            ClaimsPrincipal user,
             CocktailsDbContext dbContext)
         {
-            var cocktail = await dbContext.Cocktails.FindAsync(id);
 
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+            {
+                return Results.BadRequest(new { message = "User not found" });
+            }
+
+            var cocktail = await dbContext.Cocktails.FindAsync(id);
             if (cocktail == null)
             {
                 return Results.NotFound();
             }
 
-            // 1. Trova e rimuovi le relazioni con gli ingredienti e le misure
+            var isAdmin = user.IsInRole("Admin");
+            if (cocktail.Creator != userId && !isAdmin)
+            {
+                return Results.Forbid();
+            }
+
+            // 1. Prima carica tutte le entità correlate
+            var instructionsKey = cocktail.InstructionsKey;
+
+            // 2. Trova e rimuovi le relazioni con gli ingredienti e le misure
             var cocktailIngredients = await dbContext.CocktailsIngredients
                 .Where(ci => ci.CocktailKey == id)
+                .Include(ci => ci.Measure)
                 .ToListAsync();
 
             foreach (var ci in cocktailIngredients)
             {
                 // Rimuovi la misura associata
-                var measure = await dbContext.Measures.FindAsync(ci.MeasureKey);
-                if (measure != null)
+                if (ci.Measure != null)
                 {
-                    dbContext.Measures.Remove(measure);
+                    dbContext.Measures.Remove(ci.Measure);
                 }
 
                 // Rimuovi la relazione
                 dbContext.CocktailsIngredients.Remove(ci);
-            }
-
-            // 2. Rimuovi le istruzioni associate
-            var instructions = await dbContext.Instructions.FindAsync(cocktail.InstructionsKey);
-            if (instructions != null)
-            {
-                dbContext.Instructions.Remove(instructions);
             }
 
             // 3. Rimuovi il cocktail stesso
@@ -313,6 +385,14 @@ namespace terranova.Server.Controllers
 
             // Salva tutte le modifiche
             await dbContext.SaveChangesAsync();
+
+            // 4. Rimuovi le istruzioni associate
+            var instructions = await dbContext.Instructions.FindAsync(cocktail.InstructionsKey);
+            if (instructions != null)
+            {
+                dbContext.Instructions.Remove(instructions);
+                await dbContext.SaveChangesAsync();
+            }
 
             return Results.NoContent();
         }
@@ -323,23 +403,23 @@ namespace terranova.Server.Controllers
         public class CocktailRequest
         {
             // Informazioni di base del cocktail
-            public string Name { get; set; }
-            public string Category { get; set; }
-            public string Iba { get; set; } // International Bartender Association classification
-            public bool IsAlcoholic { get; set; }
-            public string ImageUrl { get; set; }
-            public string ImageSource { get; set; }
-            public string ImageAttribution { get; set; }
-            public string Tags { get; set; }
+            public string? Name { get; set; }
+            public string? Category { get; set; }
+            public string? Iba { get; set; } // International Bartender Association classification
+            public bool? IsAlcoholic { get; set; }
+            public string? ImageUrl { get; set; }
+            public string? ImageSource { get; set; }
+            public string? ImageAttribution { get; set; }
+            public string? Tags { get; set; }
 
             // Bicchiere
-            public string GlassName { get; set; }
+            public string? GlassName { get; set; }
 
             // Istruzioni in diverse lingue
-            public InstructionsDto Instructions { get; set; }
+            public InstructionsDto? Instructions { get; set; }
 
             // Lista di ingredienti con le loro misure
-            public List<IngredientWithMeasureDto> Ingredients { get; set; }
+            public List<IngredientWithMeasureDto>? Ingredients { get; set; }
 
             public class InstructionsDto
             {
