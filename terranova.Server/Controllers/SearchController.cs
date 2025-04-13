@@ -30,9 +30,10 @@ namespace terranova.Server.Controllers
                .WithDescription("Elimina un cocktail con ID specifico")
                .WithOpenApi();
 
-            //aggiungi il creator e quindi per modificare e cancellare devi esserlo.
+            app.MapGet("/allCocktails/", ShowAllCocktails)
+               .WithDescription("Restituisce tutti i drink del database visibili dall'utente, con paginazione e filtri")
+               .WithOpenApi();
 
-            //outputta tutti
             return app;
         }
 
@@ -471,12 +472,34 @@ namespace terranova.Server.Controllers
                 .ToListAsync();
 
             return Results.Ok(query);
+        }
 
-            //se non trova cose che iniziano con "name" allora cerca con contains. penso, guardare se è meglio usare sempre contains
-            //var query = dbContext.Cocktails
-            //    .Where(c => c.Name.ToLower().Contains(name))
-            //    .ToListAsync();
 
+        [AllowAnonymous]
+        private static async Task<IResult> ShowAllCocktails(
+            [AsParameters] DataForQuery data,
+            CocktailsDbContext dbContext)
+        {
+            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 50) : 20;
+            int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
+            int skip = (page - 1) * pageSize;
+
+            var result = await dbContext.Cocktails
+                .OrderBy(c => c.Name.ToLower())
+                .Skip(skip)
+                .Take(pageSize)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    c.Category,
+                    c.Glass,
+                    c.ImageUrl,
+                    c.IsAlcoholic
+                })
+                .ToListAsync();
+
+            return Results.Ok(result);
         }
     }
 
