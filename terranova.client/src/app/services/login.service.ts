@@ -14,15 +14,16 @@ import { User } from '../Classes/user';
  * @property {string} [error] - An optional error message if the authentication fails.
  */
 interface AuthResponse {
-	userId: string;
+	statusCode: number;
 	token: string;
 	refreshToken: string;
-	error?: Array<string>;
+	message?: string;
+	exist?: boolean;
 }
 
 interface RegisterResponse {
 	succeded: boolean;
-	error?: Array<string>;
+	error?: string;
 }
 
 /**
