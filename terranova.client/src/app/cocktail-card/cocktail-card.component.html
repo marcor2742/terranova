@@ -1,0 +1,72 @@
+<div [style.max-height]="cardHeight()" [style.max-width]="cardWidth()">
+	<div hlmCard class="cocktail-card">
+		@if (cocktail.isLoading()) {
+		<hlm-skeleton class="h-full w-full" />
+		} @else if (cocktail.error()) {
+		<div class="error-container">
+			Error: {{ cocktail.error() || "Unknown error occurred" }}
+		</div>
+		} @else if (cocktail.value()) {
+		<!-- Photo side -->
+		<div
+			class="photo-side"
+			[style.background-image]="
+				'url(' +
+				(cocktail.value().ImageUrl ||
+					'/assets/default-cocktail.jpg') +
+				')'
+			"
+		>
+			<div class="photo-overlay">
+				<div hlmCardTitle class="photo-title">
+					{{ cocktail.value().Name }}
+				</div>
+			</div>
+		</div>
+
+		<!-- Zigzag divider -->
+		<div class="zigzag-divider"></div>
+
+		<!-- Content side -->
+		<div class="content-side">
+			<div hlmCardHeader>
+				<div hlmCardTitle>{{ cocktail.value().Name }}</div>
+				<div hlmCardDescription>
+					{{ cocktail.value().Category }}
+				</div>
+			</div>
+
+			<div hlmCardContent>
+				@if (showAll()) {
+				<div class="cocktail-details">
+					<h4>{{ "ingredientsHeading" | translate }}</h4>
+					<ul class="ingredients-list">
+						@for (ingredient of
+						cocktail.value().ingredients || []; track
+						$index) {
+						<li>
+							<span class="ingredient-name">{{
+								ingredient.name
+							}}</span>
+							<span class="ingredient-amount"
+								>{{ ingredient.quantity }}
+								{{ ingredient.measure }}</span
+							>
+						</li>
+						}
+					</ul>
+					<div class="instructions-card" hlmCard>
+						<div hlmCardTitle>
+							{{ "preparationHeading" | translate }}
+						</div>
+						<div hlmCardContent>
+							{{ cocktail.value().Instructions }}
+						</div>
+					</div>
+				</div>
+				}
+			</div>
+		</div>
+		}
+	</div>
+</div>
