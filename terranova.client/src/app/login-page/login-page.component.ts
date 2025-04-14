@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import {
+	Component,
+	computed,
+	effect,
+	inject,
+	Resource,
+	signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginService } from '../services/login.service';
 import { ConfirmationModalComponent } from '../shared/confirmation-modal/confirmation-modal.component';
@@ -15,7 +22,6 @@ import { AuthService } from '../services/jwthandler.service';
 type UserExistsResponse = {
 	userExists: boolean;
 };
-
 
 interface UsernameResponse {
 	username: string;
@@ -37,7 +43,7 @@ interface UsernameResponse {
 export class LoginPageComponent {
 	private formBuilder = inject(FormBuilder);
 	private LoginService = inject(LoginService);
-	private userExistUrl = environment.userCheckerUrl;
+	private loginEndpointUrl = environment.loginUrl;
 	private userInfoUrl = environment.userInfoUrl;
 	private AuthService = inject(AuthService);
 	private router = inject(Router);
@@ -52,54 +58,82 @@ export class LoginPageComponent {
 	foundUsername = signal<string>('');
 
 	// Create resources that react to the input signals
-	userExistsResource = computed(() => {
-		const currentUsername = this.username();
-		if (currentUsername && currentUsername.length >= 4) {
-			return httpResource<UserExistsResponse>({
-				url: `${this.userExistUrl}`,
-				params: { username: currentUsername },
-			});
-		}
-		return null;
-	});
+	userExistsResource: Resource<UserExistsResponse> =
+		httpResource<UserExistsResponse>(
+			() => ({
+				url: `${this.loginEndpointUrl}`,
+				method: 'POST',
+				body: { username: this.username() },
+			}),
+			{ defaultValue: { userExists: false } }
+		);
+	// computed(() => {
+	// 	const currentUsername = this.username();
+	// 	if (currentUsername && currentUsername.length >= 4) {
+	// 		return httpResource<UserExistsResponse>({
+	// 			url: `${this.userExistUrl}`,
+	// 			params: { username: currentUsername },
+	// 		});
+	// 	}
+	// 	return null;
+	// });
 
-	emailExistsResource = computed(() => {
-		const currentEmail = this.email();
-		if (currentEmail && this.isValidEmail(currentEmail)) {
-			return httpResource<UserExistsResponse>({
-				url: `${this.userExistUrl}`,
-				params: { email: currentEmail },
-			});
-		}
-		return null;
-	});
+	emailExistsResource: Resource<UserExistsResponse> =
+		httpResource<UserExistsResponse>(
+			() => ({
+				url: `${this.loginEndpointUrl}`,
+				method: 'POST',
+				body: { email: this.email() },
+			}),
+			{ defaultValue: { userExists: false } }
+		);
+	//  = computed(() => {
+	// 	const currentEmail = this.email();
+	// 	if (currentEmail && this.isValidEmail(currentEmail)) {
+	// 		return httpResource<UserExistsResponse>({
+	// 			url: `${this.userExistUrl}`,
+	// 			params: { email: currentEmail },
+	// 		});
+	// 	}
+	// 	return null;
+	// });
 
-	usernameByEmailResource = computed(() => {
-		const currentEmail = this.email();
-		const emailResource = this.emailExistsResource();
+	usernameByEmailResource = httpResource<UsernameResponse>(
+		() => ({
+			url: `${this.loginEndpointUrl}`,
+			method: 'POST',
+			body: { email: this.email() },
+		}),
+		{ defaultValue: { username: '', errors: '' } }
+	);
+	// computed(() => {
+	// 	const currentEmail = this.email();
+	// 	const emailResource = this.emailExistsResource();
 
-		if (emailResource?.value()?.userExists) {
-			return httpResource<UsernameResponse>({
-				url: `${this.userInfoUrl}`,
-				params: { email: currentEmail },
-			});
-		}
-		return null;
-	});
+	// 	if (emailResource?.value()?.userExists) {
+	// 		return httpResource<UsernameResponse>({
+	// 			url: `${this.userInfoUrl}`,
+	// 			params: { email: currentEmail },
+	// 		});
+	// 	}
+	// 	return null;
+	// });
 
 	// Derived state
-	usernameExist = computed(() => {
-		const resource = this.userExistsResource();
-		return resource?.value()?.userExists || false;
-	});
+	// usernameExist = computed(() => {
+	// 	const resource = this.userExistsResource;
+	// 	return resource?.value()?.userExists || false;
+	// });
 
-	emailExists = computed(() => {
-		const resource = this.emailExistsResource();
-		return resource?.value()?.userExists || false;
-	});
+	// emailExists = computed(() => {
+	// 	const resource = this.emailExistsResource();
+	// 	return resource?.value()?.userExists || false;
+	// });
 
 	isRegistering = computed(() => {
-		return !this.usernameExist() && this.usernameChecked() !== '';
+		return (
+			!this.userExistsResource.value() && this.usernameChecked() !== ''
+		);
 	});
 
 	loginForm = this.formBuilder.group({
@@ -212,7 +246,11 @@ export class LoginPageComponent {
 			console.error('Missing required fields');
 			return;
 		}
-		this.LoginService.login(data.email, data.username, data.password).subscribe({
+		this.LoginService.login(
+			data.email,
+			data.username,
+			data.password
+		).subscribe({
 			next: (response) => {
 				if (response) {
 					const { token, refreshToken } = response;
@@ -221,8 +259,7 @@ export class LoginPageComponent {
 					localStorage.setItem('userId', userId);
 					this.router.navigate(['/home']);
 				}
-			}
+			},
 		});
-			
 	}
 }

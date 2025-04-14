@@ -1,4 +1,5 @@
 <div class="search-wrapper">
+	<!-- Search form - always rendered in both server and browser -->
 	<div class="search-container">
 		<form [formGroup]="searchForm" class="search-form">
 			<p-button
@@ -19,11 +20,17 @@
 		</form>
 	</div>
 
+	<!-- Only show results if there's a search term -->
 	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value">
 		<p-card styleClass="search-results-card">
-			<!-- Loading skeletons -->
-			<div *ngIf="cocktails.isLoading()">
-				<div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
+			<!-- Defer all HttpResource usage to browser only -->
+			@defer (on immediate) {
+			<!-- Loading skeletons - browser version -->
+			<div *ngIf="SearchResource.isLoading()">
+				<div
+					class="skeleton-item"
+					*ngFor="let i of [].constructor(MaxResoults())"
+				>
 					<div class="skeleton-content">
 						<p-skeleton
 							height="2rem"
@@ -41,14 +48,14 @@
 							styleClass="mb-1"
 						></p-skeleton>
 					</div>
-					<p-divider *ngIf="i < 3"></p-divider>
+					<p-divider *ngIf="MaxResoults() - 1"></p-divider>
 				</div>
 			</div>
 
 			<!-- Actual results -->
-			<ng-container *ngIf="!cocktails.isLoading()">
+			<ng-container *ngIf="!SearchResource.isLoading()">
 				<ng-container
-					*ngFor="let item of cocktails.value(); let i = index"
+					*ngFor="let item of SearchResource.value(); let i = index"
 				>
 					<app-searchresoult
 						[ResoultSize]="ResoultSize()"
@@ -56,7 +63,7 @@
 						(cocktailSelected)="GotoCocktail($event)"
 					></app-searchresoult>
 					<p-divider
-						*ngIf="i < cocktails.value().length - 1"
+						*ngIf="i < SearchResource.value().length - 1"
 					></p-divider>
 				</ng-container>
 
@@ -66,20 +73,46 @@
 						label="{{ 'LoadMore' | translate }}"
 						icon="pi pi-plus"
 						styleClass="p-button-text"
-						[loading]="cocktails.isLoading()"
+						[loading]="SearchResource.isLoading()"
 						(onClick)="loadMoreResults()"
 					></p-button>
 				</div>
 			</ng-container>
 
 			<!-- Initial loading -->
-			<div class="loading-container" *ngIf="cocktails.isLoading()">
+			<div class="loading-container" *ngIf="SearchResource.isLoading()">
 				<p-skeleton
 					height="2rem"
 					width="40%"
 					styleClass="mb-2"
 				></p-skeleton>
 			</div>
+			}
+
+			<!-- Placeholder content for server-side rendering -->
+			@placeholder {
+			<!-- Static loading skeletons for SSR -->
+			<div class="skeleton-item" *ngFor="let i of [1, 2, 3, 4]">
+				<div class="skeleton-content">
+					<p-skeleton
+						height="2rem"
+						width="60%"
+						styleClass="mb-2"
+					></p-skeleton>
+					<p-skeleton
+						height="1rem"
+						width="80%"
+						styleClass="mb-1"
+					></p-skeleton>
+					<p-skeleton
+						height="1rem"
+						width="70%"
+						styleClass="mb-1"
+					></p-skeleton>
+				</div>
+				<p-divider *ngIf="i < 3"></p-divider>
+			</div>
+			}
 		</p-card>
 	</div>
 </div>

@@ -5,15 +5,21 @@ import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 
 class ServerErrorHandler implements ErrorHandler {
-  handleError(error: any): void {
-    console.error('SERVER ERROR DETAILS:', error);
-    console.error('Stack trace:', error?.stack || 'No stack trace available');
-    // Log component details if available
-    if (error && error.ngDebugContext) {
-      console.error('Component:', error.ngDebugContext.component);
-    }
+	handleError(error: any): void {
+		console.error('=== SERVER RENDERING ERROR ===');
+		console.error('Error:', error);
+		console.error('Type:', typeof error);
+		console.error('Keys:', error ? Object.keys(error) : 'No keys (undefined)');
+		
+		// Try to extract useful information even if stack is missing
+		if (error) {
+		  console.error('Message:', error.message);
+		  console.error('Name:', error.name);
+		  console.error('Stack:', error.stack || 'No stack trace');
+		}
+		console.error('=== END SERVER RENDERING ERROR ===');
+	  }
   }
-}
 
 const serverConfig: ApplicationConfig = {
   providers: [
