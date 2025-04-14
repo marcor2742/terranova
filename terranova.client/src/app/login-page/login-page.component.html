@@ -5,11 +5,7 @@
 		<!-- Username field with user existence check -->
 		<div class="form-field">
 			<label for="username">Username:</label>
-			<input
-				id="username"
-				type="text"
-				formControlName="username"
-			/>
+			<input id="username" type="text" formControlName="username" />
 			<div
 				*ngIf="
 					loginForm.get('username')?.touched &&
@@ -33,10 +29,16 @@
 				"
 				class="user-status"
 			>
-				<div *ngIf="usernameExist()" class="exists">
+				<div
+					*ngIf="userExistsResource.value()?.userExists"
+					class="exists"
+				>
 					User exists. Please enter password to login.
 				</div>
-				<div *ngIf="!usernameExist()" class="not-exists">
+				<div
+					*ngIf="!userExistsResource.value()?.userExists"
+					class="not-exists"
+				>
 					Username not found. Please complete registration.
 				</div>
 			</div>
@@ -44,11 +46,7 @@
 
 		<div class="form-field" *ngIf="registerDiv()">
 			<label for="email">Full Email:</label>
-			<input
-				id="email"
-				type="email"
-				formControlName="email"
-			/>
+			<input id="email" type="email" formControlName="email" />
 			<div
 				*ngIf="
 					loginForm.get('email')?.touched &&
@@ -126,7 +124,7 @@
 		(confirmed)="confirmEmailUser()"
 		(cancelled)="cancelEmailConfirmation()"
 	>
-	<p>ciao</p>
+		<p>ciao</p>
 	</app-confirmation-modal>
 </div>
 

@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, Resource } from '@angular/core';
 import {
 	HlmCardContentDirective,
 	HlmCardDescriptionDirective,
@@ -8,7 +8,7 @@ import {
 } from '@spartan-ng/ui-card-helm';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
 import { httpResource } from '@angular/common/http';
-import { FullCocktail, Ingredient } from '../Classes/cocktail';
+import { Cocktail, FullCocktail, Ingredient } from '../Classes/cocktail';
 import { environment } from '../../environments/environment.development';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -39,7 +39,30 @@ export class CocktailCardComponent {
 	readonly IsRemovable = input<boolean>(false);
 	readonly removeCocktail = output<number>();
 
-	cocktail = httpResource<FullCocktail>(this.cocktailUrl);
+	cocktail: Resource<Cocktail> = httpResource<Cocktail>(
+		() => ({ url: this.cocktailUrl, method: 'GET' }),
+		{
+			defaultValue: new Cocktail(
+				1,
+				true,
+				'Mojito',
+				'A refreshing Cuban cocktail with rum, mint, and lime.',
+				{
+					name: 'Highball glass',
+					measure: 300,
+				},
+				[
+					new Ingredient('White rum', 60, 'ml'),
+					new Ingredient('Fresh lime juice', 30, 'ml'),
+					new Ingredient('Sugar', 2, 'tsp'),
+					new Ingredient('Mint leaves', 8, 'oz'),
+					new Ingredient('Soda water', 100, 'ml'),
+				],
+				'Mix all ingredients in a glass and stir well.',
+				'https://example.com/mojito.jpg'
+			),
+		}
+	);
 
 	// cocktail = {
 	// 	isLoading: () => false,

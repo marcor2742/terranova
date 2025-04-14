@@ -89,120 +89,120 @@ export class SearchbarComponent implements OnInit {
 			console.log('SearchbarComponent initialized');
 		}
 	
-	// /** HTTP resource for cocktail search results */
-	// SearchResource: Resource<Cocktail[]> = httpResource(
-	// 	() => ({
-	// 		url: this.searchUrl,
-	// 		method: 'GET',
-	// 		params: {
-	// 			searchString: this.searchParams(),
-	// 			pageSize: this.MaxResoults(),
-	// 			page: this.currentPage(),
-	// 		},
-	// 	}),
-	// 	{
-	// 		defaultValue: [
-	// 			new Cocktail(
-	// 				1,
-	// 				true,
-	// 				'Mojito',
-	// 				'Cocktail',
-	// 				{
-	// 					name: 'Highball glass',
-	// 					measure: 300,
-	// 				},
-	// 				[
-	// 					new Ingredient('White rum', 60, 'ml'),
-	// 					new Ingredient('Fresh lime juice', 30, 'ml'),
-	// 					new Ingredient('Sugar', 2, 'tsp'),
-	// 				],
-	// 				'Mix all ingredients in a glass and stir well.',
-	// 				'https://example.com/mojito.jpg'
-	// 			),
-	// 			new Cocktail(
-	// 				2,
-	// 				true,
-	// 				'Daiquiri',
-	// 				'Cocktail',
-	// 				{
-	// 					name: 'Cocktail glass',
-	// 					measure: 150,
-	// 				},
-	// 				[
-	// 					new Ingredient('White rum', 50, 'ml'),
-	// 					new Ingredient('Fresh lime juice', 25, 'ml'),
-	// 					new Ingredient('Sugar', 1, 'tsp'),
-	// 				],
-	// 				'Simplify by shaking all ingredients with ice and straining into a chilled glass.',
-	// 				'https://example.com/daiquiri.jpg'
-	// 			),
-	// 		],
-	// 	}
-	// );
-	private _searchResource?: Resource<Cocktail[]>;
-  
-	// Default cocktails to show during SSR and initial load
-	private defaultCocktails: Cocktail[] = [
-	  new Cocktail(
-		1,
-		true,
-		'Mojito',
-		'Cocktail',
-		{ name: 'Highball glass', measure: 300 },
-		// ...other details
-	  ),
-	  // ...other default cocktails
-	];
-	
-	// Computed signal that safely accesses the resource
-	get cocktails(): Resource<Cocktail[]> {
-	  if (isPlatformBrowser(this.platformId)) {
-		// Create the resource lazily on first access in browser
-		if (!this._searchResource) {
-		  this._searchResource = httpResource(
-			() => ({
-			  url: this.searchUrl || 'https://my-json-server.typicode.com/Bombatomica64/randomjson/cocktails',
-			  method: 'GET',
-			  params: {
+	/** HTTP resource for cocktail search results */
+	SearchResource: Resource<Cocktail[]> = httpResource(
+		() => ({
+			url: this.searchUrl,
+			method: 'GET',
+			params: {
 				searchString: this.searchParams(),
 				pageSize: this.MaxResoults(),
 				page: this.currentPage(),
-			  },
-			}),
-			{ defaultValue: this.defaultCocktails }
-		  );
+			},
+		}),
+		{
+			defaultValue: [
+				new Cocktail(
+					1,
+					true,
+					'Mojito',
+					'Cocktail',
+					{
+						name: 'Highball glass',
+						measure: 300,
+					},
+					[
+						new Ingredient('White rum', 60, 'ml'),
+						new Ingredient('Fresh lime juice', 30, 'ml'),
+						new Ingredient('Sugar', 2, 'tsp'),
+					],
+					'Mix all ingredients in a glass and stir well.',
+					'https://example.com/mojito.jpg'
+				),
+				new Cocktail(
+					2,
+					true,
+					'Daiquiri',
+					'Cocktail',
+					{
+						name: 'Cocktail glass',
+						measure: 150,
+					},
+					[
+						new Ingredient('White rum', 50, 'ml'),
+						new Ingredient('Fresh lime juice', 25, 'ml'),
+						new Ingredient('Sugar', 1, 'tsp'),
+					],
+					'Simplify by shaking all ingredients with ice and straining into a chilled glass.',
+					'https://example.com/daiquiri.jpg'
+				),
+			],
 		}
-		return this._searchResource;
-	  }
+	);
+	// private _searchResource?: Resource<Cocktail[]>;
+  
+	// // Default cocktails to show during SSR and initial load
+	// private defaultCocktails: Cocktail[] = [
+	//   new Cocktail(
+	// 	1,
+	// 	true,
+	// 	'Mojito',
+	// 	'Cocktail',
+	// 	{ name: 'Highball glass', measure: 300 },
+	// 	// ...other details
+	//   ),
+	//   // ...other default cocktails
+	// ];
+	
+	// // Computed signal that safely accesses the resource
+	// get cocktails(): Resource<Cocktail[]> {
+	//   if (isPlatformBrowser(this.platformId)) {
+	// 	// Create the resource lazily on first access in browser
+	// 	if (!this._searchResource) {
+	// 	  this._searchResource = httpResource(
+	// 		() => ({
+	// 		  url: this.searchUrl || 'https://my-json-server.typicode.com/Bombatomica64/randomjson/cocktails',
+	// 		  method: 'GET',
+	// 		  params: {
+	// 			searchString: this.searchParams(),
+	// 			pageSize: this.MaxResoults(),
+	// 			page: this.currentPage(),
+	// 		  },
+	// 		}),
+	// 		{ defaultValue: this.defaultCocktails }
+	// 	  );
+	// 	}
+	// 	return this._searchResource;
+	//   }
 	  
-	  // Create a complete mock Resource for SSR
-	  const mockLoadingSignal = signal<boolean>(false);
-	  const mockErrorSignal = signal<unknown>(null);
+	//   // Create a complete mock Resource for SSR
+	//   const mockLoadingSignal = signal<boolean>(false);
+	//   const mockErrorSignal = signal<unknown>(null);
 	  
-	  // Create a complete mock Resource for SSR with proper signals
-	  const mockResource: Resource<Cocktail[]> = {
-		// Core data accessor function
-		value: () => this.defaultCocktails,
+	//   // Create a complete mock Resource for SSR with proper signals
+	//   const mockResource: Resource<Cocktail[]> = {
+	// 	// Core data accessor function
+	// 	value: () => this.defaultCocktails,
 		
-		// Loading state as a function
-		isLoading: () => false,
+	// 	// Loading state as a function
+	// 	isLoading: () => false,
 		
-		// Error handling with a signal
-		error: mockErrorSignal as Signal<unknown>,
+	// 	// Error handling with a signal
+	// 	error: mockErrorSignal as Signal<unknown>,
 		
-		// Resource methods
-		retry: () => {},
-		mutate: () => {},
+	// 	// Resource methods
+	// 	retry: () => {},
+	// 	mutate: () => {},
 		
-		// Loading state as a signal
-		loading: mockLoadingSignal as Signal<boolean>,
+	// 	// Loading state as a signal
+	// 	loading: mockLoadingSignal as Signal<boolean>,
 		
-		// Refetch method returning a Promise
-		refetch: () => Promise.resolve(this.defaultCocktails)
-	  };
+	// 	// Refetch method returning a Promise
+	// 	refetch: () => Promise.resolve(this.defaultCocktails)
+	//   };
 	  
-	  return mockResource;
-	}
+	//   return mockResource;
+	// }
 	
 
 
