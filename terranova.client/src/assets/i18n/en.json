@@ -2,5 +2,7 @@
 	"ingredientsHeading": "Ingredients:",
 	"preparationHeading": "How to prepare:",
 	"SearchPlaceholder" : "Search",
-	"LoadMore" : "Load more"
+	"LoadMore" : "Load more",
+	"RegisterPage" : "Register",
+	"LoginPage" : "Login"
 }

@@ -1,7 +1,11 @@
 <div class="box">
-	<h2>Login Page</h2>
+	@if (showEmailConfirmation()) {
+	<h2>{{ "RegisterPage" | translate }}</h2>
+	} @else {
+	<h2>{{ "LoginPage" | translate }}</h2>
+	}
 
-	<form [formGroup]="loginForm" (ngSubmit)="UpdateData()">
+	<form [formGroup]="loginForm" (ngSubmit)="login()">
 		<!-- Username field with user existence check -->
 		<div class="form-field">
 			<label for="username">Username:</label>
@@ -20,31 +24,9 @@
 					Username must be at least 4 characters
 				</div>
 			</div>
-
-			<!-- User existence feedback -->
-			<div
-				*ngIf="
-					usernameChecked() &&
-					usernameChecked() === loginForm.get('username')?.value
-				"
-				class="user-status"
-			>
-				<div
-					*ngIf="userExistsResource.value()?.userExists"
-					class="exists"
-				>
-					User exists. Please enter password to login.
-				</div>
-				<div
-					*ngIf="!userExistsResource.value()?.userExists"
-					class="not-exists"
-				>
-					Username not found. Please complete registration.
-				</div>
-			</div>
 		</div>
 
-		<div class="form-field" *ngIf="registerDiv()">
+		<div class="form-field" *ngIf="showEmailConfirmation()">
 			<label for="email">Full Email:</label>
 			<input id="email" type="email" formControlName="email" />
 			<div
@@ -85,7 +67,6 @@
 		<!-- In your button group div -->
 		<div class="button-group">
 			<my-ui-button
-				*ngIf="!registerDiv()"
 				text="LOGIN"
 				variant="default"
 				size="lg"
@@ -95,12 +76,10 @@
 			></my-ui-button>
 
 			<my-ui-button
-				*ngIf="registerDiv()"
 				text="REGISTER"
 				variant="outline"
 				size="lg"
-				[disabled]="!loginForm.valid"
-				(buttonClick)="UpdateData()"
+				(buttonClick)="register()"
 				class="visible-button"
 			></my-ui-button>
 		</div>
@@ -108,7 +87,7 @@
 
 	<p>Form Status: {{ loginForm.status }}</p>
 	<!-- Email Confirmation Modal -->
-	<app-confirmation-modal
+	<!-- <app-confirmation-modal
 		*ngIf="showEmailConfirmation()"
 		[show]="showEmailConfirmation()"
 		title="Account Found"
@@ -125,7 +104,7 @@
 		(cancelled)="cancelEmailConfirmation()"
 	>
 		<p>ciao</p>
-	</app-confirmation-modal>
+	</app-confirmation-modal> -->
 </div>
 
 <!-- Display data when available -->
