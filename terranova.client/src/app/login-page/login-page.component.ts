@@ -17,7 +17,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/jwthandler.service';
 import { TranslateModule } from '@ngx-translate/core';
 
-
 @Component({
 	selector: 'app-login-page',
 	standalone: true,
@@ -35,7 +34,7 @@ export class LoginPageComponent {
 	private LoginService = inject(LoginService);
 	private AuthService = inject(AuthService);
 	private router = inject(Router);
-	
+
 	// Form signals
 	username = signal<string>('');
 	email = signal<string>('');
@@ -45,7 +44,6 @@ export class LoginPageComponent {
 	usernameError = signal<string>('');
 	showEmailConfirmation = signal<boolean>(false);
 	registerDiv = signal<boolean>(false);
-
 
 	loginForm = this.formBuilder.group({
 		username: ['', [Validators.required, Validators.minLength(4)]],
@@ -79,7 +77,6 @@ export class LoginPageComponent {
 		);
 	}
 
-
 	UpdateData(): void {
 		if (this.loginForm.valid) {
 			console.log('Form data:', this.loginForm.value);
@@ -96,23 +93,71 @@ export class LoginPageComponent {
 			this.showEmailConfirmation.set(true);
 			return;
 		}
+
 		const userData = {
 			username: this.loginForm.get('username')?.value || '',
 			password: this.loginForm.get('password')?.value || '',
 			email: this.loginForm.get('email')?.value || '',
 		};
+
 		if (!userData.email || !userData.username || !userData.password) {
 			console.error('Missing required fields');
 			return;
 		}
-		this.LoginService.register(userData).subscribe((response) => {
-			if (response.succeded) {
-				this.login();
-			} else {
-				console.error('Registration failed:', response.error); // Handle error
-			}
+
+		// Log the actual data being sent to help debugging
+		console.log('Sending registration data:', userData);
+
+		this.LoginService.register(userData).subscribe({
+			next: (response) => {
+				console.log('Registration HTTP status code:', response.status);
+
+				if (response.status === 201 || response.status === 200) {
+					console.log('Registration successful:', response.body);
+					this.login();
+				} else {
+					console.error(
+						'Registration failed with status:',
+						response.status
+					);
+				}
+			},
+			error: (err) => {
+				console.error('Registration failed with status:', err.status);
+				console.error('Error details:', err.error);
+
+				// Better handling of validation errors
+				if (err.error?.errors) {
+					// Handle ASP.NET Core validation errors
+					const errors = err.error.errors;
+
+					if (errors.Username) {
+						this.usernameError.set(errors.Username[0]);
+					}
+
+					if (errors.Password) {
+						// Add a password error signal if you want to display these
+						console.error('Password error:', errors.Password[0]);
+					}
+
+					if (errors.Email) {
+						this.emailError.set(errors.Email[0]);
+					}
+				} else if (err.error?.DuplicateUserName) {
+					this.usernameError.set('This username is already taken');
+				} else if (err.error?.DuplicateEmail) {
+					this.emailError.set('This email is already registered');
+				} else {
+					// Generic error
+					console.error(
+						'Error message:',
+						err.error?.message || err.message
+					);
+				}
+			},
 		});
 	}
+
 	login(): void {
 		const data = {
 			username: this.loginForm.get('username')?.value || '',
@@ -130,19 +175,28 @@ export class LoginPageComponent {
 			data.password
 		).subscribe({
 			next: (response) => {
-				console.log('Login response:', response);
-				if (response) {
-					const { token, refreshToken } = response;
-					console.log('Tokens received:', { token, refreshToken });
+				// HTTP status code
+				console.log('HTTP status code:', response.status);
+
+				if (response.status === 200) {
+					// The body is now in response.body
+					const { token, refreshToken } = response.body!;
 					this.AuthService.setTokens(token, refreshToken);
 					const userId = this.AuthService.getUserIdFromToken(token);
-					console.log('Extracted userId:', userId);
 					localStorage.setItem('userId', userId);
 					this.router.navigate(['/home']);
+				} else {
+					// Handle non-200 status codes
+					console.error('Login failed with status:', response.status);
 				}
 			},
 			error: (err) => {
-				console.error('Login error:', err);
+				// For 4xx/5xx errors
+				console.error('Login failed with status:', err.status);
+				console.error(
+					'Error message:',
+					err.error?.message || err.message
+				);
 			},
 		});
 	}

@@ -5,7 +5,7 @@
 	<h2>{{ "LoginPage" | translate }}</h2>
 	}
 
-	<form [formGroup]="loginForm" (ngSubmit)="login()">
+	<form [formGroup]="loginForm" (ngSubmit)="showEmailConfirmation() ? register() : login()">
 		<!-- Username field with user existence check -->
 		<div class="form-field">
 			<label for="username">Username:</label>
@@ -17,7 +17,7 @@
 				"
 				class="error"
 			>
-				<div *ngIf="loginForm.get('username')?.errors?.['required']">
+				<div *ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))">
 					Username is required
 				</div>
 				<div *ngIf="loginForm.get('username')?.errors?.['minlength']">
@@ -71,7 +71,7 @@
 				variant="default"
 				size="lg"
 				[disabled]="!loginForm.valid"
-				(buttonClick)="UpdateData()"
+				(buttonClick)="login()"
 				class="visible-button"
 			></my-ui-button>
 

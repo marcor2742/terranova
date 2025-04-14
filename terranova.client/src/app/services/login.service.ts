@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../Classes/user';
 
@@ -22,8 +22,10 @@ interface AuthResponse {
 }
 
 interface RegisterResponse {
-	succeded: boolean;
-	error?: string;
+	DuplicateUsername: string;
+	DuplicateEmail: string;
+	statusCode: number;
+	message: string;
 }
 
 /**
@@ -65,13 +67,13 @@ export class LoginService {
 		email: string | null,
 		username: string | null,
 		password: string
-	): Observable<AuthResponse> {
-		return this.http.post<AuthResponse>(`${this.loginUrl}`, {
-			email,
-			username,
-			password,
-		});
-	}
+	  ): Observable<HttpResponse<AuthResponse>> {
+		return this.http.post<AuthResponse>(
+		  `${this.loginUrl}`,
+		  { email, username, password },
+		  { observe: 'response' } // This returns the full HTTP response
+		);
+	  }
 
 	/**
 	 * Registers a new user with the provided user data.
@@ -83,10 +85,11 @@ export class LoginService {
 		email: string;
 		password: string;
 		username: string;
-	}): Observable<RegisterResponse> {
+	  }): Observable<HttpResponse<RegisterResponse>> {
 		return this.http.post<RegisterResponse>(
-			`${this.registerUrl}`,
-			userData
+		  `${this.registerUrl}`,
+		  userData,
+		  { observe: 'response' } // This returns the full HTTP response
 		);
-	}
+	  }
 }
