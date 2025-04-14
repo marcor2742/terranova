@@ -39,15 +39,29 @@ namespace terranova.Server.Controllers
 
             var result = await userManager.CreateAsync(user, model.Password);
 
-            await userManager.AddToRoleAsync(user, model.Role);
+            await userManager.AddToRoleAsync(user, "user");
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return Results.Ok(new { message = "Utente registrato con successo" });
+                var errors = result.Errors.ToList();
+                if (errors.Count == 0)
+                {
+                    return Results.BadRequest(new { message = "Errore sconosciuto" });
+                }
+
+                var errorDict = new Dictionary<string, string>();
+
+                foreach (var error in errors)
+                {
+                    errorDict.Add(error.Code, error.Description);
+                }
+
+                return Results.BadRequest(errorDict);
             }
 
+            return Results.Ok(new { message = "Utente registrato con successo" });
             //return Results.BadRequest(new { errors = result.Errors });
-            return Results.BadRequest(result);
+            //return Results.BadRequest(result);
         }
 
         [AllowAnonymous]
@@ -63,7 +77,7 @@ namespace terranova.Server.Controllers
                 user = await userManager.FindByEmailAsync(model.Email);
                 if (string.IsNullOrEmpty(model.Password) && user == null)
                 {
-                    return Results.BadRequest(new { message = "Register" });
+                    return Results.BadRequest(new { exist = false, message = "Register" });
                 }
             }
             else if (!string.IsNullOrEmpty(model.Username))
@@ -71,7 +85,7 @@ namespace terranova.Server.Controllers
                 user = await userManager.FindByNameAsync(model.Username);
                 if (string.IsNullOrEmpty(model.Password) && user == null)
                 {
-                    return Results.BadRequest(new { message = "Register" });
+                    return Results.BadRequest(new { exist = false, message = "Register" });
                 }
             }
 
@@ -224,7 +238,6 @@ namespace terranova.Server.Controllers
         [Required(ErrorMessage = "Username is required")]
         public string Username { get; set; } = string.Empty;
         public string? FullName { get; set; } // opzionale
-        public string Role { get; set; } = string.Empty; //non case sensitive
     }
 
     public class UserLoginningModel

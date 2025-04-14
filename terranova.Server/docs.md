@@ -127,5 +127,10 @@ Update-Database -Context IdentityUserContext
 	metodi di UserManager https://learn.microsoft.com/it-it/dotnet/api/microsoft.aspnetcore.identity.usermanager-1?view=aspnetcore-9.0#methods
 	sql query https://learn.microsoft.com/en-us/ef/core/querying/sql-queries?tabs=sqlserver#composing-with-linq
 
-creator in dbo.Cocktails è un riferimento a IdentityUser ma nel database è impostato? //penso di no
 api/logoutextended rimuove semplicemente il refresh token dal db
+nel db se un ingrediente non ha unità di misura viene creata comunque una riga nella table Measures, ma vuota. che faccio lascio?
+!warning!!!!!!!!!!!!!!!!! gli ingredienti aggiunti poi verrebbero poi passati al frontend (come controllo se sia un ingrediente serio? mando solo quelli anche senza il drink con un creatore?). 
+!info!!!!!!!!!!!!!!Anche alla cancellazione del drink, l'ingredienti rimangono, le unità di misura ora vengono cancellate e riscritte per ogni modifica. quindi il frontend deve mandare obbligatoriamente di nuovo tutti gli ingredienti, al contrario di tutte le altre informazione se non si vuole che vengano cambiate
+
+testare creator e quindi per modificare e cancellare devi esserlo.
+pageSize max è 50
