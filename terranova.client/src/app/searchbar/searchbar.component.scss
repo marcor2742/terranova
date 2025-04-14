@@ -20,8 +20,7 @@
 .search-form {
     display: flex;
     align-items: center;
-    width: 80%;
-    max-width: 600px;
+    width: 100%;
     @include app.responsive-margin(0, "auto", 0, "auto");
     background-color: rgba(255, 255, 255, 0.1);
     @include app.rounded-corners(8px);
@@ -90,8 +89,7 @@
 .search-results {
     position: absolute;
     top: 60px;
-    width: 80%;
-    max-width: 600px;
+    width: 100%;
     background-color: var(--background-color);
     @include app.rounded-corners(0 0 8px 8px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
