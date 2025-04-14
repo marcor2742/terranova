@@ -1,16 +1,15 @@
 <div class="box">
-	<h2>Login Page</h2>
+	@if (showEmailConfirmation()) {
+	<h2>{{ "RegisterPage" | translate }}</h2>
+	} @else {
+	<h2>{{ "LoginPage" | translate }}</h2>
+	}
 
-	<form [formGroup]="loginForm" (ngSubmit)="UpdateData()">
+	<form [formGroup]="loginForm" (ngSubmit)="login()">
 		<!-- Username field with user existence check -->
 		<div class="form-field">
 			<label for="username">Username:</label>
-			<input
-				id="username"
-				type="text"
-				formControlName="username"
-				(blur)="checkIfUserExist()"
-			/>
+			<input id="username" type="text" formControlName="username" />
 			<div
 				*ngIf="
 					loginForm.get('username')?.touched &&
@@ -25,32 +24,11 @@
 					Username must be at least 4 characters
 				</div>
 			</div>
-
-			<!-- User existence feedback -->
-			<div
-				*ngIf="
-					usernameChecked &&
-					usernameChecked === loginForm.get('username')?.value
-				"
-				class="user-status"
-			>
-				<div *ngIf="usernameExist" class="exists">
-					User exists. Please enter password to login.
-				</div>
-				<div *ngIf="!usernameExist" class="not-exists">
-					Username not found. Please complete registration.
-				</div>
-			</div>
 		</div>
 
-		<div class="form-field" *ngIf="registerDiv()">
+		<div class="form-field" *ngIf="showEmailConfirmation()">
 			<label for="email">Full Email:</label>
-			<input
-				id="email"
-				type="email"
-				formControlName="email"
-				(blur)="checkEmailExists()"
-			/>
+			<input id="email" type="email" formControlName="email" />
 			<div
 				*ngIf="
 					loginForm.get('email')?.touched &&
@@ -63,8 +41,8 @@
 				</div>
 			</div>
 			<!-- Email existence feedback -->
-			<div *ngIf="emailError" class="error email-exists">
-				{{ emailError }}
+			<div *ngIf="emailError()" class="error email-exists">
+				{{ emailError() }}
 			</div>
 		</div>
 
@@ -89,7 +67,6 @@
 		<!-- In your button group div -->
 		<div class="button-group">
 			<my-ui-button
-				*ngIf="!registerDiv()"
 				text="LOGIN"
 				variant="default"
 				size="lg"
@@ -99,12 +76,10 @@
 			></my-ui-button>
 
 			<my-ui-button
-				*ngIf="registerDiv()"
 				text="REGISTER"
 				variant="outline"
 				size="lg"
-				[disabled]="!loginForm.valid"
-				(buttonClick)="UpdateData()"
+				(buttonClick)="register()"
 				class="visible-button"
 			></my-ui-button>
 		</div>
@@ -112,9 +87,9 @@
 
 	<p>Form Status: {{ loginForm.status }}</p>
 	<!-- Email Confirmation Modal -->
-	<app-confirmation-modal
-		*ngIf="showEmailConfirmation"
-		[show]="showEmailConfirmation"
+	<!-- <app-confirmation-modal
+		*ngIf="showEmailConfirmation()"
+		[show]="showEmailConfirmation()"
 		title="Account Found"
 		[message]="
 			'An account with the email ' +
@@ -122,14 +97,14 @@
 			' already exists.'
 		"
 		description="Would you like to sign in as"
-		[highlightedText]="foundUsername"
+		[highlightedText]="foundUsername()"
 		confirmText="Yes, that's me"
 		cancelText="No, use different email"
 		(confirmed)="confirmEmailUser()"
 		(cancelled)="cancelEmailConfirmation()"
 	>
-	<p>ciao</p>
-	</app-confirmation-modal>
+		<p>ciao</p>
+	</app-confirmation-modal> -->
 </div>
 
 <!-- Display data when available -->

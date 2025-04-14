@@ -27,11 +27,11 @@ builder.Services.AddSwaggerGen();
 
 //file in Extensions
 builder.Services.AddSwaggerExplorer()
-                .InjectDbContext(builder.Configuration)
-                .AddAppConfig(builder.Configuration)
-                .AddIdentityHandlerAndStores()
-                .ConfigureIdentityOptions()
-                .AddIdentityAuth(builder.Configuration);
+				.InjectDbContext(builder.Configuration)
+				.AddAppConfig(builder.Configuration)
+				.AddIdentityHandlerAndStores()
+				.ConfigureIdentityOptions()
+				.AddIdentityAuth(builder.Configuration);
 
 var app = builder.Build();
 #endregion
@@ -48,7 +48,7 @@ app.AddIdentityAuthMiddlewares();
 app.MapControllers();
 
 app.MapGroup("/api")
-    .MapIdentityApi<IdentityUserExtended>();
+	.MapIdentityApi<IdentityUserExtended>();
 
 app.MapGroup("/api")
     .MapIdentityUserEndpoints() //do not pass builder.Configuration for security reasons
@@ -61,8 +61,15 @@ app.MapGroup("/api")
 #region seeders
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<CocktailsDbContext>();
-    CocktailSeeder.Seed(context);  // Usa il metodo Seed che hai già definito
+	var userContext = scope.ServiceProvider.GetRequiredService<IdentityUserContext>();
+	userContext.Database.Migrate();
+
+	var cocktailsContext = scope.ServiceProvider.GetRequiredService<CocktailsDbContext>();
+	cocktailsContext.Database.Migrate();
+
+
+	if (!cocktailsContext.Cocktails.Any())
+		CocktailSeeder.Seed(cocktailsContext);
 }
 
 await RoleSeeder.SeedRoles(app.Services);

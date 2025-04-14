@@ -1,161 +1,188 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "terranova.client": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "standalone": true,
-          "style": "scss"
-        },
-        "@schematics/angular:directive": {
-          "standalone": true
-        },
-        "@schematics/angular:pipe": {
-          "standalone": true
-        }
-      },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:application",
-          "options": {
-            "outputPath": "dist/terranova.client",
-            "index": "src/index.html",
-            "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
-            "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "terranova.client": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "standalone": true,
+                    "style": "scss"
                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                "@schematics/angular:directive": {
+                    "standalone": true
+                },
+                "@schematics/angular:pipe": {
+                    "standalone": true
                 }
-              ],
-              "outputHashing": "all"
             },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
+            "root": "",
+            "sourceRoot": "src",
+            "prefix": "app",
+			"i18n": {
+				"sourceLocale": "en-US",
+				"locales": {
+					"it": "src/locale/messages.it.xlf"
+				}
+			},
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:application",
+                    "options": {
+                        "outputPath": "dist/terranova.client",
+                        "index": "src/index.html",
+                        "browser": "src/main.ts",
+                        "polyfills": [
+                            "zone.js",
+                            "@angular/localize/init"
+                        ],
+                        "tsConfig": "tsconfig.app.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            {
+                                "glob": "**/*",
+                                "input": "public",
+                                "output": "/assets/"
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "src/assets",
+                                "output": "/assets/"
+                            }
+                        ],
+                        "styles": [
+                          "@angular/material/prebuilt-themes/cyan-orange.css",
+                          "src/styles.scss"
+                        ],
+                        "scripts": [],
+                        "server": "src/main.server.ts",
+                        "ssr": {
+                            "entry": "src/server.ts"
+                        },
+                        "localize": true,
+						"prerender": false
+                    },
+                    "configurations": {
+                        "production": {
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mB",
+                                    "maximumError": "4mB"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "2mB",
+                                    "maximumError": "8mB"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "development": {
+                            "optimization": false,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.development.ts"
+                                }
+                            ]
+                        },
+						"it" : {
+							"localize": ["it"]
+						}	
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "configurations": {
+                        "production": {
+                            "buildTarget": "terranova.client:build:production"
+                        },
+                        "development": {
+                            "buildTarget": "terranova.client:build:development"
+                        },
+						"it" : {
+							"buildTarget": "terranova.client:build:it"
+						}
+                    },
+                    "defaultConfiguration": "development",
+                    "options": {
+                        "proxyConfig": "src/proxy.conf.js",
+                        "port": 56057
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+					"options": {
+						"buildTarget": "terranova.client:build"
+					}
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "polyfills": [
+                            "zone.js",
+                            "zone.js/testing",
+                            "@angular/localize/init"
+                        ],
+                        "tsConfig": "tsconfig.spec.json",
+                        "inlineStyleLanguage": "scss",
+                        "assets": [
+                            {
+                                "glob": "**/*",
+                                "input": "public",
+                                "output": "/assets/"
+                            }
+                        ],
+                        "styles": [
+                          "@angular/material/prebuilt-themes/cyan-orange.css",
+                          "src/styles.scss"
+                        ],
+                        "scripts": [],
+                        "karmaConfig": "karma.conf.js"
+                    }
                 }
-              ]
             }
-          },
-          "defaultConfiguration": "production"
         },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "terranova.client:build:production"
-            },
-            "development": {
-              "buildTarget": "terranova.client:build:development"
+        "myUi": {
+            "projectType": "library",
+            "root": "projects/my-ui",
+            "sourceRoot": "projects/my-ui/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "options": {
+                        "project": "projects/my-ui/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                            "tsConfig": "projects/my-ui/tsconfig.lib.prod.json"
+                        },
+                        "development": {
+                            "tsConfig": "projects/my-ui/tsconfig.lib.json"
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "tsConfig": "projects/my-ui/tsconfig.spec.json",
+                        "polyfills": [
+                            "zone.js",
+                            "zone.js/testing"
+                        ]
+                    }
+                }
             }
-          },
-          "defaultConfiguration": "development",
-          "options": {
-            "proxyConfig": "src/proxy.conf.js",
-            "port": 56057
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "karmaConfig": "karma.conf.js"
-          }
         }
-      }
     },
-    "myUi": {
-      "projectType": "library",
-      "root": "projects/my-ui",
-      "sourceRoot": "projects/my-ui/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "projects/my-ui/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/my-ui/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/my-ui/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "projects/my-ui/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        }
-      }
+    "cli": {
+        "analytics": "640dfdb5-a348-4f27-a7b7-843673b2af39"
     }
-  },
-  "cli": {
-    "analytics": "640dfdb5-a348-4f27-a7b7-843673b2af39"
-  }
 }
