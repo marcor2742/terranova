@@ -42,19 +42,45 @@ namespace terranova.Server.Controllers
             long id,
             CocktailsDbContext dbContext)
         {
+
             var cocktail = await dbContext.Cocktails
                 .Where(c => c.Id == id)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Name,
-                    c.Category,
-                    c.Glass,
-                    c.ImageUrl,
-                    c.IsAlcoholic
-                })
+                .Include(c => c.Glass)
+                .Include(c => c.Instructions)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Ingredient)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
                 .FirstOrDefaultAsync();
-            return cocktail != null ? Results.Ok(cocktail) : Results.NotFound();
+
+            if (cocktail == null)
+                return Results.NotFound();
+
+            var result = new
+            {
+                cocktail.Id,
+                cocktail.Name,
+                cocktail.Category,
+                cocktail.IsAlcoholic,
+                Glass = cocktail.Glass?.Name,
+                Instructions = new
+                {
+                    En = cocktail.Instructions?.En,
+                    Es = cocktail.Instructions?.Es,
+                    De = cocktail.Instructions?.De,
+                    Fr = cocktail.Instructions?.Fr,
+                    It = cocktail.Instructions?.It
+                },
+                cocktail.ImageUrl,
+                Ingredients = cocktail.CocktailIngredients.Select(ci => new
+                {
+                    Ingredient = ci.Ingredient.Name,
+                    MetricMeasure = ci.Measure.Metric,
+                    ImperialMeasure = ci.Measure.Imperial
+                }).ToList()
+            };
+
+            return Results.Ok(result);
         }
 
         private static async Task<IResult> CreateCocktail(
@@ -454,24 +480,45 @@ namespace terranova.Server.Controllers
             int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
             int skip = (page - 1) * pageSize;
 
-            var query = await dbContext.Cocktails
+            var cocktails = await dbContext.Cocktails
                 .Where(c => c.Name.ToLower().Contains(name))
                 .OrderByDescending(c => c.Name.ToLower().StartsWith(name))
                 .ThenBy(c => c.Name)
+                .Include(c => c.Glass)
+                .Include(c => c.Instructions)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Ingredient)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
                 .Skip(skip)
                 .Take(pageSize)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Name,
-                    c.Category,
-                    c.Glass,
-                    c.ImageUrl,
-                    c.IsAlcoholic
-                })
                 .ToListAsync();
 
-            return Results.Ok(query);
+            var result = cocktails.Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.Category,
+                c.IsAlcoholic,
+                Glass = c.Glass?.Name,
+                Instructions = new
+                {
+                    En = c.Instructions?.En,
+                    Es = c.Instructions?.Es,
+                    De = c.Instructions?.De,
+                    Fr = c.Instructions?.Fr,
+                    It = c.Instructions?.It
+                },
+                c.ImageUrl,
+                Ingredients = c.CocktailIngredients.Select(ci => new
+                {
+                    Ingredient = ci.Ingredient.Name,
+                    MetricMeasure = ci.Measure.Metric,
+                    ImperialMeasure = ci.Measure.Imperial
+                }).ToList()
+            }).ToList();
+
+            return Results.Ok(result);
         }
 
 
@@ -484,20 +531,42 @@ namespace terranova.Server.Controllers
             int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
             int skip = (page - 1) * pageSize;
 
-            var result = await dbContext.Cocktails
+            var cocktails = await dbContext.Cocktails
                 .OrderBy(c => c.Name.ToLower())
+                .ThenBy(c => c.Name)
+                .Include(c => c.Glass)
+                .Include(c => c.Instructions)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Ingredient)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
                 .Skip(skip)
                 .Take(pageSize)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.Name,
-                    c.Category,
-                    c.Glass,
-                    c.ImageUrl,
-                    c.IsAlcoholic
-                })
                 .ToListAsync();
+
+            var result = cocktails.Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.Category,
+                c.IsAlcoholic,
+                Glass = c.Glass?.Name,
+                Instructions = new
+                {
+                    En = c.Instructions?.En,
+                    Es = c.Instructions?.Es,
+                    De = c.Instructions?.De,
+                    Fr = c.Instructions?.Fr,
+                    It = c.Instructions?.It
+                },
+                c.ImageUrl,
+                Ingredients = c.CocktailIngredients.Select(ci => new
+                {
+                    Ingredient = ci.Ingredient.Name,
+                    MetricMeasure = ci.Measure.Metric,
+                    ImperialMeasure = ci.Measure.Imperial
+                }).ToList()
+            }).ToList();
 
             return Results.Ok(result);
         }
