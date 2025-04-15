@@ -30,7 +30,13 @@ import { SidebarModule } from 'primeng/sidebar';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SkeletonModule } from 'primeng/skeleton';
-
+import {
+	Subject,
+	debounceTime,
+	distinctUntilChanged,
+	filter,
+	takeUntil,
+} from 'rxjs';
 /**
  * Component for searching cocktails
  * Provides search functionality and displays results
@@ -73,33 +79,55 @@ export class SearchbarComponent implements OnInit {
 	searchForm: FormGroup;
 	searchUrl = '';
 
-		/**
+	private readonly DEBOUNCE_TIME_MS = 300;
+
+	/** Minimum characters to trigger search */
+	private readonly MIN_SEARCH_LENGTH = 2;
+
+	/** Tracks component lifecycle for unsubscribing */
+	private destroy$ = new Subject<void>();
+
+	/** Tracks search count for debugging */
+	private searchCount = 0;
+
+	/**
 	 * Creates a new SearchbarComponent instance
 	 * @param fb - FormBuilder for creating reactive forms
 	 */
-		constructor(
-			private fb: FormBuilder,
-			@Inject(PLATFORM_ID) private platformId: Object
-		) {
-			// Initialize form
-			this.searchForm = this.fb.group({
-				searchTerm: [''],
-			});
-	
-			console.log('SearchbarComponent initialized');
-		}
-	
+	constructor(
+		private fb: FormBuilder,
+		@Inject(PLATFORM_ID) private platformId: Object
+	) {
+		// Initialize form
+		this.searchForm = this.fb.group({
+			searchTerm: [''],
+		});
+
+		console.log('SearchbarComponent initialized');
+	}
+
 	/** HTTP resource for cocktail search results */
 	SearchResource: Resource<Cocktail[]> = httpResource(
-		() => ({
-			url: this.searchUrl,
-			method: 'GET',
-			params: {
+		() => {
+			// Debug the API call
+			this.searchCount++;
+			console.log(`[Search API Call #${this.searchCount}]`, {
+				url: this.searchUrl,
 				searchString: this.searchParams(),
 				pageSize: this.MaxResoults(),
 				page: this.currentPage(),
-			},
-		}),
+			});
+
+			return {
+				url: this.searchUrl,
+				method: 'GET',
+				params: {
+					searchString: this.searchParams(),
+					pageSize: this.MaxResoults(),
+					page: this.currentPage(),
+				},
+			};
+		},
 		{
 			defaultValue: [
 				new Cocktail(
@@ -139,87 +167,38 @@ export class SearchbarComponent implements OnInit {
 			],
 		}
 	);
-	// private _searchResource?: Resource<Cocktail[]>;
-  
-	// // Default cocktails to show during SSR and initial load
-	// private defaultCocktails: Cocktail[] = [
-	//   new Cocktail(
-	// 	1,
-	// 	true,
-	// 	'Mojito',
-	// 	'Cocktail',
-	// 	{ name: 'Highball glass', measure: 300 },
-	// 	// ...other details
-	//   ),
-	//   // ...other default cocktails
-	// ];
-	
-	// // Computed signal that safely accesses the resource
-	// get cocktails(): Resource<Cocktail[]> {
-	//   if (isPlatformBrowser(this.platformId)) {
-	// 	// Create the resource lazily on first access in browser
-	// 	if (!this._searchResource) {
-	// 	  this._searchResource = httpResource(
-	// 		() => ({
-	// 		  url: this.searchUrl || 'https://my-json-server.typicode.com/Bombatomica64/randomjson/cocktails',
-	// 		  method: 'GET',
-	// 		  params: {
-	// 			searchString: this.searchParams(),
-	// 			pageSize: this.MaxResoults(),
-	// 			page: this.currentPage(),
-	// 		  },
-	// 		}),
-	// 		{ defaultValue: this.defaultCocktails }
-	// 	  );
-	// 	}
-	// 	return this._searchResource;
-	//   }
-	  
-	//   // Create a complete mock Resource for SSR
-	//   const mockLoadingSignal = signal<boolean>(false);
-	//   const mockErrorSignal = signal<unknown>(null);
-	  
-	//   // Create a complete mock Resource for SSR with proper signals
-	//   const mockResource: Resource<Cocktail[]> = {
-	// 	// Core data accessor function
-	// 	value: () => this.defaultCocktails,
-		
-	// 	// Loading state as a function
-	// 	isLoading: () => false,
-		
-	// 	// Error handling with a signal
-	// 	error: mockErrorSignal as Signal<unknown>,
-		
-	// 	// Resource methods
-	// 	retry: () => {},
-	// 	mutate: () => {},
-		
-	// 	// Loading state as a signal
-	// 	loading: mockLoadingSignal as Signal<boolean>,
-		
-	// 	// Refetch method returning a Promise
-	// 	refetch: () => Promise.resolve(this.defaultCocktails)
-	//   };
-	  
-	//   return mockResource;
-	// }
-	
-
-
 	/**
 	 * Initializes the component
 	 * Sets up form value change listeners
 	 */
 	ngOnInit() {
-		// Only subscribe to form changes in browser
 		if (isPlatformBrowser(this.platformId)) {
 			this.searchUrl = environment.searchUrl;
+			console.log('Setting search URL to:', this.searchUrl);
+
+			// Setup debounced search
 			this.searchForm
 				.get('searchTerm')
-				?.valueChanges.subscribe((value) => {
-					console.log('Search term changed:', value);
+				?.valueChanges.pipe(
+					takeUntil(this.destroy$),
+					debounceTime(this.DEBOUNCE_TIME_MS), // Wait for user to stop typing
+					distinctUntilChanged(), // Only emit when value changes
+					filter(
+						(term) => !term || term.length >= this.MIN_SEARCH_LENGTH
+					)
+				)
+				.subscribe((value) => {
+					console.log(
+						`[Search Debounced] Term: "${value}" (after ${this.DEBOUNCE_TIME_MS}ms debounce)`
+					);
 					this.searchParams.set(value || '');
+
+					if (this.currentPage() > 1) {
+						this.currentPage.set(1);
+					}
 				});
+
+			// Debug when search results are received
 		}
 	}
 	/**
@@ -227,11 +206,12 @@ export class SearchbarComponent implements OnInit {
 	 */
 	loadMoreResults() {
 		this.currentPage.set(this.currentPage() + 1);
-		// The resource will automatically reload with the new page
 	}
 
 	GotoCocktail(Searchres: Searchres) {
-		// Emit the selected cocktail
+		// remove the text from the search bar
+		this.searchParams.set('');
+		this.searchForm.get('searchTerm')?.setValue('');
 		this.cocktailSelected.emit(Searchres);
 	}
 }

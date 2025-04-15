@@ -16,6 +16,8 @@ const PROXY_CONFIG = [
       "/api/UserProfile",
       "/api/auth",
 	  '/api/refreshextended',
+	  '/api/search',
+      '/api/cocktail'
     ],
     target: apiTarget,
     secure: false,

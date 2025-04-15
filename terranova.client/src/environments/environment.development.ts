@@ -9,4 +9,5 @@ export const environment = {
   logoutUrl: '/api/logout',
   refreshUrl: '/api/refreshextended',
   searchUrl: '/api/search',
+  settingsUrl: '/api/preferences',
 };

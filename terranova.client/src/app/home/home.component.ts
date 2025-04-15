@@ -3,8 +3,8 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
-import { CocktailCardComponent } from "../cocktail-card/cocktail-card.component";
-
+import { CocktailCardComponent } from '../cocktail-card/cocktail-card.component';
+import { SettingsComponent } from '../settings/settings.component';
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -12,7 +12,7 @@ import { CocktailCardComponent } from "../cocktail-card/cocktail-card.component"
 @Component({
 	selector: 'app-home',
 	standalone: true,
-	imports: [SearchbarComponent, RouterLink, CommonModule, CocktailCardComponent],
+	imports: [SearchbarComponent, CommonModule, CocktailCardComponent, SettingsComponent],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
 	encapsulation: ViewEncapsulation.None,
@@ -25,6 +25,13 @@ export class HomeComponent {
 
 	selectedCocktails = signal<number[]>([]);
 	showCocktailDetails = signal<boolean>(false);
+
+	/**
+	 * Current active view in the main content area
+	 */
+	activeView = signal<
+		'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites'
+	>('home');
 
 	/**
 	 * Theme service for managing application theme
@@ -46,7 +53,6 @@ export class HomeComponent {
 	}
 
 	selectCocktail(id: number) {
-
 		this.selectedCocktails.set([...this.selectedCocktails(), id]);
 		if (this.selectedCocktails().length > 0) {
 			this.showCocktailDetails.set(true);
@@ -66,5 +72,14 @@ export class HomeComponent {
 		if (this.selectedCocktails().length <= 0) {
 			this.showCocktailDetails.set(false);
 		}
+	}
+
+	/**
+	 * Sets the active view in the content area
+	 */
+	setActiveView(
+		view: 'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites'
+	) {
+		this.activeView.set(view);
 	}
 }
