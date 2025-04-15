@@ -22,7 +22,11 @@
 
 	<!-- Only show results if there's a search term -->
 	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value">
-		<p-card styleClass="search-results-card" [style]="{'width': '100%'}" [styleClass]="'p-fluid'">
+		<p-card
+			styleClass="search-results-card"
+			[style]="{ width: '100%' }"
+			[styleClass]="'p-fluid'"
+		>
 			<!-- Defer all HttpResource usage to browser only -->
 			@defer (on immediate) {
 			<!-- Loading skeletons - browser version -->

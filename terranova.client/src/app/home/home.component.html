@@ -1,60 +1,117 @@
 <div class="page-container">
-    <!-- Top Navigation Bar -->
-    <header class="top-bar">
-        <div class="logo">Lollo&Marco's Cock shop</div>
-        <div class="search-container">
-            <app-searchbar (cocktailSelected)="selectCocktail($event.id)"></app-searchbar>
-        </div>
-        <div class="top-nav-actions">
-            <button class="theme-toggle" (click)="toggleTheme()">
-                {{ themeService.isDarkTheme() ? "☀️" : "🌙" }}
-            </button>
-            <button class="menu-toggle" (click)="toggleSidebar()">
-                <span class="material-icons">menu</span>
-            </button>
-        </div>
-    </header>
+	<!-- Top Navigation Bar -->
+	<header class="top-bar">
+		<div class="logo">Lollo&Marco's Cock shop</div>
+		<div class="search-container">
+			<app-searchbar
+				(cocktailSelected)="selectCocktail($event.id)"
+			></app-searchbar>
+		</div>
+		<div class="top-nav-actions">
+			<button class="theme-toggle" (click)="toggleTheme()">
+				{{ themeService.isDarkTheme() ? "☀️" : "🌙" }}
+			</button>
+			<button class="menu-toggle" (click)="toggleSidebar()">
+				<span class="material-icons">menu</span>
+			</button>
+		</div>
+	</header>
 
-    <!-- Main Content Area with Sidebar -->
-    <div class="main-container">
-        <!-- Sidebar - expandable -->
-        <aside class="sidebar" [class.expanded]="sidebarExpanded()">
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a routerLink="/dashboard">Dashboard</a></li>
-                    <li><a routerLink="/cocktails">Cocktails</a></li>
-                    <li><a routerLink="/favorites">Favorites</a></li>
-                    <li><a routerLink="/settings">Settings</a></li>
-                </ul>
-            </nav>
-        </aside>
+	<!-- Main Content Area with Sidebar -->
+	<div class="main-container">
+		<!-- Sidebar - expandable -->
+		<aside class="sidebar" [class.expanded]="sidebarExpanded()">
+			<nav class="sidebar-nav">
+				<ul>
+					<li>
+						<a (click)="setActiveView('dashboard')">Dashboard</a>
+					</li>
+					<li>
+						<a (click)="setActiveView('cocktails')">Cocktails</a>
+					</li>
+					<li>
+						<a (click)="setActiveView('favorites')">Favorites</a>
+					</li>
+					<li><a (click)="setActiveView('settings')">Settings</a></li>
+				</ul>
+			</nav>
+		</aside>
 
-        <!-- Main Content -->
-        <main class="content">
-            <div class="content-inner">
-                <h1>Welcome to Terranova</h1>
-                <p>Your go-to destination for exploring cocktails!</p>
-                
-                <div class="theme-info">
-                    <p>Current theme colors:</p>
-                    <div class="color-samples">
-                        <div class="color-sample" style="background-color: var(--primary-color);">Primary</div>
-                        <div class="color-sample" style="background-color: var(--secondary-color);">Secondary</div>
-                        <div class="color-sample" style="background-color: var(--tertiary-color);">Tertiary</div>
-                        <div class="color-sample" style="background-color: var(--quaternary-color);">Quaternary</div>
-                    </div>
-                </div>
-            </div>
-			<div class="cocktail-full" *ngIf="showCocktailDetails()">
-			  <div class="selected-cocktail-list" *ngFor="let cockID of selectedCocktails()">
-				<app-cocktail-card 
-				  [cockId]="cockID"
-				  [showAll]="true"
-                  [IsRemovable]="true"
-                  (removeCocktail)="removeCocktail($event)"
-				></app-cocktail-card>
-			  </div>
+		<!-- Main Content -->
+		<main class="content">
+			<!-- Home View -->
+			<div class="content-inner" *ngIf="activeView() === 'home'">
+				<h1>Welcome to Terranova</h1>
+				<p>Your go-to destination for exploring cocktails!</p>
+
+				<div class="theme-info">
+					<p>Current theme colors:</p>
+					<div class="color-samples">
+						<div
+							class="color-sample"
+							style="background-color: var(--primary-color)"
+						>
+							Primary
+						</div>
+						<div
+							class="color-sample"
+							style="background-color: var(--secondary-color)"
+						>
+							Secondary
+						</div>
+						<div
+							class="color-sample"
+							style="background-color: var(--tertiary-color)"
+						>
+							Tertiary
+						</div>
+						<div
+							class="color-sample"
+							style="background-color: var(--quaternary-color)"
+						>
+							Quaternary
+						</div>
+					</div>
+				</div>
 			</div>
-        </main>
-    </div>
+
+			<!-- Settings View -->
+			<div class="content-inner" *ngIf="activeView() === 'settings'">
+				<app-settings></app-settings>
+			</div>
+
+			<!-- Dashboard View (placeholder) -->
+			<div class="content-inner" *ngIf="activeView() === 'dashboard'">
+				<h1>Dashboard</h1>
+				<p>Your dashboard content will appear here.</p>
+			</div>
+
+			<!-- Cocktails View (placeholder) -->
+			<div class="content-inner" *ngIf="activeView() === 'cocktails'">
+				<h1>Cocktails</h1>
+				<p>Browse all cocktails here.</p>
+			</div>
+
+			<!-- Favorites View (placeholder) -->
+			<div class="content-inner" *ngIf="activeView() === 'favorites'">
+				<h1>Favorites</h1>
+				<p>Your favorite cocktails will appear here.</p>
+			</div>
+
+			<!-- Selected Cocktail Details (appears in any view) -->
+			<div class="cocktail-full" *ngIf="showCocktailDetails()">
+				<div
+					class="selected-cocktail-list"
+					*ngFor="let cockID of selectedCocktails()"
+				>
+					<app-cocktail-card
+						[cockId]="cockID"
+						[showAll]="true"
+						[IsRemovable]="true"
+						(removeCocktail)="removeCocktail($event)"
+					></app-cocktail-card>
+				</div>
+			</div>
+		</main>
+	</div>
 </div>
