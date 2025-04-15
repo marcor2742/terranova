@@ -37,6 +37,7 @@ export class SearchresoultComponent {
 	readonly cocktailSelected = output<Searchres>();
 
 	navigateToCocktail(Searchres: Searchres) {
+		console.log('Cocktail selected:', Searchres);
 		this.cocktailSelected.emit(Searchres);
 	}
 }
