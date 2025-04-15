@@ -1,5 +1,7 @@
 <div [style.max-height]="cardHeight()" [style.max-width]="cardWidth()">
 	<div hlmCard class="cocktail-card">
+		<button (click)="debugButton()">sesso</button>
+		
 		@if (cocktail.isLoading()) {
 		<hlm-skeleton class="h-full w-full" />
 		} @else if (cocktail.error()) {

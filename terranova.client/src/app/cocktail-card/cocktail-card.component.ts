@@ -34,7 +34,7 @@ export class CocktailCardComponent {
 	readonly cardWidth = input<string>('2500px');
 	readonly cardHeight = input<string>('20px');
 	readonly locale = input<string>('en-US');
-	readonly cocktailUrl = environment.searchUrl + '/' + this.cockId() + '/';
+	readonly cocktailUrl = environment.searchUrl + '/' + this.cockId();
 
 	readonly IsRemovable = input<boolean>(false);
 	readonly removeCocktail = output<number>();
@@ -63,6 +63,11 @@ export class CocktailCardComponent {
 			),
 		}
 	);
+
+	debugButton()
+	{
+		console.log('Resource:', this.cocktail.value());
+	}
 
 	// cocktail = {
 	// 	isLoading: () => false,
