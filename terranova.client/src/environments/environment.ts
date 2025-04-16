@@ -9,4 +9,5 @@ export const environment = {
 	logoutUrl: 'localhost:8000/logout',
 	refreshUrl: 'localhost:8000/api/refreshextended',
 	searchUrl: 'localhost:8000/search',
+	settingsUrl: 'localhost:8000/preferences',
 };

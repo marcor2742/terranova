@@ -1,14 +1,14 @@
 <div class="cocktail-item">
 	<div class="cocktail-icon">
 		<img
-			*ngIf="Cocktail().Alcoholic === true"
+			*ngIf="Cocktail().isAlcoholic === true"
 			src="./assets/icons/drink.svg"
 			alt="Alcoholic drink"
 			width="24"
 			height="24"
 		/>
 		<img
-			*ngIf="Cocktail().Alcoholic === false"
+			*ngIf="Cocktail().isAlcoholic === false"
 			src="./assets/icons/no_drink.svg"
 			alt="Non-alcoholic drink"
 			width="24"
@@ -17,17 +17,21 @@
 	</div>
 
 	<div class="cocktail-details">
-		<h3>{{ Cocktail().Name }}</h3>
+		<h3>{{ Cocktail().name }}</h3>
 		<p class="cocktail-category">
-			{{ Cocktail().Category }} · {{ Cocktail().Alcoholic }}
+			{{ Cocktail().category }}
 		</p>
+	</div>
+	<div class="add-icons">
 		<i
 			class="pi pi-arrow-right"
+			style="font-size: 1.5rem;"
 			(click)="navigateToCocktail({ id: Cocktail().id, add: 'only' })"
 			title="View Details"
 		></i>
 		<i
 			class="pi pi-plus"
+			style="font-size: 1.5rem;"
 			(click)="navigateToCocktail({ id: Cocktail().id, add: 'add' })"
 			title="Add Cocktail"
 		></i>
