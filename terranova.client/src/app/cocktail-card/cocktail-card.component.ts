@@ -11,7 +11,8 @@ import { httpResource } from '@angular/common/http';
 import { Cocktail, FullCocktail, Ingredient } from '../Classes/cocktail';
 import { environment } from '../../environments/environment.development';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { InstructionsPipe } from '../pipes/instructions.pipe';
+import { MeasurementPipe } from '../pipes/measurement.pipe';
 @Component({
 	selector: 'app-cocktail-card',
 	standalone: true,
@@ -23,6 +24,8 @@ import { TranslateModule } from '@ngx-translate/core';
 		HlmCardContentDirective,
 		HlmSkeletonComponent,
 		TranslateModule,
+		MeasurementPipe,
+		InstructionsPipe,
 	],
 	templateUrl: './cocktail-card.component.html',
 	styleUrl: './cocktail-card.component.scss',
@@ -52,11 +55,11 @@ export class CocktailCardComponent {
 					measure: 300,
 				},
 				[
-					new Ingredient('White rum', 60, 'ml'),
-					new Ingredient('Fresh lime juice', 30, 'ml'),
-					new Ingredient('Sugar', 2, 'tsp'),
-					new Ingredient('Mint leaves', 8, 'oz'),
-					new Ingredient('Soda water', 100, 'ml'),
+					new Ingredient('White rum', '60 ml', '2 oz'),
+					new Ingredient('Fresh lime juice', '30 ml', '1 oz'),
+					new Ingredient('Sugar', '2 tsp', '1 tsp'),
+					new Ingredient('Mint leaves', '8 oz', '1 cup'),
+					new Ingredient('Soda water', '100 ml', '3.4 oz'),
 				],
 				'Mix all ingredients in a glass and stir well.',
 				'https://example.com/mojito.jpg'

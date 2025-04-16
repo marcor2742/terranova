@@ -1,7 +1,6 @@
 <div [style.max-height]="cardHeight()" [style.max-width]="cardWidth()">
-	<div hlmCard class="cocktail-card">
-		<button (click)="debugButton()">sesso</button>
-		
+	<div hlmCard class="cocktail-card">\
+		<button (click)="debugButton()">sexo</button>
 		@if (cocktail.isLoading()) {
 		<hlm-skeleton class="h-full w-full" />
 		} @else if (cocktail.error()) {
@@ -14,14 +13,13 @@
 			class="photo-side"
 			[style.background-image]="
 				'url(' +
-				(cocktail.value().ImageUrl ||
-					'/assets/default-cocktail.jpg') +
+				(cocktail.value().imageUrl || '/assets/default-cocktail.jpg') +
 				')'
 			"
 		>
 			<div class="photo-overlay">
 				<div hlmCardTitle class="photo-title">
-					{{ cocktail.value().Name }}
+					{{ cocktail.value().name }}
 				</div>
 			</div>
 		</div>
@@ -32,9 +30,9 @@
 		<!-- Content side -->
 		<div class="content-side">
 			<div hlmCardHeader>
-				<div hlmCardTitle>{{ cocktail.value().Name }}</div>
+				<div hlmCardTitle>{{ cocktail.value().name }}</div>
 				<div hlmCardDescription>
-					{{ cocktail.value().Category }}
+					{{ cocktail.value().category }}
 				</div>
 			</div>
 
@@ -43,17 +41,15 @@
 				<div class="cocktail-details">
 					<h4>{{ "ingredientsHeading" | translate }}</h4>
 					<ul class="ingredients-list">
-						@for (ingredient of
-						cocktail.value().ingredients || []; track
-						$index) {
+						@for (ingredient of cocktail.value().ingredients || [];
+						track $index) {
 						<li>
 							<span class="ingredient-name">{{
-								ingredient.name
+								ingredient.ingredient
 							}}</span>
-							<span class="ingredient-amount"
-								>{{ ingredient.quantity }}
-								{{ ingredient.measure }}</span
-							>
+							<span class="ingredient-amount">{{
+								ingredient | measurement
+							}}</span>
 						</li>
 						}
 					</ul>
@@ -62,7 +58,7 @@
 							{{ "preparationHeading" | translate }}
 						</div>
 						<div hlmCardContent>
-							{{ cocktail.value().Instructions }}
+							{{ cocktail.value() | instructions }}
 						</div>
 					</div>
 				</div>

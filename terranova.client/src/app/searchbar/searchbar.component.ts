@@ -140,9 +140,8 @@ export class SearchbarComponent implements OnInit {
 						measure: 300,
 					},
 					[
-						new Ingredient('White rum', 60, 'ml'),
-						new Ingredient('Fresh lime juice', 30, 'ml'),
-						new Ingredient('Sugar', 2, 'tsp'),
+						new Ingredient('White rum', '60', 'ml'),
+						new Ingredient('Fresh lime juice', '30', 'ml'),
 					],
 					'Mix all ingredients in a glass and stir well.',
 					'https://example.com/mojito.jpg'
@@ -157,9 +156,9 @@ export class SearchbarComponent implements OnInit {
 						measure: 150,
 					},
 					[
-						new Ingredient('White rum', 50, 'ml'),
-						new Ingredient('Fresh lime juice', 25, 'ml'),
-						new Ingredient('Sugar', 1, 'tsp'),
+						new Ingredient('White rum', '50', 'ml'),
+						new Ingredient('Fresh lime juice', '25', 'ml'),
+						new Ingredient('Simple syrup', '15', 'ml'),
 					],
 					'Simplify by shaking all ingredients with ice and straining into a chilled glass.',
 					'https://example.com/daiquiri.jpg'
@@ -198,9 +197,9 @@ export class SearchbarComponent implements OnInit {
 					}
 				});
 
-			// Debug when search results are received
 		}
 	}
+
 	/**
 	 * Load more results by increasing the page number
 	 */

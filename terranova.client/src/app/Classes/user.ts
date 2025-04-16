@@ -1,4 +1,3 @@
-import { MeasureUnit } from './cocktail';
 
 /**
  * Represents a user in the application
@@ -20,6 +19,7 @@ export class User {
 		public email: string,
 		public firstName: string,
 		public lastName: string,
-		public measurements: MeasureUnit
+		public locale: string,
+		public language: string,
 	) {}
 }
