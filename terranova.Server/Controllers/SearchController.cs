@@ -23,11 +23,11 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapGet("/allCocktails/", ShowAllCocktails)
-               .WithDescription("Restituisce tutti i drink del database visibili dall'utente, con paginazione e filtri")
+               .WithDescription("Restituisce tutti i drink del database visibili dall'utente, con paginazione ma senza filtri")
                .WithOpenApi();
 
             app.MapGet("/search", SearchCocktails)
-               .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata")
+               .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata con filtri")
                .WithOpenApi();
 
             app.MapGet("/search/{id}", SearchById)
@@ -438,15 +438,24 @@ namespace terranova.Server.Controllers
 
             query = query.Where(c => c.Name.ToLower().Contains(name));
 
-            // Filtro per ingredienti (se specificati)
+            bool allIngredients = !string.IsNullOrWhiteSpace(data.AllIngredients) &&
+                      data.AllIngredients.ToLower() == "true";
+
             if (data.Ingredients != null && data.Ingredients.Length > 0)
             {
-                // Ogni cocktail deve contenere TUTTI gli ingredienti specificati
-                foreach (var ingredient in data.Ingredients)
+                if (allIngredients)
                 {
-                    var ingredientName = ingredient.ToLower();
+                    foreach (var ingredient in data.Ingredients)
+                    {
+                        query = query.Where(c => c.CocktailIngredients.Any(ci =>
+                            ci.Ingredient.Name == ingredient));
+                    }
+                }
+                else
+                {
+                    var ingredientsList = data.Ingredients.ToArray();
                     query = query.Where(c => c.CocktailIngredients.Any(ci =>
-                        ci.Ingredient.Name.ToLower().Contains(ingredientName)));
+                        ingredientsList.Contains(ci.Ingredient.Name)));
                 }
             }
 
@@ -458,16 +467,16 @@ namespace terranova.Server.Controllers
 
             if (data.GlassNames != null && data.GlassNames.Length > 0)
             {
-                var glassNamesLower = data.GlassNames.Select(g => g.ToLower()).ToArray();
-                query = query.Where(c => glassNamesLower.Any(gName =>
-                    c.Glass.Name.ToLower().Contains(gName)));
+                var glassNames = data.GlassNames.ToArray();
+                query = query.Where(c => c.Glass != null &&
+                    glassNames.Contains(c.Glass.Name));
             }
 
             if (data.Creators != null && data.Creators.Length > 0)
             {
-                var creatorsLower = data.Creators.Select(cr => cr.ToLower()).ToArray();
-                query = query.Where(c => creatorsLower.Any(creator =>
-                    c.Creator.ToLower().Contains(creator)));
+                var creators = data.Creators.ToArray();
+                query = query.Where(c => c.Creator != null &&
+                    creators.Contains(c.Creator));
             }
 
             if (!string.IsNullOrWhiteSpace(data.Category))
@@ -475,44 +484,95 @@ namespace terranova.Server.Controllers
                 query = query.Where(c => c.Category.ToLower().Contains(data.Category.ToLower()));
             }
 
-            var cocktails = await query
-                .OrderByDescending(c => c.Name.ToLower().StartsWith(name))
-                .ThenBy(c => c.Name)
-                .Include(c => c.Glass)
-                .Include(c => c.Instructions)
-                .Include(c => c.CocktailIngredients)
-                    .ThenInclude(ci => ci.Ingredient)
-                .Include(c => c.CocktailIngredients)
-                    .ThenInclude(ci => ci.Measure)
-                .Skip(skip)
-                .Take(pageSize)
-                .ToListAsync();
-
-            var result = cocktails.Select(c => new
+            if (!allIngredients && data.Ingredients != null && data.Ingredients.Length > 0)
             {
-                c.Id,
-                c.Name,
-                c.Category,
-                c.IsAlcoholic,
-                Glass = c.Glass?.Name,
-                Instructions = new
-                {
-                    En = c.Instructions?.En,
-                    Es = c.Instructions?.Es,
-                    De = c.Instructions?.De,
-                    Fr = c.Instructions?.Fr,
-                    It = c.Instructions?.It
-                },
-                c.ImageUrl,
-                Ingredients = c.CocktailIngredients.Select(ci => new
-                {
-                    Ingredient = ci.Ingredient.Name,
-                    MetricMeasure = ci.Measure.Metric,
-                    ImperialMeasure = ci.Measure.Imperial
-                }).ToList()
-            }).ToList();
+                var ingredientsList = data.Ingredients.ToArray();
 
-            return Results.Ok(result);
+                var cocktails = await query
+                    .OrderByDescending(c => c.Name.ToLower().StartsWith(name))
+                    .ThenByDescending(c => c.CocktailIngredients.Count(ci =>
+                        ingredientsList.Contains(ci.Ingredient.Name)))
+                    .ThenBy(c => c.Name)
+                    .Include(c => c.Glass)
+                    .Include(c => c.Instructions)
+                    .Include(c => c.CocktailIngredients)
+                        .ThenInclude(ci => ci.Ingredient)
+                    .Include(c => c.CocktailIngredients)
+                        .ThenInclude(ci => ci.Measure)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                var result = cocktails.Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    c.Category,
+                    c.IsAlcoholic,
+                    Glass = c.Glass?.Name,
+                    Instructions = new
+                    {
+                        En = c.Instructions?.En,
+                        Es = c.Instructions?.Es,
+                        De = c.Instructions?.De,
+                        Fr = c.Instructions?.Fr,
+                        It = c.Instructions?.It
+                    },
+                    c.ImageUrl,
+                    Ingredients = c.CocktailIngredients.Select(ci => new
+                    {
+                        Ingredient = ci.Ingredient.Name,
+                        MetricMeasure = ci.Measure.Metric,
+                        ImperialMeasure = ci.Measure.Imperial
+                    }).ToList(),
+                    MatchingIngredients = c.CocktailIngredients.Count(ci =>
+                        ingredientsList.Contains(ci.Ingredient.Name))
+                }).ToList();
+
+                return Results.Ok(result);
+            }
+            else
+            {
+                // Comportamento standard per AllIngredients=true o quando non ci sono ingredienti
+                var cocktails = await query
+                    .OrderByDescending(c => c.Name.ToLower().StartsWith(name))
+                    .ThenBy(c => c.Name)
+                    .Include(c => c.Glass)
+                    .Include(c => c.Instructions)
+                    .Include(c => c.CocktailIngredients)
+                        .ThenInclude(ci => ci.Ingredient)
+                    .Include(c => c.CocktailIngredients)
+                        .ThenInclude(ci => ci.Measure)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                var result = cocktails.Select(c => new
+                {
+                    c.Id,
+                    c.Name,
+                    c.Category,
+                    c.IsAlcoholic,
+                    Glass = c.Glass?.Name,
+                    Instructions = new
+                    {
+                        En = c.Instructions?.En,
+                        Es = c.Instructions?.Es,
+                        De = c.Instructions?.De,
+                        Fr = c.Instructions?.Fr,
+                        It = c.Instructions?.It
+                    },
+                    c.ImageUrl,
+                    Ingredients = c.CocktailIngredients.Select(ci => new
+                    {
+                        Ingredient = ci.Ingredient.Name,
+                        MetricMeasure = ci.Measure.Metric,
+                        ImperialMeasure = ci.Measure.Imperial
+                    }).ToList()
+                }).ToList();
+
+                return Results.Ok(result);
+            }
         }
 
 
@@ -625,5 +685,7 @@ namespace terranova.Server.Controllers
         public string[]? Creators { get; set; } // per username (per i propri mandi il proprio username). e guardare come mettere piu filtri dello stesso tipo. ad esempio piu glassname
         public string? Category { get; set; } // modificare il seeder per creare una nuova tabella? sennò rimuovere
         public string[]? Ingredients { get; set; }
+        public string? AllIngredients { get; set; } //false se non specificato
+
     }
 }
