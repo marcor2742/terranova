@@ -134,3 +134,12 @@ nel db se un ingrediente non ha unità di misura viene creata comunque una riga 
 
 testare creator e quindi per modificare e cancellare devi esserlo.
 pageSize max è 50
+
+gli ingredienti li rendo cercabili? perchè per ora devono essere inseriti esattamente come sono nel db. o sennò il frontend fa cercare un ingrediente e gli vengono proposti quelli simili (con un filtro di somiglianza) e poi lui lo seleziona. 
+vedere come si fa la ricerca per simili. penso di non farlo. magari elastic search
+
+immagini nel db? forse meglio sito esterno così non devo modificare il db
+
+preferenze many to many?
+vedere o no i cocktail creati dagli utenti nella ricerca base e in allcocktails (senza login non li puoi vedere)
+se i tuoi cocktail sono visibili agli altri o no
