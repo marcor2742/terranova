@@ -24,7 +24,7 @@ namespace terranova.Server.Controllers
             [AsParameters] DataForTables data,
             CocktailsDbContext dbContext)
         {
-            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 50) : 20;
+            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 1000) : 100;
             int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
             int skip = (page - 1) * pageSize;
 
@@ -42,7 +42,7 @@ namespace terranova.Server.Controllers
             [AsParameters] DataForTables data,
             CocktailsDbContext dbContext)
         {
-            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 50) : 20;
+            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 1000) : 100;
             int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
             int skip = (page - 1) * pageSize;
 

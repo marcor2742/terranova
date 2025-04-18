@@ -27,7 +27,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapGet("/search", SearchCocktails)
-               .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata con filtri")
+               .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata con filtri. se non sei loggato o se il parametro showOnlyOriginal é true allora non verranno mostrati i drink con un creator nel db")
                .WithOpenApi();
 
             app.MapGet("/search/{id}", SearchById)
@@ -423,7 +423,9 @@ namespace terranova.Server.Controllers
         [AllowAnonymous]
         private static async Task<IResult> SearchCocktails(
             [AsParameters] DataForQuery data,
-            CocktailsDbContext dbContext)
+            ClaimsPrincipal user,
+            CocktailsDbContext dbContext,
+            UserManager<IdentityUserExtended> userManager)
         {
             var name = data.SearchString?.ToLower();
             if (string.IsNullOrWhiteSpace(name))
@@ -435,6 +437,18 @@ namespace terranova.Server.Controllers
             int skip = (page - 1) * pageSize;
 
             var query = dbContext.Cocktails.AsQueryable();
+
+            #region "control to show users' cocktails only to logged in users and if showOnlyOriginal is true"
+            var userId = user.FindFirst("UserID")?.Value;
+            bool isAuthenticated = userId != null;
+            bool showOnlyOriginal = !string.IsNullOrWhiteSpace(data.showOnlyOriginal) &&
+                      data.showOnlyOriginal.ToLower() == "true";
+
+            if (!isAuthenticated || showOnlyOriginal)
+            {
+                query = query.Where(c => c.Creator == null);
+            }
+            #endregion
 
             query = query.Where(c => c.Name.ToLower().Contains(name));
 
@@ -472,12 +486,47 @@ namespace terranova.Server.Controllers
                     glassNames.Contains(c.Glass.Name));
             }
 
+            #region "creators filter. check if the user has drinks as private (showOnlyOriginal ignored)"
             if (data.Creators != null && data.Creators.Length > 0)
             {
+                if (!isAuthenticated)
+                    return Results.BadRequest(new { error = "you need to be logged to see users' drinks" });
+
                 var creators = data.Creators.ToArray();
+                var userEntity = await userManager.FindByIdAsync(userId);
+                string currentUserName = userEntity?.UserName ?? string.Empty;
+
+                var allowedCreators = new List<string>();
+
+                foreach (var creatorName in creators)
+                {
+                    if (creatorName == currentUserName)
+                    {
+                        allowedCreators.Add(creatorName);
+                        continue;
+                    }
+
+                    //controlla se l'utente con questo username ha acconsentito a mostrare i suoi drink
+                    var userobj = await userManager.FindByNameAsync(creatorName);
+                    if (userobj == null)
+                    {
+                        return Results.NotFound(new { user = creatorName, error = "User not found" });
+                    }
+                    var showAccepted = userobj.ShowMyCocktails;
+                    if (!showAccepted)
+                    {
+                        return Results.BadRequest(new { user = creatorName, error = "User's drinks are private" });
+                    }
+                    allowedCreators.Add(creatorName);
+                }
+                if (allowedCreators.Count == 0)
+                {
+                    return Results.BadRequest(new { error = "No valid creators found" });
+                }
                 query = query.Where(c => c.Creator != null &&
-                    creators.Contains(c.Creator));
+                    allowedCreators.Contains(c.Creator));
             }
+            #endregion
 
             if (!string.IsNullOrWhiteSpace(data.Category))
             {
@@ -685,7 +734,7 @@ namespace terranova.Server.Controllers
         public string[]? Creators { get; set; } // per username (per i propri mandi il proprio username). e guardare come mettere piu filtri dello stesso tipo. ad esempio piu glassname
         public string? Category { get; set; } // modificare il seeder per creare una nuova tabella? sennò rimuovere
         public string[]? Ingredients { get; set; }
-        public string? AllIngredients { get; set; } //false se non specificato
-
+        public string? AllIngredients { get; set; } //false se non specificato. vuol dire che se ci sono più ingredienti come parametro, allora se true devono esserci tutti in un drink
+        public string? showOnlyOriginal { get; set; } //false se non specificato (o non loggato). true se non vuoi vedere i drink creati da altri utenti, compresi i propri.
     }
 }
