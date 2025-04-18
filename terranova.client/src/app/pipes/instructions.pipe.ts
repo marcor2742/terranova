@@ -12,16 +12,13 @@ export class InstructionsPipe implements PipeTransform {
   transform(cocktail: Cocktail): string {
     if (!cocktail) return '';
     
-    // Get user language preference from settings
     const language = this.settingsService.getSetting('language');
     
-    // Handle the instructions directly rather than calling a method
     if (typeof cocktail.instructions === 'string') {
       return cocktail.instructions;
     } else if (cocktail.instructions && typeof cocktail.instructions === 'object') {
-      // Use safe property access with fallbacks
       return cocktail.instructions[language] || 
-             cocktail.instructions['En'] || 
+             cocktail.instructions['en'] || 
              '';
     }
     

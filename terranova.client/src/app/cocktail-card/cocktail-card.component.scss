@@ -41,60 +41,73 @@
 
 /* Zigzag divider */
 .zigzag-divider {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 24px;
-  transform: translateX(-50%);
-  z-index: 10;
-  
-  &:before, &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    background-repeat: repeat-y;
-  }
-  
-  /* Left side zigzag */
-  &:before {
-    left: 0;
-    width: 12px;
-    background-image: linear-gradient(135deg, transparent 12px, var(--secondary-color), 0);
-    background-size: 12px 24px;
-  }
-  
-  /* Right side zigzag */
-  &:after {
-    right: 0;
-    width: 12px;
-    background-image: linear-gradient(-135deg, transparent 12px, var(--secondary-color), 0);
-    background-size: 12px 24px;
-  }
+	position: absolute;
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	width: 24px;
+	transform: translateX(-50%);
+	z-index: 10;
+
+	&:before,
+	&:after {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background-repeat: repeat-y;
+	}
+
+	/* Left side zigzag */
+	&:before {
+		left: 0;
+		width: 12px;
+		background-image: linear-gradient(
+			135deg,
+			transparent 12px,
+			var(--secondary-color),
+			0
+		);
+		background-size: 12px 24px;
+	}
+
+	/* Right side zigzag */
+	&:after {
+		right: 0;
+		width: 12px;
+		background-image: linear-gradient(
+			-135deg,
+			transparent 12px,
+			var(--secondary-color),
+			0
+		);
+		background-size: 12px 24px;
+	}
 }
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
-  .zigzag-divider {
-    width: 16px;
-    
-    &:before, &:after {
-      width: 8px;
-      background-size: 8px 16px;
-    }
-  }
+	.zigzag-divider {
+		width: 16px;
+
+		&:before,
+		&:after {
+			width: 8px;
+			background-size: 8px 16px;
+		}
+	}
 }
 
 @media (min-width: 577px) and (max-width: 991px) {
-  .zigzag-divider {
-    width: 20px;
-    
-    &:before, &:after {
-      width: 10px;
-      background-size: 10px 20px;
-    }
-  }
+	.zigzag-divider {
+		width: 20px;
+
+		&:before,
+		&:after {
+			width: 10px;
+			background-size: 10px 20px;
+		}
+	}
 }
 
 .ingredients-list {
@@ -117,7 +130,7 @@
 	.ingredient-amount {
 		// Use a muted color from your palette - assuming this exists
 		color: var(--primary-color);
-        opacity: 0.8;
+		opacity: 0.8;
 	}
 }
 
@@ -132,4 +145,52 @@
 	text-align: center;
 	// Use an error/destructive color from your palette - assuming this exists
 	color: var(--error-color);
+}
+.card-header-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem 1.5rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+	.category-info {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+
+		[hlmCardTitle] {
+			margin: 0;
+			font-size: 0.95rem;
+			font-weight: 600;
+		}
+
+		[hlmCardDescription] {
+			margin: 0;
+			font-size: 0.9rem;
+			opacity: 0.8;
+		}
+	}
+
+	.action-buttons {
+		margin-left: auto;
+
+		.remove-btn {
+			font-size: 0.8rem;
+			padding: 0.3rem 0.7rem;
+		}
+	}
+}
+
+// Responsive adjustments
+@media (max-width: 480px) {
+	.card-header-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.5rem;
+
+		.action-buttons {
+			margin-left: 0;
+			align-self: flex-end;
+		}
+	}
 }

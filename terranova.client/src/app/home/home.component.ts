@@ -5,6 +5,12 @@ import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
 import { CocktailCardComponent } from '../cocktail-card/cocktail-card.component';
 import { SettingsComponent } from '../settings/settings.component';
+import { Searchres } from '../searchresoult/searchresoult.component';
+import { ScrollerModule } from 'primeng/scroller';
+import { DividerModule } from 'primeng/divider';
+import { SkeletonModule } from 'primeng/skeleton';
+import { ToolbarModule } from 'primeng/toolbar';
+import { ButtonModule } from 'primeng/button';
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -12,7 +18,17 @@ import { SettingsComponent } from '../settings/settings.component';
 @Component({
 	selector: 'app-home',
 	standalone: true,
-	imports: [SearchbarComponent, CommonModule, CocktailCardComponent, SettingsComponent],
+	imports: [
+		SearchbarComponent,
+		CommonModule,
+		CocktailCardComponent,
+		SettingsComponent,
+		ScrollerModule,
+		DividerModule,
+		SkeletonModule,
+		ButtonModule,
+		ToolbarModule,
+	],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
 	encapsulation: ViewEncapsulation.None,
@@ -81,5 +97,27 @@ export class HomeComponent {
 		view: 'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites'
 	) {
 		this.activeView.set(view);
+	}
+
+	modifySelectedCocktails(Searches: Searchres) {
+		console.log('Cocktail selected:', Searches);
+		if (Searches.add === 'add') {
+			this.selectedCocktails.set([
+				...this.selectedCocktails(),
+				Searches.id,
+			]);
+		} else if (Searches.add === 'only') {
+			this.selectedCocktails.set([Searches.id]);
+		}
+		if (this.selectedCocktails().length > 0) {
+			this.showCocktailDetails.set(true);
+		} else {
+			this.showCocktailDetails.set(false);
+		}
+	}
+	closeCocktailDetails() {
+		this.showCocktailDetails.set(false);
+		this.selectedCocktails.set([]);
+		this.activeView.set('home');
 	}
 }

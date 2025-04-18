@@ -1,13 +1,12 @@
 <div [style.max-height]="cardHeight()" [style.max-width]="cardWidth()">
-	<div hlmCard class="cocktail-card">\
-		<button (click)="debugButton()">sexo</button>
+	<div hlmCard class="cocktail-card">
 		@if (cocktail.isLoading()) {
 		<hlm-skeleton class="h-full w-full" />
 		} @else if (cocktail.error()) {
 		<div class="error-container">
 			Error: {{ cocktail.error() || "Unknown error occurred" }}
 		</div>
-		} @else if (cocktail.value()) {
+		} @else if (cocktail.hasValue()) {
 		<!-- Photo side -->
 		<div
 			class="photo-side"
@@ -29,11 +28,22 @@
 
 		<!-- Content side -->
 		<div class="content-side">
-			<div hlmCardHeader>
-				<div hlmCardTitle>{{ cocktail.value().name }}</div>
-				<div hlmCardDescription>
-					{{ cocktail.value().category }}
+			<div class="card-header-row">
+				<div hlmCardHeader>
+					<div hlmCardTitle>{{ "Type" | translate }}:	{{ cocktail.value().category }}
+					</div>
 				</div>
+				@if (IsRemovable()) {
+				<div class="action-buttons">
+					<my-ui-button
+						text="{{ 'Remove' | translate }}"
+						variant="outline"
+						size="sm"
+						(buttonClick)="remCock(cocktail.value().id)"
+						class="remove-btn"
+					></my-ui-button>
+				</div>
+				}
 			</div>
 
 			<div hlmCardContent>

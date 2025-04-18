@@ -44,11 +44,11 @@ export class Ingredient {
 }
 
 export interface Instructions {
-    En: string;
-    Es?: string;
-    De?: string;
-    Fr?: string;
-    It?: string;
+    en: string;
+    es?: string;
+    de?: string;
+    fr?: string;
+    it?: string;
 }
 
 export type Glass = {
@@ -92,11 +92,11 @@ export class Cocktail {
      * @param lang - The language key for the instructions (default is 'en')
      * @returns The instruction text in the specified language, or a fallback if not available
      */
-    public getInstructions(lang: keyof Instructions = 'En'): string {
+    public getInstructions(lang: keyof Instructions = 'en'): string {
         if (typeof this.instructions === 'string') {
             return this.instructions;
         } else if (this.instructions && typeof this.instructions === 'object') {
-            return this.instructions[lang] || this.instructions.En || '';
+            return this.instructions[lang] || this.instructions.en || '';
         }
         return '';
     }
@@ -142,9 +142,9 @@ export function getSampleCocktail(): Cocktail {
             new Ingredient('Sugar', '2 tsp', '2 tsp')
         ],
         {
-            En: 'Mix all ingredients in a glass and stir well.',
-            Es: 'Mezclar todos los ingredientes en un vaso y remover bien.',
-            It: 'Mescola tutti gli ingredienti in un bicchiere e mescola bene.'
+            en: 'Mix all ingredients in a glass and stir well.',
+            es: 'Mezclar todos los ingredientes en un vaso y remover bien.',
+            it: 'Mescola tutti gli ingredienti in un bicchiere e mescola bene.'
         },
         'https://example.com/mojito.jpg'
     );

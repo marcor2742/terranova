@@ -6,11 +6,10 @@ import { CookieService } from 'ngx-cookie-service'; // You'll need to add this d
 
 export interface UserSettings {
   theme: string;
-  language: 'En' | 'Fr' | 'Es' | 'De' | 'It';
+  language: 'en' | 'fr' | 'es' | 'de' | 'it';
   notifications: boolean;
-  displayMode: 'grid' | 'list';
+  searchPreference: 'original' | 'friend' | 'all';
   locale: 'imperial' | 'metric';
-  // Add other settings as needed
 }
 
 @Injectable({
@@ -20,10 +19,10 @@ export class SettingsService {
   private settingsUrl = `${environment.settingsUrl}`;
   private defaultSettings: UserSettings = {
     theme: 'dark-theme',
-    language: 'En',
+    language: 'en',
     locale: 'metric',
     notifications: true,
-    displayMode: 'grid'
+    searchPreference: 'original'
   };
   
   private settingsSubject = new BehaviorSubject<UserSettings>(this.defaultSettings);

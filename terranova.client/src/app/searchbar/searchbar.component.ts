@@ -82,7 +82,7 @@ export class SearchbarComponent implements OnInit {
 	private readonly DEBOUNCE_TIME_MS = 300;
 
 	/** Minimum characters to trigger search */
-	private readonly MIN_SEARCH_LENGTH = 2;
+	private readonly MIN_SEARCH_LENGTH = 1;
 
 	/** Tracks component lifecycle for unsubscribing */
 	private destroy$ = new Subject<void>();

@@ -1,21 +1,37 @@
 <div class="page-container">
-	<!-- Top Navigation Bar -->
-	<header class="top-bar">
-		<div class="logo">Lollo&Marco's Cock shop</div>
-		<div class="search-container">
-			<app-searchbar
-				(cocktailSelected)="selectCocktail($event.id)"
-			></app-searchbar>
-		</div>
-		<div class="top-nav-actions">
-			<button class="theme-toggle" (click)="toggleTheme()">
-				{{ themeService.isDarkTheme() ? "☀️" : "🌙" }}
-			</button>
-			<button class="menu-toggle" (click)="toggleSidebar()">
-				<span class="material-icons">menu</span>
-			</button>
-		</div>
-	</header>
+	<div class="p-fluid">
+		<p-toolbar styleClass="custom-toolbar">
+			<div class="p-toolbar-group-start">
+				<div class="logo">Lollo&Marco's Cock shop</div>
+			</div>
+
+			<div class="p-toolbar-group-center">
+				<div class="search-container">
+					<app-searchbar
+						(cocktailSelected)="modifySelectedCocktails($event)"
+					></app-searchbar>
+				</div>
+			</div>
+
+			<div class="p-toolbar-group-end">
+				<p-button
+					icon="{{
+						themeService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'
+					}}"
+					styleClass="p-button-rounded p-button-text"
+					(onClick)="toggleTheme()"
+					aria-label="'Toggle theme'"
+				></p-button>
+
+				<p-button
+					icon="pi pi-bars"
+					styleClass="p-button-rounded p-button-text"
+					(onClick)="toggleSidebar()"
+					aria-label="'Toggle sidebar'"
+				></p-button>
+			</div>
+		</p-toolbar>
+	</div>
 
 	<!-- Main Content Area with Sidebar -->
 	<div class="main-container">
@@ -98,19 +114,53 @@
 				<p>Your favorite cocktails will appear here.</p>
 			</div>
 
-			<!-- Selected Cocktail Details (appears in any view) -->
+			<!-- Replace the existing cocktail details section with this: -->
 			<div class="cocktail-full" *ngIf="showCocktailDetails()">
-				<div
-					class="selected-cocktail-list"
-					*ngFor="let cockID of selectedCocktails()"
-				>
-					<app-cocktail-card
-						[cockId]="cockID"
-						[showAll]="true"
-						[IsRemovable]="true"
-						(removeCocktail)="removeCocktail($event)"
-					></app-cocktail-card>
+				<div class="cocktail-header">
+					<h2>Selected Cocktails</h2>
+					<button
+						class="close-button"
+						(click)="closeCocktailDetails()"
+					>
+						<span class="material-icons">close</span>
+					</button>
 				</div>
+
+				<p-scroller
+					[items]="selectedCocktails()"
+					[style]="{ width: '100%', height: '80vh' }"
+					styleClass="cocktail-scroller"
+					[delay]="250"
+					[showLoader]="false"
+					[lazy]="false"
+					[autoSize]="true"
+				>
+					<ng-template pTemplate="item" let-id let-index="index">
+						<div class="cocktail-item-container">
+							<app-cocktail-card
+								[cockId]="id"
+								[showAll]="true"
+								[IsRemovable]="true"
+								(removeCocktail)="removeCocktail($event)"
+							>
+							</app-cocktail-card>
+
+							<p-divider
+								*ngIf="index < selectedCocktails().length - 1"
+								styleClass="cocktail-divider"
+							></p-divider>
+						</div>
+					</ng-template>
+					<ng-template pTemplate="loader" let-options="options">
+						<div class="flex justify-content-center">
+							<p-skeleton
+								height="320px"
+								width="100%"
+								styleClass="mb-2"
+							></p-skeleton>
+						</div>
+					</ng-template>
+				</p-scroller>
 			</div>
 		</main>
 	</div>
