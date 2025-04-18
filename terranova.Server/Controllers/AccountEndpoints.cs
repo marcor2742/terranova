@@ -49,6 +49,7 @@ namespace terranova.Server.Controllers
             public string? Bio { get; set; }
             public string? PropicUrl { get; set; }
             public string? PhoneNumber { get; set; }
+            public bool? ShowMyCocktails { get; set; }
         }
 
         //take some info from the body and add it to the user profile
@@ -136,6 +137,7 @@ namespace terranova.Server.Controllers
                 userDetails.BirthDate = userProfile.BirthDate.Value;
                 birthDateUpdated = true;
             }
+            if (userProfile.ShowMyCocktails.HasValue) userDetails.ShowMyCocktails = userProfile.ShowMyCocktails.Value;
 
             var result = await userManager.UpdateAsync(userDetails);
 

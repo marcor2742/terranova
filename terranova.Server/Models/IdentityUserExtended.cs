@@ -71,5 +71,7 @@ namespace terranova.Server.Models
 
         [PersonalData]
         public string? PropicUrl { get; set; }
+
+        public bool ShowMyCocktails { get; set; } = false;
     }
 }
