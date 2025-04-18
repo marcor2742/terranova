@@ -14,25 +14,25 @@ import { TranslateModule } from '@ngx-translate/core';
 import { InstructionsPipe } from '../pipes/instructions.pipe';
 import { MeasurementPipe } from '../pipes/measurement.pipe';
 import { SettingsService } from '../services/setting-service.service';
-import { ButtonComponent } from "../../../projects/my-ui/src/lib/button/button.component";
+import { ButtonComponent } from '../../../projects/my-ui/src/lib/button/button.component';
 @Component({
 	selector: 'app-cocktail-card',
 	standalone: true,
 	imports: [
-    HlmCardDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
-    HlmCardContentDirective,
-    HlmSkeletonComponent,
-    TranslateModule,
-    MeasurementPipe,
-    InstructionsPipe,
-    ButtonComponent
-],
+		HlmCardDirective,
+		HlmCardHeaderDirective,
+		HlmCardTitleDirective,
+		HlmCardContentDirective,
+		HlmSkeletonComponent,
+		TranslateModule,
+		MeasurementPipe,
+		InstructionsPipe,
+		ButtonComponent,
+	],
 	templateUrl: './cocktail-card.component.html',
 	styleUrl: './cocktail-card.component.scss',
 })
-export class CocktailCardComponent{
+export class CocktailCardComponent {
 	readonly cockId = input<number>();
 	readonly showAll = input<boolean>(true);
 	readonly showSkeleton = input<boolean>(false);
@@ -49,17 +49,16 @@ export class CocktailCardComponent{
 	cocktail = httpResource<Cocktail>(() => {
 		const id = this.cockId();
 		console.log('Resource factory executed with ID:', id);
-		
-		if (!id) {
-		  // Return null or throw an error to show in error state
-		  throw new Error('No cocktail ID provided');
-		}
-		
-		return `${environment.searchUrl}/${id}`;
-	  });
 
-	debugButton()
-	{
+		if (!id) {
+			// Return null or throw an error to show in error state
+			throw new Error('No cocktail ID provided');
+		}
+
+		return `${environment.searchUrl}/${id}`;
+	});
+
+	debugButton() {
 		console.log('Resource:', this.cocktail.value());
 	}
 
