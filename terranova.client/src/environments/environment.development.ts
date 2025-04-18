@@ -10,4 +10,6 @@ export const environment = {
   refreshUrl: '/api/refreshextended',
   searchUrl: '/api/search',
   settingsUrl: '/api/preferences',
+  glassUrl: '/api/glassesTable',
+  ingredientUrl: '/api/ingredientsTable',
 };
