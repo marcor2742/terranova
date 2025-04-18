@@ -1,5 +1,4 @@
-
-
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
@@ -20,7 +19,8 @@ import { MessageService } from 'primeng/api';
     ButtonModule,
     InputSwitchModule,
     DropdownModule,
-    ToastModule
+    ToastModule,
+    TranslateModule
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
@@ -35,9 +35,10 @@ export class SettingsComponent implements OnInit {
     { label: 'Italian', value: 'it' }
   ];
   
-  displayModeOptions = [
-    { label: 'Grid', value: 'grid' },
-    { label: 'List', value: 'list' }
+  searchPreferenceModes = [
+    { label: 'Only base cocktails', value: 'original' },
+    { label: 'Base cocktail and Friend cocktails', value: 'friend' },
+	{ label: 'All cocktails', value: 'all' }
   ];
   
   themeOptions = [
@@ -54,7 +55,7 @@ export class SettingsComponent implements OnInit {
       theme: [''],
       language: [''],
       notifications: [true],
-      displayMode: ['grid']
+      searchPreference: ['']
     });
   }
   

@@ -4,5 +4,7 @@
 	"SearchPlaceholder" : "Search",
 	"LoadMore" : "Load more",
 	"RegisterPage" : "Register",
-	"LoginPage" : "Login"
+	"LoginPage" : "Login",
+	"Type" : "Category",
+	"searchpreferences" : "Search resoult preferences"
 }

@@ -4,5 +4,7 @@
 	"SearchPlaceholder" : "Cerca",
 	"LoadMore" : "Carica di più",
 	"RegisterPage" : "Registrati",
-	"LoginPage" : "Accesso"
+	"LoginPage" : "Accesso",
+	"Type" : "Categoria",
+	"searchpreferences" : "Tipi di cocktail nelle ricerche"
 }
