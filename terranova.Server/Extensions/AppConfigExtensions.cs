@@ -11,9 +11,13 @@ namespace terranova.Server.Extensions
             app.UseCors(options =>
             {
                 options.WithOrigins("http://localhost:56057");
+                options.WithOrigins("http://localhost:56057");
+                options.WithOrigins("http://127.0.0.1:56057");
+                options.WithOrigins("http://127.0.0.1:56057");
                 // options.AllowAnyOrigin();
                 options.AllowAnyHeader();
                 options.AllowAnyMethod();
+                options.AllowCredentials();
             });
             return app;
         }
