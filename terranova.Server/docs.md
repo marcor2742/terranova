@@ -132,6 +132,7 @@ nel db se un ingrediente non ha unità di misura viene creata comunque una riga 
 !warning!!!!!!!!!!!!!!!!! gli ingredienti aggiunti poi verrebbero poi passati al frontend (come controllo se sia un ingrediente serio? mando solo quelli anche senza il drink con un creatore?). 
 !info!!!!!!!!!!!!!!Anche alla cancellazione del drink, l'ingredienti rimangono, le unità di misura ora vengono cancellate e riscritte per ogni modifica. quindi il frontend deve mandare obbligatoriamente di nuovo tutti gli ingredienti, al contrario di tutte le altre informazione se non si vuole che vengano cambiate
 !info!!!!!!!!!!!!! se non sei loginnato non puoi vedere i drink creati dagli utenti
+preferenza se i tuoi cocktail sono visibili agli altri o no
 
 testare creator e quindi per modificare e cancellare devi esserlo.
 testare se i cocktail creati da utenti sono visibili anche a chi non è loggato.
@@ -144,6 +145,7 @@ vedere come si fa la ricerca per simili. penso di non farlo. magari elastic sear
 immagini nel db? forse meglio sito esterno così non devo modificare il db
 
 preferenze many to many?
-preferenza se i tuoi cocktail sono visibili agli altri o no
 stellina per i drink preferiti
-salvataggio delle ricerche cliccate (dopo il get del drink) per i surreminenti
+salvataggio delle ricerche cliccate (dopo il get del drink) per i suggerimenti
+
+ripensare all'admin

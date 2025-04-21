@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using terranova.Server.Models;
+using terranova.Server.Services;
 
 namespace terranova.Server.Controllers
 {
@@ -677,7 +678,9 @@ namespace terranova.Server.Controllers
         [AllowAnonymous]
         private static async Task<IResult> SearchById(
             long id,
-            CocktailsDbContext dbContext)
+            ClaimsPrincipal user,
+            CocktailsDbContext dbContext,
+            UserCocktailService userCocktailService = null)
         {
 
             var cocktail = await dbContext.Cocktails
@@ -692,6 +695,12 @@ namespace terranova.Server.Controllers
 
             if (cocktail == null)
                 return Results.NotFound();
+
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId != null && userCocktailService != null)
+            {
+                await userCocktailService.AddToSearchHistoryAsync(userId, id);
+            }
 
             var result = new
             {
