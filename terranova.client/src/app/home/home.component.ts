@@ -11,6 +11,11 @@ import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
+import { Cocktail } from '../Classes/cocktail';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { FiltersComponent } from '../filters/filters.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -28,26 +33,44 @@ import { ButtonModule } from 'primeng/button';
 		SkeletonModule,
 		ButtonModule,
 		ToolbarModule,
+		SelectButtonModule,
+		FiltersComponent,
+		TranslateModule,
+		ReactiveFormsModule,
 	],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
 	encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent {
-	/**
-	 * Signal controlling sidebar expanded state
-	 */
+
+
+	private fb = inject(FormBuilder);
+
+	sidebarForm = this.fb.group({
+		sidebarMode: ['navigation'],
+	});
 	sidebarExpanded = signal<boolean>(true);
 
 	selectedCocktails = signal<number[]>([]);
 	showCocktailDetails = signal<boolean>(false);
 
+	searchModeActive = signal<boolean>(false);
+	currentSearchTerm = signal<string>('');
+	searchResults = signal<Cocktail[]>([]);
 	/**
 	 * Current active view in the main content area
 	 */
 	activeView = signal<
-		'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites'
+		'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
 	>('home');
+
+	readonly sidebarMode = signal<'navigation' | 'filters'>('navigation');
+
+	sidebarModeOptions = [
+		{ label: 'Menu', value: 'navigation', icon: 'pi pi-bars' },
+		{ label: 'Filters', value: 'filters', icon: 'pi pi-filter' }
+	  ];
 
 	/**
 	 * Theme service for managing application theme
@@ -94,7 +117,7 @@ export class HomeComponent {
 	 * Sets the active view in the content area
 	 */
 	setActiveView(
-		view: 'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites'
+		view: 'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
 	) {
 		this.activeView.set(view);
 	}
@@ -119,5 +142,22 @@ export class HomeComponent {
 		this.showCocktailDetails.set(false);
 		this.selectedCocktails.set([]);
 		this.activeView.set('home');
+	}
+	handleFullSearch(searchTerm: string) {
+		this.currentSearchTerm.set(searchTerm);
+		this.searchModeActive.set(true);
+		this.sidebarExpanded.set(true);
+
+		this.activeView.set('search');
+	}
+
+
+	changeSidebarMode(mode: 'navigation' | 'filters'): string {
+		this.sidebarMode.set(mode);
+		if (mode === 'navigation') {
+			return 'pi pi-bars';
+		} else {
+			return 'pi pi-filter';
+		}
 	}
 }

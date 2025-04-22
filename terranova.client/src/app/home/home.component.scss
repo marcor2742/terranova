@@ -129,6 +129,52 @@ $transition-speed: 0.3s;
 			left: 0;
 		}
 	}
+
+	.sidebar-header {
+		padding: 1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		
+		// Style the select button to match your theme
+		::ng-deep .p-selectbutton {
+		  width: 100%;
+		  display: flex;
+		  
+		  .p-button {
+			flex: 1;
+			background-color: var(--background-color);
+			border-color: rgba(255, 255, 255, 0.2);
+			color: var(--text-color);
+			
+			&.p-highlight {
+			  background-color: var(--primary-color);
+			  border-color: var(--primary-color);
+			  color: var(--text-color);
+			}
+			
+			&:hover:not(.p-highlight) {
+			  background-color: rgba(255, 255, 255, 0.1);
+			}
+		  }
+		}
+	  }
+	  
+	  .sidebar-mode-option {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		
+		i {
+		  font-size: 1rem;
+		}
+	  }
+	  
+	  // Allow both navigation and filters to take full height
+	  .sidebar-navigation,
+	  .sidebar-filters {
+		height: calc(100% - 60px); // Adjust based on toggle height
+		overflow-y: auto;
+	  }
 }
 
 // Content area

@@ -48,4 +48,5 @@ export class SearchresoultComponent implements OnInit {
         console.log('Cocktail selected:', Searchres);
         this.cocktailSelected.emit(Searchres);
     }
+
 }
