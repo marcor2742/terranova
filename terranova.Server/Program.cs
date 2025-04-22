@@ -7,12 +7,17 @@ using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using System;
+using System.IO;
 using terranova.Server.Controllers;
 using terranova.Server.Data;
 using terranova.Server.Extensions;
 using terranova.Server.Models;
 using terranova.Server.Seeder;
 using terranova.Server.Services;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +40,10 @@ builder.Services.AddSwaggerExplorer()
 				.AddIdentityAuth(builder.Configuration);
 
 builder.Services.AddScoped<UserCocktailService>();
+builder.Services.AddSingleton<BlobServiceClient>(x =>
+    new BlobServiceClient(builder.Configuration.GetConnectionString("BlobAzuriteConnectionString")));
+builder.Services.AddScoped<IAzureStorageService, AzureStorageService>();
+
 
 var app = builder.Build();
 #endregion
