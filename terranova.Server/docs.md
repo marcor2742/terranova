@@ -131,9 +131,13 @@ api/logoutextended rimuove semplicemente il refresh token dal db
 nel db se un ingrediente non ha unità di misura viene creata comunque una riga nella table Measures, ma vuota. che faccio lascio?
 !warning!!!!!!!!!!!!!!!!! gli ingredienti aggiunti poi verrebbero poi passati al frontend (come controllo se sia un ingrediente serio? mando solo quelli anche senza il drink con un creatore?). 
 !info!!!!!!!!!!!!!!Anche alla cancellazione del drink, l'ingredienti rimangono, le unità di misura ora vengono cancellate e riscritte per ogni modifica. quindi il frontend deve mandare obbligatoriamente di nuovo tutti gli ingredienti, al contrario di tutte le altre informazione se non si vuole che vengano cambiate
+!info!!!!!!!!!!!!! se non sei loginnato non puoi vedere i drink creati dagli utenti
+preferenza se i tuoi cocktail sono visibili agli altri o no
 
 testare creator e quindi per modificare e cancellare devi esserlo.
-pageSize max è 50
+testare se i cocktail creati da utenti sono visibili anche a chi non è loggato.
+testa la possibilità di cercare per userid. se sei tu allora tutto ok, altrimenti controlla se l'altro utente ha acconsentito a mostrare i suoi drink
+pageSize max è 50 tranne per gli ingredienti e i glass che sono 1000
 
 gli ingredienti li rendo cercabili? perchè per ora devono essere inseriti esattamente come sono nel db. o sennò il frontend fa cercare un ingrediente e gli vengono proposti quelli simili (con un filtro di somiglianza) e poi lui lo seleziona. 
 vedere come si fa la ricerca per simili. penso di non farlo. magari elastic search
@@ -141,5 +145,9 @@ vedere come si fa la ricerca per simili. penso di non farlo. magari elastic sear
 immagini nel db? forse meglio sito esterno così non devo modificare il db
 
 preferenze many to many?
-vedere o no i cocktail creati dagli utenti nella ricerca base e in allcocktails (senza login non li puoi vedere)
-se i tuoi cocktail sono visibili agli altri o no
+stellina per i drink preferiti
+salvataggio delle ricerche cliccate (dopo il get del drink) per i suggerimenti
+
+rendere ingridients cercabile
+
+ripensare all'admin

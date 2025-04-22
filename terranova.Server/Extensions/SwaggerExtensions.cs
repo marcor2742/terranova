@@ -1,6 +1,8 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using terranova.Server.Models;
+using System.Reflection;
+using Microsoft.AspNetCore.Http;
 
 namespace terranova.Server.Extensions
 {
@@ -57,6 +59,17 @@ namespace terranova.Server.Extensions
                         new List<String>()
                     }
                 });
+
+                //images
+                options.OperationFilter<FileUploadOperationFilter>();
+                options.OperationFilter<DefaultResponsesOperationFilter>();
+
+                options.CustomOperationIds(api =>
+                {
+                    if (api.RelativePath?.Contains("uploadProfileImage") == true)
+                        return "UploadProfileImage";
+                    return api.TryGetMethodInfo(out var methodInfo) ? methodInfo.Name : null;
+                });
             });
             return services;
         }
@@ -72,4 +85,54 @@ namespace terranova.Server.Extensions
             return app;
         }
     }
+
+    public class FileUploadOperationFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            var fileParameters = context.MethodInfo?.GetParameters()
+                .Where(p => p.ParameterType == typeof(IFormFile) ||
+                            (p.ParameterType == typeof(HttpRequest) &&
+                             context.ApiDescription.HttpMethod?.ToUpperInvariant() == "POST"))
+                .ToList();
+
+            if (fileParameters == null || fileParameters.Count == 0)
+                return;
+
+            if (context.ApiDescription.RelativePath?.Contains("uploadProfileImage") == true ||
+                operation.OperationId?.Contains("Upload") == true)
+            {
+                if (operation.RequestBody == null)
+                {
+                    operation.RequestBody = new OpenApiRequestBody
+                    {
+                        Content = new Dictionary<string, OpenApiMediaType>()
+                    };
+                }
+
+                var contentType = "multipart/form-data";
+                if (!operation.RequestBody.Content.ContainsKey(contentType))
+                {
+                    operation.RequestBody.Content[contentType] = new OpenApiMediaType
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Type = "object",
+                            Properties = new Dictionary<string, OpenApiSchema>
+                            {
+                                ["file"] = new OpenApiSchema
+                                {
+                                    Type = "string",
+                                    Format = "binary",
+                                    Description = "File to upload"
+                                }
+                            },
+                            Required = new HashSet<string> { "file" }
+                        }
+                    };
+                }
+            }
+        }
+    }
+
 }
