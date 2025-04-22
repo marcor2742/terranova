@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.Extensions.Options;
+using terranova.Server.Services;
 
 namespace terranova.Server.Controllers
 {
@@ -17,6 +18,8 @@ namespace terranova.Server.Controllers
             app.MapGet("/userProfile", GetUserProfile); //.RequireAuthorization();
 
             app.MapPost("/addProfileInfo", AddProfileInfo);
+
+            app.MapPost("/uploadProfileImage", UploadProfileImage);
 
             return app;
         }
@@ -31,7 +34,8 @@ namespace terranova.Server.Controllers
             {
                 FullName = userDetails?.FullName,
                 Email = userDetails?.Email,
-                UserName = userDetails?.UserName
+                UserName = userDetails?.UserName,
+                PropicUrl = userDetails?.PropicUrl,
             });
         }
 
@@ -156,6 +160,47 @@ namespace terranova.Server.Controllers
                 return Results.Ok(new { message = "Profilo aggiornato con successo" });
             }
             return Results.BadRequest(new { message = "Errore nell'aggiornamento del profilo", errors = result.Errors });
+        }
+
+        private static async Task<IResult> UploadProfileImage(
+            HttpRequest request,
+            ClaimsPrincipal user,
+            UserManager<IdentityUserExtended> userManager,
+            IAzureStorageService azureStorageService)
+        {
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+                return Results.BadRequest(new { message = "User not found" });
+
+            var userDetails = await userManager.FindByIdAsync(userId);
+            if (userDetails == null)
+                return Results.BadRequest(new { message = "User not found" });
+
+            if (!request.HasFormContentType || request.Form.Files.Count == 0)
+                return Results.BadRequest(new { message = "No image file provided" });
+
+            var file = request.Form.Files[0];
+
+            if (file.Length == 0)
+                return Results.BadRequest(new { message = "Empty file" });
+
+            if (!file.ContentType.StartsWith("image/"))
+                return Results.BadRequest(new { message = "File is not an image" });
+
+            // delete old image if exists
+            if (!string.IsNullOrEmpty(userDetails.PropicUrl))
+            {
+                await azureStorageService.DeleteProfileImageAsync(userDetails.PropicUrl);
+            }
+
+            // upload new image
+            using var stream = file.OpenReadStream();
+            var imageUrl = await azureStorageService.UploadProfileImageAsync(userId, stream, file.ContentType);
+
+            userDetails.PropicUrl = imageUrl;
+            await userManager.UpdateAsync(userDetails);
+
+            return Results.Ok(new { imageUrl });
         }
     }
 }

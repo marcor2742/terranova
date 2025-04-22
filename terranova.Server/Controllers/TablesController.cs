@@ -42,17 +42,26 @@ namespace terranova.Server.Controllers
             [AsParameters] DataForTables data,
             CocktailsDbContext dbContext)
         {
+
             int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 1000) : 100;
             int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
             int skip = (page - 1) * pageSize;
 
-            var query = await dbContext.Ingredients
-                .OrderBy(x => x.Name)
-                .Skip(skip)
-                .Take(pageSize)
-                .ToListAsync();
+            var query = dbContext.Ingredients.AsQueryable();
 
-            var result = query.Select(x => new
+            if (!string.IsNullOrWhiteSpace(data.SearchString))
+            {
+                var name = data.SearchString?.ToLower();
+                query = query.Where(c => c.Name.ToLower().Contains(name));
+            }
+
+            var ingredients = await query
+                    .OrderBy(x => x.Name)
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+            var result = ingredients.Select(x => new
             {
                 x.Id,
                 x.Name
@@ -63,6 +72,7 @@ namespace terranova.Server.Controllers
     }
     public class DataForTables
     {
+        public string? SearchString { get; set; }
         public int? PageSize { get; set; }
         public int? Page { get; set; }
     }

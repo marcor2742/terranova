@@ -148,4 +148,6 @@ preferenze many to many?
 stellina per i drink preferiti
 salvataggio delle ricerche cliccate (dopo il get del drink) per i suggerimenti
 
+rendere ingridients cercabile
+
 ripensare all'admin
