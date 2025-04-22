@@ -9,6 +9,7 @@
 				<div class="search-container">
 					<app-searchbar
 						(cocktailSelected)="modifySelectedCocktails($event)"
+						(continuedSearch)="handleFullSearch($event)"
 					></app-searchbar>
 				</div>
 			</div>
@@ -35,23 +36,50 @@
 
 	<!-- Main Content Area with Sidebar -->
 	<div class="main-container">
-		<!-- Sidebar - expandable -->
-		<aside class="sidebar" [class.expanded]="sidebarExpanded()">
-			<nav class="sidebar-nav">
-				<ul>
-					<li>
-						<a (click)="setActiveView('dashboard')">Dashboard</a>
-					</li>
-					<li>
-						<a (click)="setActiveView('cocktails')">Cocktails</a>
-					</li>
-					<li>
-						<a (click)="setActiveView('favorites')">Favorites</a>
-					</li>
-					<li><a (click)="setActiveView('settings')">Settings</a></li>
-				</ul>
-			</nav>
-		</aside>
+		<div class="sidebar" [class.collapsed]="!sidebarExpanded()">
+			<div class="sidebar-header">
+				<form [formGroup]="sidebarForm">
+					<p-selectButton
+					[options]="sidebarModeOptions"
+					formControlName="sidebarMode"
+					[style]="{ width: '100%' }"
+					optionLabel="label"
+					optionValue="value"
+				  >
+					<ng-template let-item pTemplate="item">
+						<div class="sidebar-mode-option">
+							<i [class]="item.icon"></i>
+							<span>{{ item.label }}</span>
+						</div>
+					</ng-template>
+				</p-selectButton>
+				</form>
+			</div>
+
+			<!-- Show different content based on sidebar mode -->
+			<div [ngSwitch]="sidebarMode()">
+				<div *ngSwitchCase="'navigation'" class="sidebar-navigation">
+					<nav class="sidebar-menu">
+						<div
+							class="menu-item"
+							[class.active]="activeView() === 'dashboard'"
+							(click)="setActiveView('dashboard')"
+						>
+							<i class="pi pi-chart-bar"></i>
+							<span>{{ "Dashboard" | translate }}</span>
+						</div>
+						
+					</nav>
+				</div>
+
+				<!-- Filters content -->
+				<div *ngSwitchCase="'filters'" class="sidebar-filters">
+					<app-filters
+						[searchTerm]="currentSearchTerm()"
+					></app-filters>
+				</div>
+			</div>
+		</div>
 
 		<!-- Main Content -->
 		<main class="content">

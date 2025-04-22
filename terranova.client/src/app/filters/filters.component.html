@@ -1,3 +1,78 @@
-<form [formGroup]="filtersForm">
-	<p-select-button [options]="alcolOption" formControlName="Alcoholic"></p-select-button>
-</form>
+<div class="filters-container">
+  <h3>{{ 'FilterCocktails' | translate }}</h3>
+  
+  <form [formGroup]="filtersForm">
+    <!-- Alcoholic/Non-Alcoholic Filter -->
+    <div class="filter-section">
+      <label class="block mb-2">{{ 'AlcoholContent' | translate }}</label>
+      <p-selectButton 
+        [options]="alcolOption" 
+        formControlName="Alcoholic" 
+        optionLabel="label" 
+        optionValue="value"
+        [style]="{'width': '100%'}"
+      ></p-selectButton>
+    </div>
+    
+    <p-divider></p-divider>
+    
+    <!-- Glasses MultiSelect -->
+    <div class="filter-section">
+      <label class="block mb-2">{{ 'GlassType' | translate }}</label>
+      <p-multiSelect
+        [options]="glasses"
+        formControlName="Glasses"
+        optionLabel="name"
+        selectedItemsLabel="{0} glasses selected"
+        [filter]="true"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="38"
+        placeholder="{{ 'SelectGlasses' | translate }}"
+        [style]="{'width': '100%'}"
+      >
+        <!-- Custom item template -->
+        <ng-template let-glass pTemplate="item">
+          <div class="glass-item">
+            <span class="glass-name">{{ glass.name }}</span>
+            <span class="glass-measure" *ngIf="glass.measure">({{ glass.measure }})</span>
+          </div>
+        </ng-template>
+      </p-multiSelect>
+    </div>
+    
+    <p-divider></p-divider>
+    
+    <!-- Ingredients MultiSelect with API filtering -->
+    <div class="filter-section">
+      <label class="block mb-2">{{ 'Ingredients' | translate }}</label>
+      <p-multiSelect
+        [options]="filteredIngredients"
+        formControlName="Ingredients"
+        optionLabel="name"
+        selectedItemsLabel="{0} ingredients selected"
+        [filter]="true"
+        [filterBy]="'name'"
+        [showClear]="true"
+        [virtualScroll]="true"
+        [virtualScrollItemSize]="38"
+        (onFilter)="searchIngredients($event)"
+        placeholder="{{ 'SearchIngredients' | translate }}"
+        [style]="{'width': '100%'}"
+      >
+        <!-- Custom item template for ingredients -->
+        <ng-template let-ingredient pTemplate="item">
+          <div class="ingredient-item">
+            <span class="ingredient-name">{{ ingredient.name }}</span>
+            <span class="ingredient-type" *ngIf="ingredient.type">({{ ingredient.type }})</span>
+          </div>
+        </ng-template>
+      </p-multiSelect>
+    </div>
+    
+    <div class="filter-actions">
+      <button type="button" class="p-button p-button-text" (click)="resetFilters()">
+        {{ 'ResetFilters' | translate }}
+      </button>
+    </div>
+  </form>
+</div>

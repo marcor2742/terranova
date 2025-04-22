@@ -76,6 +76,9 @@ export class SearchbarComponent implements OnInit {
 	MaxResoults = input<number>(5);
 
 	readonly cocktailSelected = output<Searchres>();
+
+	readonly continuedSearch = output<string>();
+
 	searchForm: FormGroup;
 	searchUrl = '';
 
@@ -212,5 +215,13 @@ export class SearchbarComponent implements OnInit {
 		this.searchParams.set('');
 		this.searchForm.get('searchTerm')?.setValue('');
 		this.cocktailSelected.emit(Searchres);
+	}
+
+	performSearch() {
+		const searchTerm = this.searchForm.get('searchTerm')?.value;
+		if (searchTerm && searchTerm.length >= this.MIN_SEARCH_LENGTH) {
+			this.searchParams.set(searchTerm);
+			this.continuedSearch.emit(searchTerm);
+		}
 	}
 }

@@ -1,11 +1,11 @@
 <div class="search-wrapper p-fluid">
-	<!-- Search form - always rendered in both server and browser -->
 	<div class="search-container">
 		<form [formGroup]="searchForm" class="search-form">
 			<p-button
 				icon="pi pi-search"
 				styleClass="search-button p-button-rounded p-button-text"
 				type="submit"
+				(onClick)="performSearch()"
 			></p-button>
 
 			<div class="form-field">
@@ -15,6 +15,7 @@
 					formControlName="searchTerm"
 					placeholder="{{ 'SearchPlaceholder' | translate }}"
 					class="search-input p-fluid"
+					(keyup.enter)="performSearch()"
 				/>
 			</div>
 		</form>
