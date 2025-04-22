@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using terranova.Server.Models;
 
@@ -11,9 +12,11 @@ using terranova.Server.Models;
 namespace terranova.Server.Migrations.IdentityUser
 {
     [DbContext(typeof(IdentityUserContext))]
-    partial class IdentityUserContextModelSnapshot : ModelSnapshot
+    [Migration("20250418222254_showmycocktails")]
+    partial class showmycocktails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,63 +232,6 @@ namespace terranova.Server.Migrations.IdentityUser
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("terranova.Server.Models.Favorite", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CocktailId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "CocktailId")
-                        .IsUnique();
-
-                    b.ToTable("Favorites", (string)null);
-                });
-
-            modelBuilder.Entity("terranova.Server.Models.SearchHistory", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CocktailId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "CocktailId");
-
-                    b.ToTable("SearchHistories", (string)null);
-                });
-
             modelBuilder.Entity("terranova.Server.Models.IdentityUserExtended", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -376,35 +322,6 @@ namespace terranova.Server.Migrations.IdentityUser
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("terranova.Server.Models.Favorite", b =>
-                {
-                    b.HasOne("terranova.Server.Models.IdentityUserExtended", "User")
-                        .WithMany("Favorites")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("terranova.Server.Models.SearchHistory", b =>
-                {
-                    b.HasOne("terranova.Server.Models.IdentityUserExtended", "User")
-                        .WithMany("SearchHistories")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("terranova.Server.Models.IdentityUserExtended", b =>
-                {
-                    b.Navigation("Favorites");
-
-                    b.Navigation("SearchHistories");
                 });
 #pragma warning restore 612, 618
         }

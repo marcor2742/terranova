@@ -71,5 +71,30 @@ namespace terranova.Server.Models
 
         [PersonalData]
         public string? PropicUrl { get; set; }
+
+        public bool ShowMyCocktails { get; set; } = false;
+
+        public virtual ICollection<Favorite>? Favorites { get; set; }
+        public virtual ICollection<SearchHistory>? SearchHistories { get; set; }
+    }
+
+    public class Favorite
+    {
+        public long Id { get; set; }
+        public string UserId { get; set; }
+        public virtual IdentityUserExtended User { get; set; }
+        public long CocktailId { get; set; }
+        public DateTimeOffset Date { get; set; } = DateTimeOffset.UtcNow;
+        public int Count { get; set; } = 1;
+    }
+
+    public class SearchHistory
+    {
+        public long Id { get; set; }
+        public string UserId { get; set; }
+        public IdentityUserExtended User { get; set; }
+        public long CocktailId { get; set; }
+        public DateTimeOffset Date { get; set; } = DateTimeOffset.UtcNow;
+        public int Count { get; set; } = 1;
     }
 }
