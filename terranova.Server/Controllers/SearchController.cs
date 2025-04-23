@@ -32,7 +32,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapGet("/search/{id}", SearchById)
-               .WithDescription("Cerca cocktail per un id")
+               .WithDescription("Cerca cocktail per un id, e aggiunge la ricerca a searchHistory")
                .WithOpenApi();
 
             return app;
