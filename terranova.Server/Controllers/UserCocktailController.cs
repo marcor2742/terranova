@@ -9,16 +9,20 @@ namespace terranova.Server.Controllers
         public static IEndpointRouteBuilder MapUserCocktailEndpoints(this IEndpointRouteBuilder app)
         {
             app.MapPost("/favorites/{id}", AddToFavorites)
-               .RequireAuthorization();
+               .WithDescription("Aggiunge il drink ai preferiti")
+               .WithOpenApi();
 
             app.MapDelete("/favorites/{id}", RemoveFromFavorites)
-               .RequireAuthorization();
+               .WithDescription("Rimuove il drink ai preferiti")
+               .WithOpenApi();
 
             app.MapGet("/favorites", GetUserFavorites)
-               .RequireAuthorization();
+               .WithDescription("Restituisce i preferiti dell'user")
+               .WithOpenApi();
 
             app.MapGet("/search-history", GetUserSearchHistory)
-               .RequireAuthorization();
+               .WithDescription("Restituisce i drink cercati dall'utente (cioè quelli cercati per id /search/{id})")
+               .WithOpenApi();
 
             return app;
         }

@@ -6,7 +6,7 @@ namespace terranova.Server.Services
     public interface IAzureStorageService
     {
         Task<string> UploadProfileImageAsync(string userId, Stream imageStream, string contentType);
-        Task<bool> DeleteProfileImageAsync(string imageUrl);
+        Task<bool> DeleteProfileImageAsync(string userId, string imageUrl, bool isAdmin = false);
     }
 
     public class AzureStorageService : IAzureStorageService
@@ -32,12 +32,21 @@ namespace terranova.Server.Services
             return blobClient.Uri.ToString();
         }
 
-        public async Task<bool> DeleteProfileImageAsync(string imageUrl)
+        public async Task<bool> DeleteProfileImageAsync(string userId, string imageUrl, bool isAdmin = false)
         {
-            if (!Uri.TryCreate(imageUrl, UriKind.Absolute, out Uri uri))
+            if (string.IsNullOrEmpty(userId) || !Uri.TryCreate(imageUrl, UriKind.Absolute, out Uri uri))
                 return false;
 
             var blobName = Path.GetFileName(uri.LocalPath);
+            string expectedPrefix = $"{userId}-";
+            if (!isAdmin)
+            { 
+                if (!blobName.StartsWith(expectedPrefix))
+                {
+                    return false;
+                }
+            }
+
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blobClient = containerClient.GetBlobClient(blobName);
 
