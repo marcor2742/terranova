@@ -15,11 +15,21 @@ namespace terranova.Server.Controllers
     {
         public static IEndpointRouteBuilder MapAccountEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapGet("/userProfile", GetUserProfile); //.RequireAuthorization();
+            app.MapGet("/userProfile", GetUserProfile) //.RequireAuthorization();
+               .WithDescription("Restituisce i dati dell'utente")
+               .WithOpenApi();
 
-            app.MapPost("/addProfileInfo", AddProfileInfo);
+            app.MapPost("/addProfileInfo", AddProfileInfo)
+               .WithDescription("Aggiunge i dati dell'utente")
+               .WithOpenApi();
 
-            app.MapPost("/uploadProfileImage", UploadProfileImage);
+            app.MapPost("/uploadProfileImage", UploadProfileImage)
+               .WithDescription("carica la foto profilo e cancella quella precedente")
+               .WithOpenApi();
+
+            app.MapDelete("/deleteProfileImage", DeleteProfileImage)
+               .WithDescription("cancella la foto profilo. (lo fa anche uploadProfileImage per poi sostituire l'immagine)")
+               .WithOpenApi();
 
             return app;
         }
@@ -179,6 +189,7 @@ namespace terranova.Server.Controllers
             if (!request.HasFormContentType || request.Form.Files.Count == 0)
                 return Results.BadRequest(new { message = "No image file provided" });
 
+            bool isAdmin = user.IsInRole("Admin");
             var file = request.Form.Files[0];
 
             if (file.Length == 0)
@@ -190,7 +201,7 @@ namespace terranova.Server.Controllers
             // delete old image if exists
             if (!string.IsNullOrEmpty(userDetails.PropicUrl))
             {
-                await azureStorageService.DeleteProfileImageAsync(userDetails.PropicUrl);
+                await azureStorageService.DeleteProfileImageAsync(userId, userDetails.PropicUrl, isAdmin);
             }
 
             // upload new image
@@ -202,6 +213,36 @@ namespace terranova.Server.Controllers
 
             return Results.Ok(new { imageUrl });
         }
+
+        private static async Task<IResult> DeleteProfileImage(
+            HttpRequest request,
+            ClaimsPrincipal user,
+            UserManager<IdentityUserExtended> userManager,
+            IAzureStorageService azureStorageService)
+        {
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+                return Results.BadRequest(new { message = "User not found" });
+            var userDetails = await userManager.FindByIdAsync(userId);
+            if (userDetails == null)
+                return Results.BadRequest(new { message = "User not found" });
+            if (string.IsNullOrEmpty(userDetails.PropicUrl))
+                return Results.BadRequest(new { message = "No image to delete" });
+            bool isAdmin = user.IsInRole("Admin");
+            var result = await azureStorageService.DeleteProfileImageAsync(userId, userDetails.PropicUrl, isAdmin);
+            if (result)
+            {
+                userDetails.PropicUrl = null;
+                await userManager.UpdateAsync(userDetails);
+                return Results.Ok(new { message = "Image deleted successfully" });
+            }
+            else
+            {
+                return Results.BadRequest(new { message = "Error deleting image" });
+            }
+
+        }
+
     }
 }
 
