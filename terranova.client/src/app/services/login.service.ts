@@ -1,3 +1,4 @@
+/// <reference path="../../environments/environment.development.ts" />
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpResponse } from '@angular/common/http';
@@ -71,7 +72,7 @@ export class LoginService {
 		return this.http.post<AuthResponse>(
 		  `${this.loginUrl}`,
 		  { email, username, password },
-		  { observe: 'response' } // This returns the full HTTP response
+		  { observe: 'response' }
 		);
 	  }
 
@@ -89,7 +90,7 @@ export class LoginService {
 		return this.http.post<RegisterResponse>(
 		  `${this.registerUrl}`,
 		  userData,
-		  { observe: 'response' } // This returns the full HTTP response
+		  { observe: 'response' }
 		);
 	  }
 }

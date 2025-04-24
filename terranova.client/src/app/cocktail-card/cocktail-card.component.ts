@@ -1,4 +1,4 @@
-import { Component, input, OnInit, output, Resource } from '@angular/core';
+import { Component, input, OnInit, output, PLATFORM_ID, Resource, Signal, signal } from '@angular/core';
 import {
 	HlmCardContentDirective,
 	HlmCardDescriptionDirective,
@@ -15,6 +15,10 @@ import { InstructionsPipe } from '../pipes/instructions.pipe';
 import { MeasurementPipe } from '../pipes/measurement.pipe';
 import { SettingsService } from '../services/setting-service.service';
 import { ButtonComponent } from '../../../projects/my-ui/src/lib/button/button.component';
+import { ButtonModule } from 'primeng/button';
+import { FavoritesService } from '../services/favorites.service';
+import { isPlatformBrowser } from '@angular/common';
+import { inject } from '@angular/core';
 @Component({
 	selector: 'app-cocktail-card',
 	standalone: true,
@@ -28,11 +32,12 @@ import { ButtonComponent } from '../../../projects/my-ui/src/lib/button/button.c
 		MeasurementPipe,
 		InstructionsPipe,
 		ButtonComponent,
+		ButtonModule,
 	],
 	templateUrl: './cocktail-card.component.html',
 	styleUrl: './cocktail-card.component.scss',
 })
-export class CocktailCardComponent {
+export class CocktailCardComponent implements OnInit {
 	readonly cockId = input<number>();
 	readonly showAll = input<boolean>(true);
 	readonly showSkeleton = input<boolean>(false);
@@ -43,7 +48,9 @@ export class CocktailCardComponent {
 	readonly IsRemovable = input<boolean>(false);
 	readonly removeCocktail = output<number>();
 
-	constructor(public settingService: SettingsService) {}
+	isFavorite = signal<boolean>(false);
+	private favoriteService = inject(FavoritesService)
+	constructor(public settingService: SettingsService) { }
 
 	// cocktail = httpResource<Cocktail>(`${environment.searchUrl}/${this.cockId()}`);
 	cocktail = httpResource<Cocktail>(() => {
@@ -85,8 +92,78 @@ export class CocktailCardComponent {
 	// 	})
 	//   };
 
-	// ngOnDestroy(): void {
-	// 	// Clean up the resource
-	// 	this.cocktail.destroy();
-	// }
+
+	addFavorite() {
+		if (this.cockId() === undefined) {
+			console.error('Error: Cocktail ID is undefined.');
+			return;
+		}
+
+		this.favoriteService.addFavorite(this.cockId() as number).subscribe({
+			next: (response) => {
+				console.log('Favorite added:', response);
+			},
+			error: (error) => {
+				console.error('Error adding favorite:', error);
+			},
+		});
+	}
+	removeFavorite() {
+		if (this.cockId() === undefined) {
+			console.error('Error: Cocktail ID is undefined.');
+			return;
+		}
+		this.favoriteService.removeFavorite(this.cockId() as number).subscribe({
+			next: (response) => {
+				console.log('Favorite removed:', response);
+			},
+			error: (error) => {
+				console.error('Error removing favorite:', error);
+			},
+		});
+	}
+
+	ngOnInit() {
+		if (isPlatformBrowser((PLATFORM_ID))) {
+			this.favoriteService.getFavorites().subscribe((response) => {
+				if (response.includes(this.cockId() as number)) {
+					this.isFavorite.set(true);
+				} else {
+					this.isFavorite.set(false);
+				}
+			});
+		}
+	}
+
+	toggleFavorite() {
+		if (this.cockId() === undefined) {
+			console.error('Error: Cocktail ID is undefined.');
+			return;
+		}
+
+		if (this.isFavorite) {
+			this.favoriteService.removeFavorite(this.cockId() as number).subscribe({
+				next: () => {
+					this.isFavorite.set(false);
+					console.log('Favorite removed');
+				},
+				error: (error) => {
+					console.error('Error removing favorite:', error);
+				}
+			});
+		} else {
+			this.favoriteService.addFavorite(this.cockId() as number).subscribe({
+				next: () => {
+					this.isFavorite.set(true);
+					console.log('Favorite added');
+				},
+				error: (error) => {
+					console.error('Error adding favorite:', error);
+				}
+			});
+		}
+	}
+
 }
+
+

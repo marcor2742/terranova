@@ -11,5 +11,6 @@ export const environment = {
 	searchUrl: 'localhost:8000/search',
 	settingsUrl: 'localhost:8000/preferences',
 	glassUrl: 'localhost:8000/glass',
+	favoriteUrl: 'localhost:8000/favorites',
 	ingredientUrl: 'localhost:8000/ingredientsTable'
 };
