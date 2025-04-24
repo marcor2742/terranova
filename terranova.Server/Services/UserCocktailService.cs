@@ -167,5 +167,11 @@ namespace terranova.Server.Services
                 .Cast<dynamic>()
                 .ToList();
         }
+
+        public async Task<bool> CheckIfInFavoritesAsync(string userId, long cocktailId)
+        {
+            return await _userContext.Favorites
+                .AnyAsync(f => f.UserId == userId && f.CocktailId == cocktailId);
+        }
     }
 }
