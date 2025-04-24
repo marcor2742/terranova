@@ -8,14 +8,12 @@
 		</div>
 		} @else if (cocktail.hasValue()) {
 		<!-- Photo side -->
-		<div
-			class="photo-side"
-			[style.background-image]="
+		<div class="photo-side"
+			 [style.background-image]="
 				'url(' +
 				(cocktail.value().imageUrl || '/assets/default-cocktail.jpg') +
 				')'
-			"
-		>
+			">
 			<div class="photo-overlay">
 				<div hlmCardTitle class="photo-title">
 					{{ cocktail.value().name }}
@@ -30,18 +28,17 @@
 		<div class="content-side">
 			<div class="card-header-row">
 				<div hlmCardHeader>
-					<div hlmCardTitle>{{ "Type" | translate }}:	{{ cocktail.value().category }}
+					<div hlmCardTitle>
+						{{ "Type" | translate }}:	{{ cocktail.value().category }}
 					</div>
 				</div>
 				@if (IsRemovable()) {
 				<div class="action-buttons">
-					<my-ui-button
-						text="{{ 'Remove' | translate }}"
-						variant="outline"
-						size="sm"
-						(buttonClick)="remCock(cocktail.value().id)"
-						class="remove-btn"
-					></my-ui-button>
+					<my-ui-button text="{{ 'Remove' | translate }}"
+								  variant="outline"
+								  size="sm"
+								  (buttonClick)="remCock(cocktail.value().id)"
+								  class="remove-btn"></my-ui-button>
 				</div>
 				}
 			</div>
@@ -54,12 +51,16 @@
 						@for (ingredient of cocktail.value().ingredients || [];
 						track $index) {
 						<li>
-							<span class="ingredient-name">{{
+							<span class="ingredient-name">
+								{{
 								ingredient.ingredient
-							}}</span>
-							<span class="ingredient-amount">{{
+								}}
+							</span>
+							<span class="ingredient-amount">
+								{{
 								ingredient | measurement
-							}}</span>
+								}}
+							</span>
 						</li>
 						}
 					</ul>
@@ -73,6 +74,12 @@
 					</div>
 				</div>
 				}
+				<div>
+					<p-button [icon]="isFavorite() ? 'pi pi-star-fill' : 'pi pi-star'"
+							  (onClick)="toggleFavorite()"
+							  [label]="isFavorite() ? 'Remove from favorites' : 'Add to favorites'">
+					</p-button>
+				</div>
 			</div>
 		</div>
 		}
