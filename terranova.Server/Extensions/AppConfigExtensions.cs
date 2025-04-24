@@ -14,6 +14,10 @@ namespace terranova.Server.Extensions
                 options.WithOrigins("http://localhost:56057");
                 options.WithOrigins("http://127.0.0.1:56057");
                 options.WithOrigins("http://127.0.0.1:56057");
+                options.WithOrigins("https://localhost:56057");
+                options.WithOrigins("https://localhost:56057");
+                options.WithOrigins("https://127.0.0.1:56057");
+                options.WithOrigins("https://127.0.0.1:56057");
                 // options.AllowAnyOrigin();
                 options.AllowAnyHeader();
                 options.AllowAnyMethod();

@@ -139,15 +139,6 @@ testare se i cocktail creati da utenti sono visibili anche a chi non è loggato.
 testa la possibilità di cercare per userid. se sei tu allora tutto ok, altrimenti controlla se l'altro utente ha acconsentito a mostrare i suoi drink
 pageSize max è 50 tranne per gli ingredienti e i glass che sono 1000
 
-gli ingredienti li rendo cercabili? perchè per ora devono essere inseriti esattamente come sono nel db. o sennò il frontend fa cercare un ingrediente e gli vengono proposti quelli simili (con un filtro di somiglianza) e poi lui lo seleziona. 
 vedere come si fa la ricerca per simili. penso di non farlo. magari elastic search
-
-immagini nel db? forse meglio sito esterno così non devo modificare il db
-
-preferenze many to many?
-stellina per i drink preferiti
-salvataggio delle ricerche cliccate (dopo il get del drink) per i suggerimenti
-
-rendere ingridients cercabile
 
 ripensare all'admin

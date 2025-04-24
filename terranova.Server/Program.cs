@@ -68,7 +68,8 @@ app.MapGroup("/api")
     .MapUserCocktailEndpoints()
 	.MapAuthorizationEndpoints()
 	.MapSearchEndpoints()
-	.MapTablesEndpoints();
+	.MapTablesEndpoints()
+	.MapSuggestedEndpoints();
 
 #endregion
 
