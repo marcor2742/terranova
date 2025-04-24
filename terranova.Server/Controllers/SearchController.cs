@@ -696,10 +696,12 @@ namespace terranova.Server.Controllers
             if (cocktail == null)
                 return Results.NotFound();
 
+            var isInFavorites = false;
             var userId = user.FindFirst("UserID")?.Value;
             if (userId != null && userCocktailService != null)
             {
                 await userCocktailService.AddToSearchHistoryAsync(userId, id);
+                isInFavorites = await userCocktailService.CheckIfInFavoritesAsync(userId, id);
             }
 
             var result = new
@@ -707,6 +709,7 @@ namespace terranova.Server.Controllers
                 cocktail.Id,
                 cocktail.Name,
                 cocktail.Category,
+                favorite = isInFavorites,
                 cocktail.IsAlcoholic,
                 Glass = cocktail.Glass?.Name,
                 Instructions = new

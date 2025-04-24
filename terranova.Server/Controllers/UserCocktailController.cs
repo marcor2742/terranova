@@ -24,6 +24,10 @@ namespace terranova.Server.Controllers
                .WithDescription("Restituisce i drink cercati dall'utente (cioè quelli cercati per id /search/{id})")
                .WithOpenApi();
 
+            app.MapGet("/isInFavorites/{id}", IsinFavorites)
+                .WithDescription("Controlla se il drink è nei preferiti, ritorna bool")
+                .WithOpenApi();
+
             return app;
         }
 
@@ -85,6 +89,20 @@ namespace terranova.Server.Controllers
 
             var history = await service.GetSearchHistoryAsync(userId, page, Math.Min(pageSize, 50));
             return Results.Ok(history);
+        }
+
+        private static async Task<IResult> IsinFavorites(
+            long id,
+            ClaimsPrincipal user,
+            UserCocktailService service)
+        {
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+                return Results.BadRequest(new { message = "User not found" });
+
+            var result = await service.CheckIfInFavoritesAsync(userId, id);
+
+            return Results.Ok(result);
         }
     }
 }
