@@ -102,7 +102,7 @@ namespace terranova.Server.Controllers
 
             var result = await service.CheckIfInFavoritesAsync(userId, id);
 
-            return Results.Ok(result);
+            return Results.Ok(new { favorite = result });
         }
     }
 }
