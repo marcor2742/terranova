@@ -141,4 +141,7 @@ pageSize max è 50 tranne per gli ingredienti e i glass che sono 1000
 
 vedere come si fa la ricerca per simili. penso di non farlo. magari elastic search
 
+!info!!!!!!!!!!!!!!! i suggested drinks sono presi anche quelli creati dagli utenti. lo rendo un impostazione del profilo aggiungendo al db suggestOnlyOriginal?
 ripensare all'admin
+
+testare suggested drinks quando c'è il forntend. testare soprattutto per utenti minorenni che hanno pochi drink disponibili. commentare la parte di DEBUG
