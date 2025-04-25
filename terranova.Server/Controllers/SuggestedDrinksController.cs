@@ -46,15 +46,23 @@ namespace terranova.Server.Controllers
                 .ToListAsync();
 
             var isOver18 = user.FindFirstValue("Over18") == "true";
-            var alcoholContent = user.FindFirstValue("AlcoholContentPreference");
-            var bestGlass = user.FindFirstValue("GlassPreference");
-            var bestIngredient = user.FindFirstValue("BaseIngredientPreference");
+            var PreferAlcoholic = user.FindFirstValue("AlcoholContentPreference");
+            var bestGlassPref = user.FindFirstValue("GlassPreference");
+            var bestIngredientPref = user.FindFirstValue("BaseIngredientPreference");
+
+            AlcoholContentPreference? alcoholContentPref = null;
+            if (!string.IsNullOrEmpty(PreferAlcoholic) && Enum.TryParse<AlcoholContentPreference>(PreferAlcoholic, out var parsedPref))
+            {
+                alcoholContentPref = parsedPref;
+            }
 
             var favoriteDrinks = await dbContext.Cocktails
                 .Where(f => favoritesQuery.Contains(f.Id))
                 .Include(f => f.Glass)
                 .Include(f => f.CocktailIngredients)
                     .ThenInclude(ci => ci.Ingredient)
+                .Include(f => f.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
                 .ToListAsync();
 
             var searchHistoryDrinks = await dbContext.Cocktails
@@ -62,9 +70,186 @@ namespace terranova.Server.Controllers
                 .Include(s => s.Glass)
                 .Include(s => s.CocktailIngredients)
                     .ThenInclude(ci => ci.Ingredient)
+                .Include(f => f.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
                 .ToListAsync();
 
-            var favorites = favoriteDrinks.Select(c => new
+            //to avoid suggesting drinks that are already in favorites or search history
+            var seenCocktailIds = favoritesQuery.Concat(searchHistoryQuery).Distinct().ToHashSet();
+
+            var userIngredientVector = new Dictionary<string, double>();
+            var userGlassPreferences = new Dictionary<string, double>();
+            var userCategoryPreferences = new Dictionary<string, double>();
+
+            AnalyzeUserPreferences(
+                favoriteDrinks,
+                userIngredientVector,
+                userGlassPreferences,
+                userCategoryPreferences,
+                ingredientWeight: 3.0,
+                glassWeight: 0.5,
+                categoryWeight: 1.0);
+
+            AnalyzeUserPreferences(
+                searchHistoryDrinks,
+                userIngredientVector,
+                userGlassPreferences,
+                userCategoryPreferences,
+                ingredientWeight: 2.0,
+                glassWeight: 0.2,
+                categoryWeight: 0.5);
+
+            if (!string.IsNullOrEmpty(bestIngredientPref))
+            {
+                if (userIngredientVector.ContainsKey(bestIngredientPref))
+                    userIngredientVector[bestIngredientPref] += 3.0;
+                else
+                    userIngredientVector[bestIngredientPref] = 3.0;
+            }
+
+            if (!string.IsNullOrEmpty(bestGlassPref))
+            {
+                if (userGlassPreferences.ContainsKey(bestGlassPref))
+                    userGlassPreferences[bestGlassPref] += 3.0;
+                else
+                    userGlassPreferences[bestGlassPref] = 3.0;
+            }
+
+            //DEBUG rimuovere anche dal return
+            var ingredientPreferences = userIngredientVector
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => new { Ingredient = kv.Key, Weight = kv.Value })
+                .ToList();
+            var glassPreferences = userGlassPreferences
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => new { Glass = kv.Key, Weight = kv.Value })
+                .ToList();
+            var categoryPreferences = userCategoryPreferences
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => new { Category = kv.Key, Weight = kv.Value })
+                .ToList();
+
+
+            var potentialFavoritesQuery = dbContext.Cocktails.AsQueryable();
+
+            if (!isOver18)
+            {
+                potentialFavoritesQuery = potentialFavoritesQuery.Where(c => !c.IsAlcoholic);
+            }
+
+            if (seenCocktailIds.Any())
+            {
+                potentialFavoritesQuery = potentialFavoritesQuery.Where(c => !seenCocktailIds.Contains(c.Id));
+            }
+
+            var potentialRecommendations = await potentialFavoritesQuery
+                .Include(c => c.Glass)
+                .Include(c => c.Instructions)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Ingredient)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
+                .ToListAsync();
+
+            var recommendationsWithScore = new List<(Cocktail Cocktail, double Score)>();
+
+            foreach (var candidate in potentialRecommendations)
+            {
+                double ingredientScore = 0;
+                double glassScore = 0;
+                double categoryScore = 0;
+                double alcoholPreferenceScore = 0;
+
+                if (userIngredientVector.Any())
+                {
+                    var possibleDrinksIngredients = candidate.CocktailIngredients
+                        .Select(ci => ci.Ingredient?.Name)
+                        .Where(name => !string.IsNullOrEmpty(name) && !IsCommonIngredient(name))
+                        .ToList();
+
+                    double dotProduct = 0;
+                    foreach (var ingredientName in possibleDrinksIngredients)
+                    {
+                        if (userIngredientVector.ContainsKey(ingredientName))
+                        {
+                            dotProduct += userIngredientVector[ingredientName];
+                        }
+                    }
+
+                    double userVectorMagnitude = Math.Sqrt(userIngredientVector.Values.Sum(v => v * v));
+                    //double candidateVectorMagnitude = Math.Sqrt(possibleDrinksIngredients.Count);
+                    
+                    if (userVectorMagnitude > 0/* && candidateVectorMagnitude > 0*/)
+                    {
+                        ingredientScore = dotProduct / (userVectorMagnitude /** candidateVectorMagnitude*/);
+                    }
+                }
+
+                if (userGlassPreferences.Any() && candidate.Glass != null)
+                {
+                    string glassName = candidate.Glass.Name;
+                    if (userGlassPreferences.ContainsKey(glassName))
+                    {
+                        glassScore = userGlassPreferences[glassName];
+                    }
+                }
+
+                if (userCategoryPreferences.Any() && candidate.Category != null)
+                {
+                    string categoryName = candidate.Category;
+                    if (userCategoryPreferences.ContainsKey(categoryName))
+                    {
+                        categoryScore = userCategoryPreferences[categoryName];
+                    }
+                }
+                if (isOver18 && alcoholContentPref.HasValue)
+                {
+                    if ((alcoholContentPref == AlcoholContentPreference.Alcoholic && candidate.IsAlcoholic) ||
+                    (alcoholContentPref == AlcoholContentPreference.NonAlcoholic && !candidate.IsAlcoholic))
+                    {
+                        alcoholPreferenceScore = 1.5;
+                    }
+                }
+
+                double finalScore = ingredientScore + glassScore + categoryScore + alcoholPreferenceScore;
+                recommendationsWithScore.Add((candidate, finalScore));
+            }
+
+            Random random = new Random();
+            var topRecommendations = recommendationsWithScore
+                .Select(item => {
+                    // Aggiungi un piccolo fattore casuale (±5%) al punteggio
+                    double randomFactor = 1.0 + (random.NextDouble() * 0.1 - 0.05);
+                    return (item.Cocktail, Score: item.Score * randomFactor);
+                })
+                .OrderByDescending(item => item.Score)
+                .Take(10)
+                .Select(item => item.Cocktail)
+                .ToList();
+
+            #region "if not sufficent data"
+            // Popular random cocktail if not enough drinks in recommendations
+            var popularCocktails = new List<Cocktail>();
+            if (topRecommendations.Count < 20)
+            {
+                var remainingToFetch = 20 - topRecommendations.Count;
+                var allSeenIds = seenCocktailIds.Concat(topRecommendations.Select(r => r.Id)).ToHashSet();
+
+                popularCocktails = await dbContext.Cocktails
+                    .Where(c => !allSeenIds.Contains(c.Id))
+                    .Where(c => isOver18 || !c.IsAlcoholic)
+                    .Include(c => c.Glass)
+                    .Include(c => c.Instructions)
+                    .Include(c => c.CocktailIngredients)
+                        .ThenInclude(ci => ci.Ingredient)
+                    .Include(c => c.CocktailIngredients)
+                        .ThenInclude(ci => ci.Measure)
+                    .OrderBy(c => Guid.NewGuid()) 
+                    .Take(remainingToFetch)
+                    .ToListAsync();
+            }
+
+            var randoms = popularCocktails.Select(c => new
             {
                 c.Id,
                 c.Name,
@@ -79,8 +264,9 @@ namespace terranova.Server.Controllers
                     ImperialMeasure = ci.Measure?.Imperial
                 }).ToList()
             }).ToList();
+            #endregion
 
-            var history = searchHistoryDrinks.Select(c => new
+            var favorites = topRecommendations.Select(c => new
             {
                 c.Id,
                 c.Name,
@@ -88,6 +274,14 @@ namespace terranova.Server.Controllers
                 c.IsAlcoholic,
                 Glass = c.Glass?.Name,
                 c.ImageUrl,
+                Instructions = new
+                {
+                    En = c.Instructions?.En,
+                    Es = c.Instructions?.Es,
+                    De = c.Instructions?.De,
+                    Fr = c.Instructions?.Fr,
+                    It = c.Instructions?.It
+                },
                 Ingredients = c.CocktailIngredients.Select(ci => new
                 {
                     Name = ci.Ingredient.Name,
@@ -96,7 +290,71 @@ namespace terranova.Server.Controllers
                 }).ToList()
             }).ToList();
 
-            return Results.Ok(new { favorites, history });
+            return Results.Ok(new { favorites, randoms,
+                diagnostics = new
+                {
+                    ingredientPreferences,
+                    glassPreferences,
+                    categoryPreferences
+                }
+            });
+        }
+
+        private static void AnalyzeUserPreferences(
+            IEnumerable<Cocktail> drinks,
+            Dictionary<string, double> userIngredientVector,
+            Dictionary<string, double> userGlassPreferences,
+            Dictionary<string, double> userCategoryPreferences,
+            double ingredientWeight = 2.0,
+            double glassWeight = 0.5,
+            double categoryWeight = 1.0)
+        {
+            if (drinks == null || !drinks.Any())
+                return;
+
+            foreach (var drink in drinks)
+            {
+                foreach (var ci in drink.CocktailIngredients)
+                {
+                    string ingredientName = ci.Ingredient?.Name ?? "";
+                    if (IsCommonIngredient(ingredientName))
+                        continue;
+                    if (userIngredientVector.ContainsKey(ingredientName))
+                        userIngredientVector[ingredientName] += ingredientWeight;
+                    else
+                        userIngredientVector[ingredientName] = ingredientWeight;
+                }
+
+                if (drink.Glass != null && !string.IsNullOrEmpty(drink.Glass.Name))
+                {
+                    if (userGlassPreferences.ContainsKey(drink.Glass.Name))
+                        userGlassPreferences[drink.Glass.Name] += glassWeight;
+                    else
+                        userGlassPreferences[drink.Glass.Name] = glassWeight;
+                }
+
+                if (drink.Category != null && !string.IsNullOrEmpty(drink.Category))
+                {
+                    if (userCategoryPreferences.ContainsKey(drink.Category))
+                        userCategoryPreferences[drink.Category] += categoryWeight;
+                    else
+                        userCategoryPreferences[drink.Category] = categoryWeight;
+                }
+            }
+        }
+
+        private static bool IsCommonIngredient(string ingredientName)
+        {
+            if (string.IsNullOrEmpty(ingredientName))
+                return false;
+
+            // Lista di ingredienti comuni da ignorare
+            var commonIngredients = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "Ice", "Water", "Sugar", "Salt", "Garnish", "Soda Water", "Club Soda", "Ginger ale", "Powdered sugar"
+            };
+
+            return commonIngredients.Contains(ingredientName);
         }
     }
 }
