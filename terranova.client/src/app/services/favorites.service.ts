@@ -8,10 +8,15 @@ import { environment } from '../../environments/environment';
 export class FavoritesService {
 	constructor( ) { }
 	private http = inject(HttpClient)
-	favUrl = environment.favoriteUrl;
+	private favUrl = environment.favoriteUrl;
+	private isFavUrl = environment.isFavoriteUrl;
 
 	getFavorites() {
 		return this.http.get<number[]>(`${this.favUrl}`);
+	}
+
+	IsFavorite(cocktailId: number) {
+		return this.http.get<boolean>(`${this.isFavUrl}/${cocktailId}`);
 	}
 
 	addFavorite(cocktailId: number) {

@@ -138,6 +138,7 @@ export class SearchbarComponent implements OnInit {
 					true,
 					'Mojito',
 					'Cocktail',
+					false,
 					{
 						name: 'Highball glass',
 						measure: 300,
@@ -154,6 +155,7 @@ export class SearchbarComponent implements OnInit {
 					true,
 					'Daiquiri',
 					'Cocktail',
+					false,
 					{
 						name: 'Cocktail glass',
 						measure: 150,
