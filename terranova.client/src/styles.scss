@@ -12,10 +12,7 @@
 	--error-color: #ff3d3d;
 	--text-color: #000000;
 	--border-color: linear-gradient(var(--primary-color), var(--accent-color));
-	--content-color: linear-gradient(
-		var(--tertiary-color),
-		var(--quaternary-color)
-	);
+	--content-color: linear-gradient( var(--tertiary-color), var(--quaternary-color) );
 }
 
 // Responsive breakpoints
@@ -30,23 +27,24 @@ body.summer-theme {
 	--warning-color: #ffa500;
 	--error-color: #ff3d3d;
 	--border-color: linear-gradient(var(--primary-color), var(--accent-color));
-	--content-color: linear-gradient(
-		var(--tertiary-color),
-		var(--quaternary-color)
-	);
+	--content-color: linear-gradient( var(--tertiary-color), var(--quaternary-color) );
 }
 
 html {
+	min-height: 100vh;
 	margin: 0;
 	padding: 0;
 }
 
-body {
-	margin: 0;
-	padding: 0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-		Helvetica, Arial, sans-serif;
-	background-color: var(--background-color);
-	color: var(--text-color);
-	transition: background-color 0.3s, color 0.3s;
+/* Apply base styles to body - Note: body styling moved to background-effects.scss */
+
+body.dark-theme {
+	min-height: 100vh;
+	background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
+	background-size: 400% 400%;
+	animation: liquid-bg 15s ease infinite;
+}
+
+button-group {
+	width: 100%;
 }

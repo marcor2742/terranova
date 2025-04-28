@@ -5,6 +5,12 @@ $text-light: white;
 $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 
 // Responsive mixins
+:host {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh; // Usa l'altezza completa della viewport
+}
 
 // Main container
 .box {
@@ -12,19 +18,20 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 	border-radius: 12px;
 	box-shadow: $box-shadow;
 	color: $text-light;
-	margin: 30px auto;
-	max-width: 600px;
+	max-width: 500px;
 	overflow: hidden;
 	padding: 0;
 	position: relative;
-	width: 90%;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	min-width: 200px;
+	margin: 10%;
 
 	@include app.mobile {
-		width: 95%;
-		margin: 15px auto;
+		margin: 15px;
 		border-radius: 8px;
 	}
-
 	// Header
 	h2 {
 		background-color: rgba(0, 0, 0, 0.2);
@@ -120,13 +127,12 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 .button-group {
 	display: flex;
 	gap: 12px;
-	justify-content: flex-end;
+	width: 100%;
 	margin: 25px 0 10px;
 
 	@include app.mobile {
 		flex-direction: column;
 	}
-
 	// Style for my-ui-button
 	my-ui-button {
 		display: inline-block;
