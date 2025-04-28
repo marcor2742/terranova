@@ -127,6 +127,7 @@
 			} @case ('cocktails') {
 			<div class="content-inner">
 				<app-cocktail-list
+					[cockTailList]="selectedCocktails()"
 					(close)="setActiveView('dashboard')"
 					(removeCock)="removeCocktail($event)"
 				></app-cocktail-list>

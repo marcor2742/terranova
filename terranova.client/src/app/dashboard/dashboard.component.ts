@@ -8,6 +8,7 @@ import { User } from '../Classes/user';
 import { CarouselModule } from 'primeng/carousel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Cocktail } from '../Classes/cocktail';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
 	selector: 'app-dashboard',
@@ -17,6 +18,7 @@ import { Cocktail } from '../Classes/cocktail';
 		CardModule,
 		CarouselModule,
 		SkeletonModule,
+		ButtonModule,
 	],
 	templateUrl: './dashboard.component.html',
 	styleUrl: './dashboard.component.scss',
@@ -27,7 +29,7 @@ export class DashboardComponent {
 	user = httpResource<User>(this.userProfileUrl);
 
 	carouselPage = signal<number>(1);
-	carouselPageSize = signal<number>(3);
+	carouselPageSize = signal<number>(20);
 	favCocktails = httpResource<Cocktail[]>(
 		`${
 			this.favoriteUrl
@@ -49,6 +51,7 @@ export class DashboardComponent {
 
     // Load more cocktails (next page)
     loadMoreCocktails() {
+		console.log(this.cachedCocktails());
         this.carouselPage.set(this.carouselPage() + 1);
     }
 

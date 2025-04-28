@@ -1,4 +1,4 @@
-import { Component, Inject, input, OnInit, output, PLATFORM_ID, Resource, Signal, signal } from '@angular/core';
+import { Component, effect, Inject, input, OnInit, output, PLATFORM_ID, Resource, Signal, signal } from '@angular/core';
 import {
 	HlmCardContentDirective,
 	HlmCardDescriptionDirective,
@@ -50,7 +50,9 @@ export class CocktailCardComponent implements OnInit {
 
 	isFavorite = signal<boolean>(false);
 	private favoriteService = inject(FavoritesService)
-	constructor(public settingService: SettingsService, @Inject(PLATFORM_ID) private platformId: Object) { }
+    private platformId = inject(PLATFORM_ID);
+    public settingService = inject(SettingsService);
+
 
 	// cocktail = httpResource<Cocktail>(`${environment.searchUrl}/${this.cockId()}`);
 	cocktail = httpResource<Cocktail>(() => {
@@ -64,6 +66,19 @@ export class CocktailCardComponent implements OnInit {
 
 		return `${environment.searchUrl}/${id}`;
 	});
+
+	constructor() {
+        // Effect runs when cocktail resource successfully loads data
+        effect(() => {
+            const currentCocktail = this.cocktail.value(); // Get the loaded cocktail data
+
+            // Check only if loading succeeded and we have data
+            if (isPlatformBrowser(this.platformId) && this.cocktail.hasValue() && currentCocktail) {
+                console.log(`CocktailCard: Cocktail ${currentCocktail.id} loaded. Checking favorite status.`);
+                this.isFavorite.set(currentCocktail.favorite ?? false);
+            }
+        });
+    }
 
 	debugButton() {
 		console.log('Resource:', this.cocktail.value());
