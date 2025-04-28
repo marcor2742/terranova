@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.Extensions.Options;
 using terranova.Server.Services;
+using terranova.Server.Migrations.IdentityUser;
 
 namespace terranova.Server.Controllers
 {
@@ -42,10 +43,18 @@ namespace terranova.Server.Controllers
             var userDetails = await userManager.FindByIdAsync(userID);
             return Results.Ok(new
             {
-                FullName = userDetails?.FullName,
-                Email = userDetails?.Email,
                 UserName = userDetails?.UserName,
+                Email = userDetails?.Email,
+                FullName = userDetails?.FullName,
+                AlcoholContentPreference = userDetails?.AlcoholContentPreference,
+                BaseIngredientPreference = userDetails?.BaseIngredientPreference,
+                Bio = userDetails?.Bio,
+                BirthDate = userDetails?.BirthDate,
+                GlassPreference = userDetails?.GlassPreference,
+                Language = userDetails?.Language,
+                MeasurementSystem = userDetails?.MeasurementSystem,
                 PropicUrl = userDetails?.PropicUrl,
+                ShowMyCocktails = userDetails?.ShowMyCocktails,
             });
         }
 
