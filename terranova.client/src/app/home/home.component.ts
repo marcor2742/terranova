@@ -3,7 +3,6 @@ import { SearchbarComponent } from '../searchbar/searchbar.component';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
-import { CocktailCardComponent } from '../cocktail-card/cocktail-card.component';
 import { SettingsComponent } from '../settings/settings.component';
 import { Searchres } from '../searchresoult/searchresoult.component';
 import { ScrollerModule } from 'primeng/scroller';
@@ -11,12 +10,12 @@ import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
-import { Cocktail } from '../Classes/cocktail';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { FiltersComponent } from '../filters/filters.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CocktailListComponent } from '../cocktail-list/cocktail-list.component';
+import { DashboardComponent } from "../dashboard/dashboard.component";
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -25,21 +24,21 @@ import { CocktailListComponent } from '../cocktail-list/cocktail-list.component'
 	selector: 'app-home',
 	standalone: true,
 	imports: [
-		SearchbarComponent,
-		CommonModule,
-		CocktailCardComponent,
-		SettingsComponent,
-		ScrollerModule,
-		DividerModule,
-		SkeletonModule,
-		ButtonModule,
-		ToolbarModule,
-		SelectButtonModule,
-		TranslateModule,
-		FiltersComponent,
-		ReactiveFormsModule,
-		CocktailListComponent,
-	],
+    SearchbarComponent,
+    CommonModule,
+    SettingsComponent,
+    ScrollerModule,
+    DividerModule,
+    SkeletonModule,
+    ButtonModule,
+    ToolbarModule,
+    SelectButtonModule,
+    TranslateModule,
+    FiltersComponent,
+    ReactiveFormsModule,
+    CocktailListComponent,
+    DashboardComponent,
+],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
 	encapsulation: ViewEncapsulation.None,

@@ -12,8 +12,7 @@ const PROXY_CONFIG = [
 		context: [
 			"/api/loginextended",
 			"/api/registerextended",
-			"/api/user",
-			"/api/UserProfile",
+			"/api/userProfile",
 			"/api/auth",
 			'/api/refreshextended',
 			'/api/search',

@@ -40,6 +40,18 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+	"fullTemplateTypeCheck": true,
+	"enableResourceInlining": true,
+	"enableNgModuleTypeCheck": true,
+	"enableNgTemplateTypeChecker": true,
+	"strictSafeNavigationTypes": true,
+	"strictNullInputTypes": true,
+	"strictContextGenerics": true,
+	"strictSafeContextBinding": true,
+	"strictDomLocalRefs": true,
+	"strictBindCallApply": true,
+	"strictNullChecks": false,
+	"enableControlFlow": true,
   }
 }

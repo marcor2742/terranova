@@ -14,4 +14,5 @@ export const environment = {
 	favoriteUrl: 'localhost:8000/favorites',
 	ingredientUrl: 'localhost:8000/ingredientsTable',
 	isFavoriteUrl: 'localhost:8000/isInFavorites',
+	userProfileUrl: 'localhost:8000/userProfile',
 };

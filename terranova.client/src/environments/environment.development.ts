@@ -14,4 +14,5 @@ export const environment = {
 	ingredientUrl: '/api/ingredientsTable',
 	favoriteUrl: '/api/favorites',
 	isFavoriteUrl: '/api/isInFavorites',
+	userProfileUrl: '/api/userProfile',
 };
