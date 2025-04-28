@@ -135,6 +135,7 @@ export class HomeComponent {
 		}
 		if (this.selectedCocktails().length > 0) {
 			this.showCocktailDetails.set(true);
+			this.activeView.set('cocktails');
 		} else {
 			this.showCocktailDetails.set(false);
 		}

@@ -21,8 +21,8 @@ interface TokenPayload {
   providedIn: 'root'
 })
 export class TokenStoreService {
-  private readonly TOKEN_KEY = '';
-  private readonly REFRESH_TOKEN_KEY = '';
+  private readonly TOKEN_KEY = 'access_token';
+  private readonly REFRESH_TOKEN_KEY = 'refresh_token';
   private platformId = inject(PLATFORM_ID);
   
   // Signal-based token storage
