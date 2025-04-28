@@ -1,0 +1,48 @@
+<div class="cocktail-full">
+	<div class="cocktail-header">
+		@Switch (searchOrList()) {
+		@Case ('search') {
+		<h2>{{ 'SearchResults' | translate }}</h2>
+		} @Case ('list') {
+		<h2>{{ 'CocktailList' | translate }}</h2>
+		} @Case ('favourites') {
+		<h2>{{ 'Favourites' | translate }}</h2>
+		} @Case ('searchResults') {
+		<h2>{{ 'SearchResults' | translate }}</h2>
+		} @else {
+		<h2>{{ 'CocktailList' | translate }}</h2>
+		}
+		<button class="close-button"
+				(click)="closeCocktailList()">
+			<span class="material-icons">close</span>
+		</button>
+	</div>
+
+	<p-scroller [items]="cockTailList()"
+				[style]="{ width: '100%', height: '80vh' }"
+				styleClass="cocktail-scroller"
+				[delay]="250"
+				[showLoader]="false"
+				[lazy]="false"
+				[autoSize]="true">
+		<ng-template pTemplate="item" let-id let-index="index">
+			<div class="cocktail-item-container">
+				<app-cocktail-card [cockId]="id"
+								   [showAll]="true"
+								   [IsRemovable]="true"
+								   (removeCocktail)="removeCocktail($event)">
+				</app-cocktail-card>
+
+				<p-divider *ngIf="index < selectedCocktails().length - 1"
+						   styleClass="cocktail-divider"></p-divider>
+			</div>
+		</ng-template>
+		<ng-template pTemplate="loader" let-options="options">
+			<div class="flex justify-content-center">
+				<p-skeleton height="320px"
+							width="100%"
+							styleClass="mb-2"></p-skeleton>
+			</div>
+		</ng-template>
+	</p-scroller>
+</div>

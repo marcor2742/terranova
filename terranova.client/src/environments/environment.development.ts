@@ -13,4 +13,5 @@ export const environment = {
 	glassUrl: '/api/glassesTable',
 	ingredientUrl: '/api/ingredientsTable',
 	favoriteUrl: '/api/favorites',
+	isFavoriteUrl: '/api/isInFavorites',
 };

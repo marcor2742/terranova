@@ -54,9 +54,7 @@ export class FiltersComponent implements OnInit {
     Ingredients: [[] as Ingredient[]]
   });
 
-  constructor() {
-    // Form initialization moved to ngOnInit
-  }
+	constructor() { }
 
   ngOnInit() {
 

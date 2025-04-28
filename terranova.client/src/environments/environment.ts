@@ -12,5 +12,6 @@ export const environment = {
 	settingsUrl: 'localhost:8000/preferences',
 	glassUrl: 'localhost:8000/glass',
 	favoriteUrl: 'localhost:8000/favorites',
-	ingredientUrl: 'localhost:8000/ingredientsTable'
+	ingredientUrl: 'localhost:8000/ingredientsTable',
+	isFavoriteUrl: 'localhost:8000/isInFavorites',
 };
