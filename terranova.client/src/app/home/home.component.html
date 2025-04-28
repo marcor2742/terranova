@@ -7,23 +7,29 @@
 
 			<div class="p-toolbar-group-center">
 				<div class="search-container">
-					<app-searchbar (cocktailSelected)="modifySelectedCocktails($event)"
-								   (continuedSearch)="handleFullSearch($event)"></app-searchbar>
+					<app-searchbar
+						(cocktailSelected)="modifySelectedCocktails($event)"
+						(continuedSearch)="handleFullSearch($event)"
+					></app-searchbar>
 				</div>
 			</div>
 
 			<div class="p-toolbar-group-end">
-				<p-button icon="{{
+				<p-button
+					icon="{{
 						themeService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'
 					}}"
-						  styleClass="p-button-rounded p-button-text"
-						  (onClick)="toggleTheme()"
-						  aria-label="'Toggle theme'"></p-button>
+					styleClass="p-button-rounded p-button-text"
+					(onClick)="toggleTheme()"
+					aria-label="'Toggle theme'"
+				></p-button>
 
-				<p-button icon="pi pi-bars"
-						  styleClass="p-button-rounded p-button-text"
-						  (onClick)="toggleSidebar()"
-						  aria-label="'Toggle sidebar'"></p-button>
+				<p-button
+					icon="pi pi-bars"
+					styleClass="p-button-rounded p-button-text"
+					(onClick)="toggleSidebar()"
+					aria-label="'Toggle sidebar'"
+				></p-button>
 			</div>
 		</p-toolbar>
 	</div>
@@ -33,11 +39,13 @@
 		<div class="sidebar" [class.collapsed]="!sidebarExpanded()">
 			<div class="sidebar-header">
 				<form [formGroup]="sidebarForm">
-					<p-selectButton [options]="sidebarModeOptions"
-									formControlName="sidebarMode"
-									[style]="{ width: '100%' }"
-									optionLabel="label"
-									optionValue="value">
+					<p-selectButton
+						[options]="sidebarModeOptions"
+						formControlName="sidebarMode"
+						[style]="{ width: '100%' }"
+						optionLabel="label"
+						optionValue="value"
+					>
 						<ng-template let-item pTemplate="item">
 							<div class="sidebar-mode-option">
 								<i [class]="item.icon"></i>
@@ -52,77 +60,83 @@
 			<div [ngSwitch]="sidebarMode()">
 				<div *ngSwitchCase="'navigation'" class="sidebar-navigation">
 					<nav class="sidebar-menu">
-						<div class="menu-item"
-							 [class.active]="activeView() === 'dashboard'"
-							 (click)="setActiveView('dashboard')">
+						<div
+							class="menu-item"
+							[class.active]="activeView() === 'dashboard'"
+							(click)="setActiveView('dashboard')"
+						>
 							<i class="pi pi-chart-bar"></i>
 							<span>{{ "Dashboard" | translate }}</span>
 						</div>
-
 					</nav>
 				</div>
 
 				<!-- Filters content -->
 				<div *ngSwitchCase="'filters'" class="sidebar-filters">
-					<app-filters [searchTerm]="currentSearchTerm()"></app-filters>
+					<app-filters
+						[searchTerm]="currentSearchTerm()"
+					></app-filters>
 				</div>
 			</div>
 		</div>
 
 		<!-- Main Content -->
 		<main class="content">
-			<!-- Home View -->
-			<div class="content-inner" *ngIf="activeView() === 'home'">
+			@switch (activeView()) { @case ('home') {
+			<div class="content-inner">
 				<h1>Welcome to Terranova</h1>
 				<p>Your go-to destination for exploring cocktails!</p>
-
 				<div class="theme-info">
 					<p>Current theme colors:</p>
 					<div class="color-samples">
-						<div class="color-sample"
-							 style="background-color: var(--primary-color)">
+						<div
+							class="color-sample"
+							style="background-color: var(--primary-color)"
+						>
 							Primary
 						</div>
-						<div class="color-sample"
-							 style="background-color: var(--secondary-color)">
+						<div
+							class="color-sample"
+							style="background-color: var(--secondary-color)"
+						>
 							Secondary
 						</div>
-						<div class="color-sample"
-							 style="background-color: var(--tertiary-color)">
+						<div
+							class="color-sample"
+							style="background-color: var(--tertiary-color)"
+						>
 							Tertiary
 						</div>
-						<div class="color-sample"
-							 style="background-color: var(--quaternary-color)">
+						<div
+							class="color-sample"
+							style="background-color: var(--quaternary-color)"
+						>
 							Quaternary
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<!-- Settings View -->
-			<div class="content-inner" *ngIf="activeView() === 'settings'">
+			} @case ('settings') {
+			<div class="content-inner">
 				<app-settings></app-settings>
 			</div>
-
-			<!-- Dashboard View (placeholder) -->
-			<div class="content-inner" *ngIf="activeView() === 'dashboard'">
-				<h1>Dashboard</h1>
-				<p>Your dashboard content will appear here.</p>
+			} @case ('dashboard') {
+			<div class="content-inner">
+				<app-dashboard></app-dashboard>
 			</div>
-
-			<!-- Cocktails View (placeholder) -->
-			<div class="content-inner" *ngIf="activeView() === 'cocktails'">
-				<app-cocktail-list (close)="setActiveView('dashboard')"
-								   ></app-cocktail-list>
-
+			} @case ('cocktails') {
+			<div class="content-inner">
+				<app-cocktail-list
+					(close)="setActiveView('dashboard')"
+					(removeCock)="removeCocktail($event)"
+				></app-cocktail-list>
 			</div>
-
-			<!-- Favorites View (placeholder) -->
-			<div class="content-inner" *ngIf="activeView() === 'favorites'">
+			} @case ('favorites') {
+			<div class="content-inner">
 				<h1>Favorites</h1>
 				<p>Your favorite cocktails will appear here.</p>
 			</div>
-
+			} }
 		</main>
 	</div>
 </div>

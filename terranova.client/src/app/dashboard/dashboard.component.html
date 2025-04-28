@@ -1,0 +1,23 @@
+<div class="user-card">
+    @defer () {
+        <p-card>
+            <ng-container *ngIf="user.hasValue()">
+                <div class="user-info">
+                    <img *ngIf="user" [src]="user.value().propicUrl" class="user-avatar" />
+                    <h2>{{ user.value().username }}</h2>
+                    <p>{{ user.value().email }}</p>
+                </div>
+            </ng-container>
+        </p-card>
+    } @placeholder {
+        <!-- Skeleton placeholder while loading -->
+        <p-skeleton shape="circle" height="120px" width="100%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton height="24px" width="60%" styleClass="mb-2"></p-skeleton>
+        <p-skeleton height="18px" width="40%"></p-skeleton>
+    }
+</div>
+<div class="user-favorites">
+	<p-carousel [value]="favCocktails.value()" [numVisible]="getNumvis()">
+
+</p-carousel>
+</div>

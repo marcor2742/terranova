@@ -1,4 +1,3 @@
-
 /**
  * Represents a user in the application
  * Contains user details and preferences
@@ -15,11 +14,21 @@ export class User {
 	 */
 	constructor(
 		public id: string,
-		public username: string,
 		public email: string,
-		public firstName: string,
-		public lastName: string,
-		public locale: string,
-		public language: string,
+		public username: string,
+		public propicUrl?: string,
+		public locale?: string,
+		public language?: string,
+		public fullName?: string,
 	) {}
 }
+
+/*
+{
+  "fullName": null,
+  "email": "lollo@lollo.com",
+  "userName": "lollo",
+  "propicUrl": null,
+  "language": "en"
+}
+*/
