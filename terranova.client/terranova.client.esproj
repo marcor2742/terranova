@@ -7,4 +7,7 @@
     <!-- Add Linux-specific settings -->
     <NodeJsExecutablePath Condition="'$(OS)' != 'Windows_NT'">$(HOME)/.nvm/versions/node/v18.16.0/bin/node</NodeJsExecutablePath>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\assets\login\" />
+  </ItemGroup>
 </Project>
