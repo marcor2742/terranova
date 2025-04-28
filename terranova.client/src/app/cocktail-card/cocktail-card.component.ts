@@ -1,4 +1,4 @@
-import { Component, input, OnInit, output, PLATFORM_ID, Resource, Signal, signal } from '@angular/core';
+import { Component, Inject, input, OnInit, output, PLATFORM_ID, Resource, Signal, signal } from '@angular/core';
 import {
 	HlmCardContentDirective,
 	HlmCardDescriptionDirective,
@@ -50,7 +50,7 @@ export class CocktailCardComponent implements OnInit {
 
 	isFavorite = signal<boolean>(false);
 	private favoriteService = inject(FavoritesService)
-	constructor(public settingService: SettingsService) { }
+	constructor(public settingService: SettingsService, @Inject(PLATFORM_ID) private platformId: Object) { }
 
 	// cocktail = httpResource<Cocktail>(`${environment.searchUrl}/${this.cockId()}`);
 	cocktail = httpResource<Cocktail>(() => {
@@ -72,26 +72,6 @@ export class CocktailCardComponent implements OnInit {
 	remCock(event: number) {
 		this.removeCocktail.emit(event);
 	}
-	// cocktail = {
-	// 	isLoading: () => false,
-	// 	error: () => null, // Return null for no error
-	// 	value: () => ({
-	// 	  Cocktail: {
-	// 		Name: 'Mojito',
-	// 		Description: 'A refreshing Cuban cocktail with rum, mint, and lime.',
-	// 		ingredients: [
-	// 		  { name: 'White rum', quantity: 60, measure: 'ml' },
-	// 		  { name: 'Fresh lime juice', quantity: 30, measure: 'ml' },
-	// 		  { name: 'Sugar', quantity: 2, measure: 'tsp' },
-	// 		  { name: 'Mint leaves', quantity: 8, measure: 'oz' },
-	// 		  { name: 'Soda water', quantity: 100, measure: 'ml' }
-	// 		],
-	// 		Instructions: 'Muddle mint with sugar and lime juice. Add rum and fill with ice. Top with soda water and garnish with mint.',
-	// 		ImageUrl: 'https://drinkabile.cdaweb.it/wp-content/uploads/2021/10/Americano-cocktail.jpeg'
-	// 	}
-	// 	})
-	//   };
-
 
 	addFavorite() {
 		if (this.cockId() === undefined) {
@@ -122,18 +102,64 @@ export class CocktailCardComponent implements OnInit {
 			},
 		});
 	}
-
 	ngOnInit() {
-		if (isPlatformBrowser((PLATFORM_ID))) {
-			this.favoriteService.getFavorites().subscribe((response) => {
-				if (response.includes(this.cockId() as number)) {
-					this.isFavorite.set(true);
-				} else {
-					this.isFavorite.set(false);
-				}
-			});
+		console.log('CocktailCardComponent initialized');
+		if (isPlatformBrowser(this.platformId)) {
+			const cocktailId = this.cockId();
+			if (cocktailId === undefined) {
+				console.error('Error: Cocktail ID is undefined.');
+				return;
+			}
+			if (this.cocktail.hasValue()) {
+				this.isFavorite.set(this.cocktail.value()?.favorite ?? false);
+				console.log('Cocktail loaded:', this.cocktail.value());
+			}
+			else
+			{
+				setTimeout(() => this.loadIfisFav(), 100);
+			}
 		}
 	}
+
+	loadIfisFav() {
+		if (this.cocktail.hasValue()) {
+			this.isFavorite.set(this.cocktail.value()?.favorite ?? false);
+		}
+		else {
+			console.log('Cocktail not loaded yet, checking again...');
+			// Se il cocktail non è ancora caricato, ricontrolliamo tra poco
+			setTimeout(() => this.loadIfisFav(), 100);
+		}
+	}
+
+	//private _hasAlreadyFetched = false;
+	//ngOnInit() {
+	//	if (isPlatformBrowser(this.platformId)) {
+	//		const cocktailId = this.cockId();
+	//		if (cocktailId === undefined) {
+	//			return;
+	//		}
+
+	//		if (this._hasAlreadyFetched) {
+	//			console.log('Favorite status already fetched');
+	//			return;
+	//		}
+
+	//		console.log('Checking favorite status for cocktail:', cocktailId);
+	//		this._hasAlreadyFetched = true;
+
+
+	//		this.favoriteService.IsFavorite(cocktailId).subscribe((isFavorite) => {
+	//			console.log('isFavorite:', isFavorite);
+	//			if (isFavorite) {
+	//				this.isFavorite.set(true);
+	//			} else {
+	//				this.isFavorite.set(false);
+	//			}
+	//		});
+	//		console.log('isFavorite:', this.isFavorite());
+	//	}
+	//}
 
 	toggleFavorite() {
 		if (this.cockId() === undefined) {
@@ -141,7 +167,7 @@ export class CocktailCardComponent implements OnInit {
 			return;
 		}
 
-		if (this.isFavorite) {
+		if (this.isFavorite()) {
 			this.favoriteService.removeFavorite(this.cockId() as number).subscribe({
 				next: () => {
 					this.isFavorite.set(false);

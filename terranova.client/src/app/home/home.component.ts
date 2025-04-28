@@ -16,6 +16,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { FiltersComponent } from '../filters/filters.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { CocktailListComponent } from '../cocktail-list/cocktail-list.component';
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -37,6 +38,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 		TranslateModule,
 		FiltersComponent,
 		ReactiveFormsModule,
+		CocktailListComponent,
 	],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
@@ -57,7 +59,7 @@ export class HomeComponent {
 
 	searchModeActive = signal<boolean>(false);
 	currentSearchTerm = signal<string>('');
-	searchResults = signal<Cocktail[]>([]);
+	// searchResults = signal<Cocktail[]>([]);
 	/**
 	 * Current active view in the main content area
 	 */
