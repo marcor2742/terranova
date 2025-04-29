@@ -6,7 +6,6 @@ $sidebar-collapsed-width: 60px;
 $header-height: 70px;
 $transition-speed: 0.3s;
 
-
 .page-container {
 	display: grid;
 	grid-template-rows: $header-height 1fr;
@@ -338,7 +337,7 @@ $transition-speed: 0.3s;
 		
 		.p-toolbar-group-center {
 		  flex: 1;
-		  width: 100%;
+		  width: 70%;
 		  min-width: 0;
 		  display: flex;
 		  justify-content: center;
@@ -382,6 +381,7 @@ $transition-speed: 0.3s;
 		  }
 		  
 		  .p-toolbar-group-center {
+			width: 70%;
 			margin: 0 8px; // Add some spacing on mobile
 		  }
 		  
