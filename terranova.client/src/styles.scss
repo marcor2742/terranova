@@ -10,7 +10,7 @@
 	--accent-color: #4caf50;
 	--warning-color: #ffa500;
 	--error-color: #ff3d3d;
-	--text-color: #000000;
+	--text-color: #eeeeee;
 	--border-color: linear-gradient(var(--primary-color), var(--accent-color));
 	--content-color: linear-gradient( var(--tertiary-color), var(--quaternary-color) );
 	--p-toolbar-background: none;
@@ -27,6 +27,7 @@ body.summer-theme {
 	--accent-color: #4caf50;
 	--warning-color: #ffa500;
 	--error-color: #ff3d3d;
+	--text-color: #0e0e0e;
 	--border-color: linear-gradient(var(--primary-color), var(--accent-color));
 	--content-color: linear-gradient( var(--tertiary-color), var(--quaternary-color) );
 }
