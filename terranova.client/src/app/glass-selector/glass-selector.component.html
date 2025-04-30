@@ -1,0 +1,58 @@
+<div class="glass-selector-container">
+  <!-- Display selected glasses as individual chips -->
+  <div class="selected-chips-container mb-2 flex flex-wrap gap-2">
+    @for (glass of selectedGlasses(); track glass.name) { <!-- Track by name -->
+      <p-chip
+        [label]="glass.name"
+        [removable]="true"
+        (onRemove)="removeGlass(glass)"
+        styleClass="selected-chip-item"
+      ></p-chip>
+    }
+    @if (selectedGlasses().length === 0) {
+      <span class="text-sm text-gray-500 italic">No glasses selected</span>
+    }
+  </div>
+
+  <!-- Search and add glasses using AutoComplete -->
+  <div class="p-fluid relative">
+    <p-autoComplete
+      [(ngModel)]="currentSearchText"
+      [suggestions]="suggestions()"
+      (completeMethod)="search($event)"
+      (onSelect)="onGlassSelect($event)"
+      field="name"
+      [placeholder]="placeholder()"
+      [minLength]="1"
+      [forceSelection]="true"
+      [style]="{'width': '100%'}"
+      [inputStyle]="{'width': '100%'}"
+      [disabled]="isMaxReached"
+      appendTo="body"
+    >
+      <ng-template pTemplate="item" let-glass>
+        <div class="glass-suggestion-item">
+          <span>{{ glass.name }}</span>
+          <!-- Optional: Add measure info -->
+          <!-- <small *ngIf="glass.measure"> ({{ glass.measure }}ml)</small> -->
+        </div>
+      </ng-template>
+      <ng-template pTemplate="empty">
+        <div class="p-3 text-center" *ngIf="!isLoading()">
+          {{ currentSearchText.length < 1 ? 'Type to search' : 'No glasses found' }}
+        </div>
+      </ng-template>
+    </p-autoComplete>
+    <!-- Loading Spinner -->
+    <p-progressSpinner
+      *ngIf="isLoading()"
+      styleClass="search-spinner"
+      strokeWidth="6"
+      animationDuration=".5s"
+    ></p-progressSpinner>
+  </div>
+   <!-- Optional: Display max glasses info -->
+   <small *ngIf="maxGlasses() !== undefined" class="max-info mt-1">
+    {{ selectedGlasses().length }} / {{ maxGlasses() }} glasses selected
+  </small>
+</div>

@@ -8,6 +8,8 @@
 			<div class="p-toolbar-group-center">
 				<div class="search-container">
 					<app-searchbar
+						[filters]="activeFilters()"
+						[searchMode]="searchMode()"
 						(cocktailSelected)="modifySelectedCocktails($event)"
 						(continuedSearch)="handleFullSearch($event)"
 					></app-searchbar>
@@ -56,8 +58,8 @@
 				</form>
 			</div>
 
-			<!-- Show different content based on sidebar mode -->
-			<div [ngSwitch]="sidebarMode()">
+			<!-- Show different content based on sidebar mode form control value -->
+			<div [ngSwitch]="sidebarForm.get('sidebarMode')?.value">
 				<div *ngSwitchCase="'navigation'" class="sidebar-navigation">
 					<nav class="sidebar-menu">
 						<div
@@ -74,7 +76,7 @@
 				<!-- Filters content -->
 				<div *ngSwitchCase="'filters'" class="sidebar-filters">
 					<app-filters
-						[searchTerm]="currentSearchTerm()"
+						(filtersChanged)="pushFilters($event)"
 					></app-filters>
 				</div>
 			</div>
@@ -82,62 +84,75 @@
 
 		<!-- Main Content -->
 		<main class="content">
-			@switch (activeView()) { @case ('home') {
-			<div class="content-inner">
-				<h1>Welcome to Terranova</h1>
-				<p>Your go-to destination for exploring cocktails!</p>
-				<div class="theme-info">
-					<p>Current theme colors:</p>
-					<div class="color-samples">
-						<div
-							class="color-sample"
-							style="background-color: var(--primary-color)"
-						>
-							Primary
-						</div>
-						<div
-							class="color-sample"
-							style="background-color: var(--secondary-color)"
-						>
-							Secondary
-						</div>
-						<div
-							class="color-sample"
-							style="background-color: var(--tertiary-color)"
-						>
-							Tertiary
-						</div>
-						<div
-							class="color-sample"
-							style="background-color: var(--quaternary-color)"
-						>
-							Quaternary
+			@switch (activeView()) {
+				@case ('home') {
+					<div class="content-inner">
+						<h1>Welcome to Terranova</h1>
+						<p>Your go-to destination for exploring cocktails!</p>
+						<div class="theme-info">
+							<p>Current theme colors:</p>
+							<div class="color-samples">
+								<div
+									class="color-sample"
+									style="background-color: var(--primary-color)"
+								>
+									Primary
+								</div>
+								<div
+									class="color-sample"
+									style="background-color: var(--secondary-color)"
+								>
+									Secondary
+								</div>
+								<div
+									class="color-sample"
+									style="background-color: var(--tertiary-color)"
+								>
+									Tertiary
+								</div>
+								<div
+									class="color-sample"
+									style="background-color: var(--quaternary-color)"
+								>
+									Quaternary
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			} @case ('settings') {
-			<div class="content-inner">
-				<app-settings></app-settings>
-			</div>
-			} @case ('dashboard') {
-			<div class="content-inner">
-				<app-dashboard></app-dashboard>
-			</div>
-			} @case ('cocktails') {
-			<div class="content-inner">
-				<app-cocktail-list
-					[cockTailList]="selectedCocktails()"
-					(close)="setActiveView('dashboard')"
-					(removeCock)="removeCocktail($event)"
-				></app-cocktail-list>
-			</div>
-			} @case ('favorites') {
-			<div class="content-inner">
-				<h1>Favorites</h1>
-				<p>Your favorite cocktails will appear here.</p>
-			</div>
-			} }
+				}
+				@case ('settings') {
+					<div class="content-inner">
+						<app-settings></app-settings>
+					</div>
+				}
+				@case ('dashboard') {
+					<div class="content-inner">
+						<app-dashboard></app-dashboard>
+					</div>
+				}
+				@case ('cocktails') {
+					<div class="content-inner">
+						<app-cocktail-list
+							[cockTailList]="selectedCocktails()"
+							[searchOrList]="listMode()"
+							(close)="setActiveView('dashboard')"
+							(removeCock)="removeCocktail($event)"
+						></app-cocktail-list>
+					</div>
+				}
+				@case ('favorites') {
+					<div class="content-inner">
+						<h1>Favorites</h1>
+						<p>Your favorite cocktails will appear here.</p>
+					</div>
+				}
+				@case ('search') {
+					<div class="content-inner">
+						<h1>Search Results for "{{ currentSearchTerm() }}"</h1>
+						<p>Filters are active (integration pending).</p>
+					</div>
+				}
+			}
 		</main>
 	</div>
 </div>

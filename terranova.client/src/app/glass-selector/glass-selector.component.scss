@@ -1,0 +1,41 @@
+// Use similar styles as ingredient-selector
+:host {
+  display: block;
+  width: 100%;
+}
+
+.glass-selector-container {
+  width: 100%;
+
+  .selected-chips-container {
+    min-height: 24px; // Ensure container has some height even when empty
+  }
+
+//   .selected-chip-item {
+//     // Add specific styles for glass chips if needed
+//   }
+
+  .glass-suggestion-item {
+    padding: 0.5rem;
+  }
+
+  .relative {
+    position: relative;
+  }
+
+  .search-spinner {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .max-info {
+    display: block;
+    text-align: right;
+    font-size: 0.8em;
+    color: var(--text-color-secondary);
+  }
+}

@@ -1,0 +1,54 @@
+:host {
+  display: block; // Ensures the component takes up block space
+  width: 100%;
+}
+
+.ingredient-selector-container {
+  width: 100%;
+
+  // Style the chips container if needed
+  .selected-chips {
+    width: 100%;
+    margin-bottom: 0.5rem; // Add space below chips
+
+    // Target the input inside p-chips if you want to hide it completely
+    .p-chips-input-token {
+       display: none; // Uncomment if you don't want any input in the chips area
+    }
+  }
+
+  // Style the AutoComplete suggestions
+  .ingredient-suggestion-item {
+    padding: 0.5rem;
+  }
+
+  // Style the spinner to overlay the input
+  .relative { // Ensure the parent div has relative positioning
+    position: relative;
+  }
+
+  .search-spinner {
+    position: absolute;
+    right: 10px; // Adjust position as needed
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px !important; // Override default size
+    height: 20px !important;
+  }
+
+  .max-info {
+    display: block;
+    text-align: right;
+    font-size: 0.8em;
+    color: var(--text-color-secondary); // Use theme variable if available
+  }
+}
+
+// PrimeNG Overrides (place in global styles.scss if preferred, scoped here for example)
+// ::ng-deep .p-chips .p-chips-multiple-container {
+//   width: 100%;
+// }
+
+// ::ng-deep .p-autocomplete-input {
+//   width: 100%;
+// }
