@@ -77,6 +77,7 @@ $transition-speed: 0.3s;
 	transition: width $transition-speed ease;
 	overflow: hidden;
 	z-index: 5;
+	border-right: 1px solid var(--p-toolbar-border-color);
 
 	&.collapsed {
 		width: $sidebar-collapsed-width;
@@ -108,7 +109,6 @@ $transition-speed: 0.3s;
 			}
 		}
 	}
-
 	// Mobile responsive sidebar
 	@include app.mobile {
 		position: fixed;
@@ -124,48 +124,46 @@ $transition-speed: 0.3s;
 	.sidebar-header {
 		padding: 1rem;
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		
 		// Style the select button to match your theme
 		::ng-deep .p-selectbutton {
-		  width: 100%;
-		  display: flex;
-		  
-		  .p-button {
-			flex: 1;
-			background-color: var(--background-color);
-			border-color: rgba(255, 255, 255, 0.2);
-			color: var(--text-color);
-			
-			&.p-highlight {
-			  background-color: var(--primary-color);
-			  border-color: var(--primary-color);
-			  color: var(--text-color);
+			width: 100%;
+			display: flex;
+
+			.p-button {
+				flex: 1;
+				background-color: var(--background-color);
+				border-color: rgba(255, 255, 255, 0.2);
+				color: var(--text-color);
+
+				&.p-highlight {
+					background-color: var(--primary-color);
+					border-color: var(--primary-color);
+					color: var(--text-color);
+				}
+
+				&:hover:not(.p-highlight) {
+					background-color: rgba(255, 255, 255, 0.1);
+				}
 			}
-			
-			&:hover:not(.p-highlight) {
-			  background-color: rgba(255, 255, 255, 0.1);
-			}
-		  }
 		}
-	  }
-	  
-	  .sidebar-mode-option {
+	}
+
+	.sidebar-mode-option {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		
+
 		i {
-		  font-size: 1rem;
+			font-size: 1rem;
 		}
-	  }
-	  
-	  // Allow both navigation and filters to take full height
-	  .sidebar-navigation,
-	  .sidebar-filters {
+	}
+	// Allow both navigation and filters to take full height
+	.sidebar-navigation,
+	.sidebar-filters {
 		height: calc(100% - 60px); // Adjust based on toggle height
 		overflow-y: auto;
-	  }
+	}
 }
 
 // Content area
@@ -237,7 +235,8 @@ $transition-speed: 0.3s;
 @include app.mobile {
 	.top-bar {
 		.logo {
-			font-size: 1.2rem;
+			font-size: 1.2rem !important;
+			color: var(--text-color) !important;
 		}
 
 		.search-container {
@@ -295,6 +294,11 @@ $transition-speed: 0.3s;
 	}
 }
 
+
+.p-toolbar {
+	background: none !important; /* Rimuove il background */
+}
+
 .cocktail-item-container {
 	padding: 6px;
 	width: 100%;
@@ -306,82 +310,89 @@ $transition-speed: 0.3s;
 	clear: both;
 }
 
+.logo {
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: var(--text-color);
+	white-space: nowrap;
+}
+
 // Style the PrimeNG scroller
 :host ::ng-deep {
 	.p-fluid {
 		width: 100%;
-	  }
-	  
-	  .custom-toolbar {
+	}
+
+	.custom-toolbar {
+		--p-toolbar-background: white;
 		border: none;
 		border-radius: 0;
 		padding: 0.5rem 1rem;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 		width: 100%;
-		
 		// Improve toolbar group layout
 		.p-toolbar-group-start {
-		  flex: 0 0 auto;
-		  @include app.responsive-padding(0, 10, 0, 0);
+			flex: 0 0 auto;
+			@include app.responsive-padding(0, 10, 0, 0);
 		}
-		
+
 		.p-toolbar-group-center {
-		  flex: 1;
-		  width: 70%;
-		  min-width: 0;
-		  display: flex;
-		  justify-content: center;
-		}
-		
-		.p-toolbar-group-end {
-		  flex: 0 0 auto;
-		  @include app.responsive-padding(0, 0, 0, 10);
-		  white-space: nowrap; // Keep buttons on same line
-		}
-		
-		.logo {
-		  font-size: 1.2rem;
-		  font-weight: bold;
-		  color: var(--text-color);
-		  white-space: nowrap;
-		}
-		
-		.search-container {
-		  width: 100%; // Take full width of center group
-		  max-width: 1000px; // Optional max-width
-		}
-		
-		.p-button.p-button-text {
-		  color: var(--text-color);
-		  
-		  &:hover {
-			background: rgba(255, 255, 255, 0.1);
-			color: var(--text-color);
-		  }
-		}
-	  }
-	  
-	  // Mobile optimizations
-	  @media screen and (max-width: 768px) {
-		.custom-toolbar {
-		  .p-toolbar-group-start {
-			.logo {
-			  font-size: 1rem; // Smaller logo on mobile
-			}
-		  }
-		  
-		  .p-toolbar-group-center {
+			flex: 1;
 			width: 70%;
-			margin: 0 8px; // Add some spacing on mobile
-		  }
-		  
-		  .p-toolbar-group-end {
-			.p-button {
-			  padding: 0.4rem; // Smaller buttons on mobile
-			}
-		  }
+			min-width: 0;
+			display: flex;
+			justify-content: center;
 		}
-	  }
+
+		.p-toolbar-group-end {
+			flex: 0 0 auto;
+			@include app.responsive-padding(0, 0, 0, 10);
+			white-space: nowrap; // Keep buttons on same line
+		}
+
+		.logo {
+			font-size: 1.2rem;
+			font-weight: bold;
+			color: var(--text-color);
+			white-space: nowrap;
+		}
+
+		.search-container {
+			width: 100%; // Take full width of center group
+			max-width: 1000px; // Optional max-width
+		}
+
+		.p-button.p-button-text {
+			color: var(--text-color);
+
+			&:hover {
+				background: rgba(255, 255, 255, 0.1);
+				color: var(--text-color);
+			}
+		}
+	}
+	// Mobile optimizations
+	@media screen and (max-width: 768px) {
+		.custom-toolbar {
+			.p-toolbar-group-start {
+				.logo {
+					font-size: 1rem; // Smaller logo on mobile
+				}
+			}
+
+			.p-toolbar-group-center {
+				width: 70%;
+				margin: 0 8px; // Add some spacing on mobile
+			}
+
+			.p-toolbar-group-end {
+				.p-button {
+					padding: 0.4rem; // Smaller buttons on mobile
+				}
+			}
+		}
+	}
+
 	.p-scroller {
 		width: 100%;
 
@@ -389,6 +400,7 @@ $transition-speed: 0.3s;
 			padding: 0;
 			display: block !important;
 		}
+
 		.p-scroller-item {
 			position: relative !important;
 			height: auto !important;
@@ -403,7 +415,6 @@ $transition-speed: 0.3s;
 			background-color: var(--background-color);
 		}
 	}
-
 	// Style the scrollbar
 	.p-scroller::-webkit-scrollbar {
 		width: 8px;
