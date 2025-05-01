@@ -69,6 +69,21 @@ namespace terranova.Server.Controllers
                 }
             }
 
+            // Trova o crea la categoria
+            Category category = null;
+            if (!string.IsNullOrWhiteSpace(cocktailData.Category))
+            {
+                category = await dbContext.Categories
+                    .FirstOrDefaultAsync(c => c.Name.ToLower() == cocktailData.Category.ToLower());
+
+                if (category == null)
+                {
+                    category = new Category { Name = cocktailData.Category };
+                    dbContext.Categories.Add(category);
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+
             // Crea le istruzioni
             var instructions = new Instructions
             {
@@ -86,7 +101,7 @@ namespace terranova.Server.Controllers
             {
                 // L'ID verrà generato automaticamente dal database
                 Name = cocktailData.Name,
-                Category = cocktailData.Category,
+                CategoryKey = category?.Id,
                 Iba = cocktailData.Iba,
                 IsAlcoholic = cocktailData.IsAlcoholic ?? true,
                 ImageUrl = cocktailData.ImageUrl,
@@ -160,12 +175,6 @@ namespace terranova.Server.Controllers
                 return Results.BadRequest(new { message = "User not found" });
             }
 
-                // Verifica che il nome sia fornito
-                //if (string.IsNullOrWhiteSpace(cocktailData.Name))
-                //{
-                //    return Results.BadRequest("Il nome del cocktail è obbligatorio");
-                //}
-
             // Cerca il cocktail esistente
             var cocktail = await dbContext.Cocktails.FindAsync(id);
             if (cocktail == null)
@@ -194,6 +203,21 @@ namespace terranova.Server.Controllers
                 }
             }
 
+            // Trova o crea la categoria
+            Category category = null;
+            if (!string.IsNullOrWhiteSpace(cocktailData.Category))
+            {
+                category = await dbContext.Categories
+                    .FirstOrDefaultAsync(c => c.Name.ToLower() == cocktailData.Category.ToLower());
+
+                if (category == null)
+                {
+                    category = new Category { Name = cocktailData.Category };
+                    dbContext.Categories.Add(category);
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+
             // Aggiorna le istruzioni
             var instructions = await dbContext.Instructions.FindAsync(cocktail.InstructionsKey);
             if (instructions != null && cocktailData.Instructions != null)
@@ -211,9 +235,9 @@ namespace terranova.Server.Controllers
             {
                 cocktail.Name = cocktailData.Name;
             }
-            if (cocktailData.Category != null)
+            if (category != null)
             {
-                cocktail.Category = cocktailData.Category;
+                cocktail.CategoryKey = category.Id;
             }
             if (cocktailData.Iba != null)
             {
@@ -531,7 +555,8 @@ namespace terranova.Server.Controllers
 
             if (!string.IsNullOrWhiteSpace(data.Category))
             {
-                query = query.Where(c => c.Category.ToLower().Contains(data.Category.ToLower()));
+                query = query.Where(c => c.Category != null &&
+                    c.Category.Name.ToLower().Contains(data.Category.ToLower()));
             }
 
             if (!allIngredients && data.Ingredients != null && data.Ingredients.Length > 0)
@@ -544,6 +569,7 @@ namespace terranova.Server.Controllers
                         ingredientsList.Contains(ci.Ingredient.Name)))
                     .ThenBy(c => c.Name)
                     .Include(c => c.Glass)
+                    .Include(c => c.Category)
                     .Include(c => c.Instructions)
                     .Include(c => c.CocktailIngredients)
                         .ThenInclude(ci => ci.Ingredient)
@@ -557,7 +583,7 @@ namespace terranova.Server.Controllers
                 {
                     c.Id,
                     c.Name,
-                    c.Category,
+                    Category = c.Category?.Name,
                     c.IsAlcoholic,
                     Glass = c.Glass?.Name,
                     Instructions = new
@@ -588,6 +614,7 @@ namespace terranova.Server.Controllers
                     .OrderByDescending(c => c.Name.ToLower().StartsWith(name))
                     .ThenBy(c => c.Name)
                     .Include(c => c.Glass)
+                    .Include(c => c.Category)
                     .Include(c => c.Instructions)
                     .Include(c => c.CocktailIngredients)
                         .ThenInclude(ci => ci.Ingredient)
@@ -601,7 +628,7 @@ namespace terranova.Server.Controllers
                 {
                     c.Id,
                     c.Name,
-                    c.Category,
+                    Category=c.Category?.Name,
                     c.IsAlcoholic,
                     Glass = c.Glass?.Name,
                     Instructions = new
@@ -639,6 +666,7 @@ namespace terranova.Server.Controllers
                 .OrderBy(c => c.Name.ToLower())
                 .ThenBy(c => c.Name)
                 .Include(c => c.Glass)
+                .Include(c => c.Category)
                 .Include(c => c.Instructions)
                 .Include(c => c.CocktailIngredients)
                     .ThenInclude(ci => ci.Ingredient)
@@ -652,7 +680,7 @@ namespace terranova.Server.Controllers
             {
                 c.Id,
                 c.Name,
-                c.Category,
+                Category = c.Category?.Name,
                 c.IsAlcoholic,
                 Glass = c.Glass?.Name,
                 Instructions = new
@@ -686,6 +714,7 @@ namespace terranova.Server.Controllers
             var cocktail = await dbContext.Cocktails
                 .Where(c => c.Id == id)
                 .Include(c => c.Glass)
+                .Include(c => c.Category)
                 .Include(c => c.Instructions)
                 .Include(c => c.CocktailIngredients)
                     .ThenInclude(ci => ci.Ingredient)
@@ -708,7 +737,7 @@ namespace terranova.Server.Controllers
             {
                 cocktail.Id,
                 cocktail.Name,
-                cocktail.Category,
+                Category = cocktail.Category?.Name,
                 favorite = isInFavorites,
                 cocktail.IsAlcoholic,
                 Glass = cocktail.Glass?.Name,
