@@ -144,6 +144,7 @@ namespace terranova.Server.Controllers
 
             var potentialRecommendations = await potentialFavoritesQuery
                 .Include(c => c.Glass)
+                .Include(c => c.Category)
                 .Include(c => c.Instructions)
                 .Include(c => c.CocktailIngredients)
                     .ThenInclude(ci => ci.Ingredient)
@@ -196,7 +197,7 @@ namespace terranova.Server.Controllers
 
                 if (userCategoryPreferences.Any() && candidate.Category != null)
                 {
-                    string categoryName = candidate.Category;
+                    string categoryName = candidate.Category.Name;
                     if (userCategoryPreferences.ContainsKey(categoryName))
                     {
                         categoryScore = userCategoryPreferences[categoryName];
@@ -333,12 +334,12 @@ namespace terranova.Server.Controllers
                         userGlassPreferences[drink.Glass.Name] = glassWeight;
                 }
 
-                if (drink.Category != null && !string.IsNullOrEmpty(drink.Category))
+                if (drink.Category != null && !string.IsNullOrEmpty(drink.Category.Name))
                 {
-                    if (userCategoryPreferences.ContainsKey(drink.Category))
-                        userCategoryPreferences[drink.Category] += categoryWeight;
+                    if (userCategoryPreferences.ContainsKey(drink.Category.Name))
+                        userCategoryPreferences[drink.Category.Name] += categoryWeight;
                     else
-                        userCategoryPreferences[drink.Category] = categoryWeight;
+                        userCategoryPreferences[drink.Category.Name] = categoryWeight;
                 }
             }
         }
