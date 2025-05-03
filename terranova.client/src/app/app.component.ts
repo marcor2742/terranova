@@ -8,6 +8,7 @@ import {
 import { ThemeService } from './services/theme.service';
 import { RouterOutlet } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { LoginRequiredPopupComponent } from './login-required-popup/login-required-popup.component';
 
 /**
  * Root component of the Terranova application
@@ -16,7 +17,7 @@ import { isPlatformBrowser } from '@angular/common';
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [RouterOutlet],
+	imports: [RouterOutlet, LoginRequiredPopupComponent],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss',
 })

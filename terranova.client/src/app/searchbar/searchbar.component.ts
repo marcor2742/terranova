@@ -9,6 +9,7 @@ import {
 	PLATFORM_ID,
 	computed,
 	Signal,
+	effect,
 } from '@angular/core';
 import { environment } from '../../environments/environment';
 import {
@@ -20,7 +21,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { httpResource } from '@angular/common/http';
+import { HttpParams, httpResource } from '@angular/common/http';
 
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -37,6 +38,26 @@ import {
 	filter,
 	takeUntil,
 } from 'rxjs';
+
+export interface bigSearch {
+	cocktails: Cocktail[];
+	searchString: string;
+	page: number;
+}
+
+export interface SearchFilters {
+	SearchString: string;
+	PageSize: number;
+	Page: number;
+	IsAlcoholic: 'Alcoholic' | 'NonAlcoholic' | 'NoPreference';
+	GlassNames: string[];
+	Creators: string[];
+	Category: string;
+	Ingredients: string[];
+	AllIngredients: 'true' | 'false';
+	ShowOnlyOriginal: 'true' | 'false';
+}
+
 /**
  * Component for searching cocktails
  * Provides search functionality and displays results
@@ -75,9 +96,24 @@ export class SearchbarComponent implements OnInit {
 	/** Maximum number of results to display */
 	MaxResoults = input<number>(5);
 
+	searchMode = input<string>('dropdown');
+
 	readonly cocktailSelected = output<Searchres>();
 
-	readonly continuedSearch = output<string>();
+	readonly continuedSearch = output<bigSearch>();
+
+	filters = input<SearchFilters>({
+		SearchString: '',
+		PageSize: 10,
+		Page: 1,
+		IsAlcoholic: 'NoPreference',
+		GlassNames: [],
+		Creators: [],
+		Category: '',
+		Ingredients: [],
+		AllIngredients: 'false',
+		ShowOnlyOriginal: 'false',
+	});
 
 	searchForm: FormGroup;
 	searchUrl = '';
@@ -92,6 +128,8 @@ export class SearchbarComponent implements OnInit {
 
 	/** Tracks search count for debugging */
 	private searchCount = 0;
+	private lastEmittedSearch: { cocktails: Cocktail[]; searchString: string; page: number } | null = null;
+
 
 	/**
 	 * Creates a new SearchbarComponent instance
@@ -107,28 +145,115 @@ export class SearchbarComponent implements OnInit {
 		});
 
 		console.log('SearchbarComponent initialized');
+
+		effect(() => {
+			// Only trigger this effect when the resource is loaded, not pending
+			if (this.SearchResource.isLoading()) return;
+			
+			// Only proceed if we're in 'full' mode and have search results
+			const mode = this.searchMode();
+			const results = this.SearchResource.value();
+			const searchString = this.searchParams();
+			const page = this.currentPage();
+
+			if (
+				mode === 'full' &&
+				results &&
+				results.length > 0 &&
+				searchString &&
+				searchString.trim().length > 0
+			) {
+				const current = {
+					cocktails: results,
+					searchString,
+					page
+				};
+
+				// Confronta con l'ultimo stato emesso
+				const isSame =
+					this.lastEmittedSearch &&
+					this.lastEmittedSearch.searchString === current.searchString &&
+					this.lastEmittedSearch.page === current.page &&
+					JSON.stringify(this.lastEmittedSearch.cocktails) === JSON.stringify(current.cocktails);
+
+				if (!isSame) {
+					this.continuedSearch.emit(current);
+					this.lastEmittedSearch = current;
+				}
+			}
+		//	if (mode === 'full' && results && results.length > 0) {
+		//		console.log('Auto-emitting search results in full mode:', results.length, 'cocktails found');
+				
+		//		// Don't emit empty search string results to prevent API errors
+		//		if (searchString && searchString.trim().length > 0) {
+		//			this.continuedSearch.emit({
+		//				cocktails: results,
+		//				searchString: searchString,
+		//				page: this.currentPage()
+		//			});
+		//		}
+		//	}
+		});
 	}
 
 	/** HTTP resource for cocktail search results */
 	SearchResource: Resource<Cocktail[]> = httpResource(
 		() => {
-			// Debug the API call
+			const currentFilters = this.filters();
+			const searchString = this.searchParams();
+			const pageSize = this.MaxResoults();
+			const page = this.currentPage();
+			const mode = this.searchMode();
+
+
+			let params = new HttpParams()
+				.set('SearchString', searchString)
+				.set('PageSize', pageSize.toString())
+				.set('Page', page.toString());
+
+			if (mode !== 'dropdown') {
+				// Add filter parameters only if not in dropdown mode
+				if (currentFilters.IsAlcoholic !== 'NoPreference') {
+					params = params.set('IsAlcoholic', currentFilters.IsAlcoholic);
+				}
+				if (currentFilters.GlassNames && currentFilters.GlassNames.length > 0) {
+					currentFilters.GlassNames.forEach(glass => {
+						params = params.append('GlassNames', glass);
+					});
+				}
+				if (currentFilters.Ingredients && currentFilters.Ingredients.length > 0) {
+					currentFilters.Ingredients.forEach(ingredient => {
+						params = params.append('Ingredients', ingredient);
+					});
+				}
+				if (currentFilters.Creators && currentFilters.Creators.length > 0) {
+					currentFilters.Creators.forEach(creator => {
+						params = params.append('Creators', creator);
+					});
+				}
+				if (currentFilters.Category) {
+					params = params.set('Category', currentFilters.Category);
+				}
+				if (currentFilters.AllIngredients) {
+					params = params.set('AllIngredients', currentFilters.AllIngredients);
+				}
+				if (currentFilters.ShowOnlyOriginal) {
+					params = params.set('ShowOnlyOriginal', currentFilters.ShowOnlyOriginal);
+				}
+			}
+
+			// debug log
 			this.searchCount++;
-			console.log(`[Search API Call #${this.searchCount}]`, {
-				url: this.searchUrl,
-				searchString: this.searchParams(),
-				pageSize: this.MaxResoults(),
-				page: this.currentPage(),
-			});
+			console.log(
+				`[Search Resource] Search Count: ${this.searchCount}, Search String: "${searchString}", Page: ${page}, Filters: ${JSON.stringify(
+					currentFilters
+				)}`
+			);
 
 			return {
 				url: this.searchUrl,
 				method: 'GET',
-				params: {
-					searchString: this.searchParams(),
-					pageSize: this.MaxResoults(),
-					page: this.currentPage(),
-				},
+				params: params,
 			};
 		},
 		{
@@ -171,6 +296,7 @@ export class SearchbarComponent implements OnInit {
 			],
 		}
 	);
+
 	/**
 	 * Initializes the component
 	 * Sets up form value change listeners
@@ -203,6 +329,7 @@ export class SearchbarComponent implements OnInit {
 				});
 
 		}
+		
 	}
 
 	/**
@@ -222,8 +349,13 @@ export class SearchbarComponent implements OnInit {
 	performSearch() {
 		const searchTerm = this.searchForm.get('searchTerm')?.value;
 		if (searchTerm && searchTerm.length >= this.MIN_SEARCH_LENGTH) {
-			this.searchParams.set(searchTerm);
-			this.continuedSearch.emit(searchTerm);
+			this.continuedSearch.emit({
+				cocktails: this.SearchResource.value() || [],
+				searchString: searchTerm,
+				page: this.currentPage(),
+			});
+			// this.searchForm.get('searchTerm')?.setValue('');
+			// this.searchParams.set('');
 		}
 	}
 }
