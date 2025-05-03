@@ -17,7 +17,7 @@ export class User {
 		public email: string,
 		public username: string,
 		public propicUrl?: string,
-		public locale?: string,
+		public locale?: 'Metric' | 'Imperial',
 		public language?: string,
 		public fullName?: string,
 	) {}

@@ -1,7 +1,7 @@
 @use "../app.component" as app;
 
 // Variables
-$sidebar-width: 250px;
+$sidebar-width: 450px;
 $sidebar-collapsed-width: 60px;
 $header-height: 70px;
 $transition-speed: 0.3s;
@@ -82,7 +82,7 @@ $transition-speed: 0.3s;
 		var(--secondary-color),
 		var(--primary-color)
 	);
-	width: $sidebar-width;
+	width: 100%;
 	transition: width $transition-speed ease;
 	overflow: hidden;
 	z-index: 5;

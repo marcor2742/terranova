@@ -1,0 +1,58 @@
+<div class="ingredient-selector-container">
+	<!-- Display selected ingredients as individual chips -->
+	<div class="selected-chips-container mb-2 flex flex-wrap gap-2"> <!-- Use flexbox for layout -->
+	  @for (ingredient of selectedIngredients(); track ingredient.id) {
+		<p-chip
+		  [label]="ingredient.name"
+		  [removable]="true"
+		  (onRemove)="removeIngredient(ingredient)"
+		  styleClass="selected-chip-item"
+		></p-chip>
+	  }
+	  @if (selectedIngredients().length === 0) {
+		<span class="text-sm text-gray-500 italic">No ingredients selected</span>
+	  }
+	</div>
+
+
+  <div class="p-fluid relative">
+    <p-autoComplete
+      [(ngModel)]="currentSearchText"
+      [suggestions]="suggestions()"
+      (completeMethod)="search($event)"
+      (onSelect)="onIngredientSelect($event)"
+      field="name"
+      [placeholder]="placeholder()"
+      [minLength]="2"
+      [forceSelection]="true"
+      [style]="{'width': '100%'}"
+      [inputStyle]="{'width': '100%'}"
+      [disabled]="isMaxReached"
+      appendTo="body"
+    >
+      <ng-template pTemplate="item" let-ingredient>
+        <div class="ingredient-suggestion-item">
+          <span>{{ ingredient.name }}</span>
+          <!-- Optional: Add type or other info -->
+          <!-- <small *ngIf="ingredient.type"> ({{ ingredient.type }})</small> -->
+        </div>
+      </ng-template>
+      <ng-template pTemplate="empty">
+        <div class="p-3 text-center" *ngIf="!isLoading()">
+          {{ currentSearchText.length < 2 ? 'Type 2+ characters' : 'No ingredients found' }}
+        </div>
+      </ng-template>
+    </p-autoComplete>
+    <!-- Loading Spinner -->
+    <p-progressSpinner
+      *ngIf="isLoading()"
+      styleClass="search-spinner"
+      strokeWidth="6"
+      animationDuration=".5s"
+    ></p-progressSpinner>
+  </div>
+   <!-- Optional: Display max ingredients info -->
+   <small *ngIf="maxIngredients() !== undefined" class="max-info mt-1">
+    {{ selectedIngredients().length }} / {{ maxIngredients() }} ingredients selected
+  </small>
+</div>
