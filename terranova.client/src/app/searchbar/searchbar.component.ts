@@ -128,6 +128,8 @@ export class SearchbarComponent implements OnInit {
 
 	/** Tracks search count for debugging */
 	private searchCount = 0;
+	private lastEmittedSearch: { cocktails: Cocktail[]; searchString: string; page: number } | null = null;
+
 
 	/**
 	 * Creates a new SearchbarComponent instance
@@ -152,61 +154,93 @@ export class SearchbarComponent implements OnInit {
 			const mode = this.searchMode();
 			const results = this.SearchResource.value();
 			const searchString = this.searchParams();
-			
-			if (mode === 'full' && results && results.length > 0) {
-				console.log('Auto-emitting search results in full mode:', results.length, 'cocktails found');
-				
-				// Don't emit empty search string results to prevent API errors
-				if (searchString && searchString.trim().length > 0) {
-					this.continuedSearch.emit({
-						cocktails: results,
-						searchString: searchString,
-						page: this.currentPage()
-					});
+			const page = this.currentPage();
+
+			if (
+				mode === 'full' &&
+				results &&
+				results.length > 0 &&
+				searchString &&
+				searchString.trim().length > 0
+			) {
+				const current = {
+					cocktails: results,
+					searchString,
+					page
+				};
+
+				// Confronta con l'ultimo stato emesso
+				const isSame =
+					this.lastEmittedSearch &&
+					this.lastEmittedSearch.searchString === current.searchString &&
+					this.lastEmittedSearch.page === current.page &&
+					JSON.stringify(this.lastEmittedSearch.cocktails) === JSON.stringify(current.cocktails);
+
+				if (!isSame) {
+					this.continuedSearch.emit(current);
+					this.lastEmittedSearch = current;
 				}
 			}
+		//	if (mode === 'full' && results && results.length > 0) {
+		//		console.log('Auto-emitting search results in full mode:', results.length, 'cocktails found');
+				
+		//		// Don't emit empty search string results to prevent API errors
+		//		if (searchString && searchString.trim().length > 0) {
+		//			this.continuedSearch.emit({
+		//				cocktails: results,
+		//				searchString: searchString,
+		//				page: this.currentPage()
+		//			});
+		//		}
+		//	}
 		});
 	}
 
 	/** HTTP resource for cocktail search results */
 	SearchResource: Resource<Cocktail[]> = httpResource(
 		() => {
-			const currentFilters = this.filters(); // Get current filter values
-            const searchString = this.searchParams();
-            const pageSize = this.MaxResoults();
-            const page = this.currentPage();
-            const mode = this.searchMode();
+			const currentFilters = this.filters();
+			const searchString = this.searchParams();
+			const pageSize = this.MaxResoults();
+			const page = this.currentPage();
+			const mode = this.searchMode();
 
-			const resourceParams: { [param: string]: string | number | boolean | ReadonlyArray<string | number | boolean> } = {
-                SearchString: searchString,
-                PageSize: pageSize,
-                Page: page,
-            };
 
-            if (mode !== 'dropdown') {
-                // Add filter parameters only if not in dropdown mode
-                if (currentFilters.IsAlcoholic !== undefined && currentFilters.IsAlcoholic !== null) {
-                    resourceParams['IsAlcoholic'] = String(currentFilters.IsAlcoholic);
-                }
-                if (currentFilters.GlassNames && currentFilters.GlassNames.length > 0) {
-                    resourceParams['GlassNames'] = currentFilters.GlassNames;
-                }
-                if (currentFilters.Ingredients && currentFilters.Ingredients.length > 0) {
-                    resourceParams['Ingredients'] = currentFilters.Ingredients;
-                }
-                if (currentFilters.Creators && currentFilters.Creators.length > 0) {
-                    resourceParams['Creators'] = currentFilters.Creators;
-                }
-                if (currentFilters.Category) {
-                    resourceParams['Category'] = currentFilters.Category;
-                }
-                if (currentFilters.AllIngredients !== undefined) {
-                    resourceParams['AllIngredients'] = String(currentFilters.AllIngredients);
-                }
-                if (currentFilters.ShowOnlyOriginal !== undefined) {
-                    resourceParams['ShowOnlyOriginal'] = String(currentFilters.ShowOnlyOriginal);
-                }
-            }
+			let params = new HttpParams()
+				.set('SearchString', searchString)
+				.set('PageSize', pageSize.toString())
+				.set('Page', page.toString());
+
+			if (mode !== 'dropdown') {
+				// Add filter parameters only if not in dropdown mode
+				if (currentFilters.IsAlcoholic !== 'NoPreference') {
+					params = params.set('IsAlcoholic', currentFilters.IsAlcoholic);
+				}
+				if (currentFilters.GlassNames && currentFilters.GlassNames.length > 0) {
+					currentFilters.GlassNames.forEach(glass => {
+						params = params.append('GlassNames', glass);
+					});
+				}
+				if (currentFilters.Ingredients && currentFilters.Ingredients.length > 0) {
+					currentFilters.Ingredients.forEach(ingredient => {
+						params = params.append('Ingredients', ingredient);
+					});
+				}
+				if (currentFilters.Creators && currentFilters.Creators.length > 0) {
+					currentFilters.Creators.forEach(creator => {
+						params = params.append('Creators', creator);
+					});
+				}
+				if (currentFilters.Category) {
+					params = params.set('Category', currentFilters.Category);
+				}
+				if (currentFilters.AllIngredients) {
+					params = params.set('AllIngredients', currentFilters.AllIngredients);
+				}
+				if (currentFilters.ShowOnlyOriginal) {
+					params = params.set('ShowOnlyOriginal', currentFilters.ShowOnlyOriginal);
+				}
+			}
 
 			// debug log
 			this.searchCount++;
@@ -215,10 +249,11 @@ export class SearchbarComponent implements OnInit {
 					currentFilters
 				)}`
 			);
+
 			return {
 				url: this.searchUrl,
 				method: 'GET',
-				params: resourceParams,
+				params: params,
 			};
 		},
 		{
@@ -319,8 +354,8 @@ export class SearchbarComponent implements OnInit {
 				searchString: searchTerm,
 				page: this.currentPage(),
 			});
-			this.searchForm.get('searchTerm')?.setValue('');
-			this.searchParams.set('');
+			// this.searchForm.get('searchTerm')?.setValue('');
+			// this.searchParams.set('');
 		}
 	}
 }
