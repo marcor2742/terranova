@@ -1,3 +1,5 @@
+// Modifiche al file login-page.component.scss per ottenere l'effetto vetro con riflesso circolare e bordo realistico
+
 @use "sass:color";
 @use "../app.component.scss" as app;
 
@@ -5,34 +7,87 @@ $text-light: white;
 $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 
 // Responsive mixins
+:host {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	background-size: cover;
+	background-position: center;
+}
 
-// Main container
+// Main container con effetto vetro
 .box {
-	background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
-	border-radius: 12px;
-	box-shadow: $box-shadow;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+	border-image: linear-gradient( 145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 100% );
+	border-image-slice: 1;
 	color: $text-light;
-	margin: 30px auto;
-	max-width: 600px;
+	max-width: 500px;
 	overflow: hidden;
 	padding: 0;
 	position: relative;
-	width: 90%;
-
-	@include app.mobile {
-		width: 95%;
-		margin: 15px auto;
-		border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	min-width: 200px;
+	margin: 10%;
+	transition: all 0.3s ease;
+	position: relative;
+	// Overlay per effetto bordo illuminato
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: 16px;
+		padding: 1px; // Spessore del bordo
+		background: linear-gradient( 145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.1) 70%, rgba(0, 0, 0, 0.05) 100% );
+		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
+		pointer-events: none;
 	}
 
+	&:hover {
+		box-shadow: 0 7px 35px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+	}
+
+	@include app.mobile {
+		margin: 15px;
+		border-radius: 12px;
+
+		&::after {
+			border-radius: 12px;
+		}
+	}
+	// Riflesso circolare
+	&::before {
+		content: "";
+		position: absolute;
+		top: -400px;
+		left: -500px;
+		width: 900px;
+		height: 900px;
+		background: radial-gradient( circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 40%, transparent 70% );
+		border-radius: 50%;
+		opacity: 0.8;
+		pointer-events: none;
+		z-index: 2;
+	}
 	// Header
 	h2 {
-		background-color: rgba(0, 0, 0, 0.2);
+		margin-top: 30px;
 		font-size: 26px;
-		margin: 0;
-		padding: 20px;
+		padding: 25px 20px;
 		text-align: center;
-		text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+		text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+		position: relative;
+		z-index: 3;
+		letter-spacing: 0.5px;
+		font-weight: 600;
 
 		@include app.mobile {
 			font-size: 22px;
@@ -42,6 +97,8 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 
 	form {
 		padding: 25px;
+		position: relative;
+		z-index: 3;
 
 		@include app.mobile {
 			padding: 15px;
@@ -52,88 +109,96 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 // Form fields
 .form-field {
 	margin-bottom: 22px;
+	position: relative;
 
 	label {
 		display: block;
 		font-size: 16px;
 		font-weight: 500;
-		margin-bottom: 8px;
-		opacity: 0.9;
+		margin-bottom: 10px;
+		opacity: 0.95;
+		letter-spacing: 0.3px;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 
 		@include app.mobile {
 			font-size: 14px;
-			margin-bottom: 6px;
+			margin-bottom: 8px;
 		}
 	}
 
 	input {
-		background-color: rgba(255, 255, 255, 0.9);
-		border: 2px solid transparent;
-		border-radius: 8px;
-		color: #333;
+		background-color: rgba(255, 255, 255, 0.10);
+		border-radius: 10px;
+		color: white;
 		font-size: 16px;
-		padding: 12px 15px;
+		padding: 14px 15px;
 		transition: all 0.3s;
 		width: 100%;
+		backdrop-filter: blur(5px);
+		box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+		position: relative;
+		// Effetto bordo illuminato anche per gli input
+		&::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border-radius: 10px;
+			padding: 1px;
+			background: linear-gradient( 145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100% );
+			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			pointer-events: none;
+		}
+
+		&::placeholder {
+			color: rgba(255, 255, 255, 0.6);
+		}
 
 		&:focus {
-			border-color: var(--accent-color);
-			box-shadow: 0 0 0 2px rgba(var(--accent-color), 0.3);
+			border-image: linear-gradient( to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2) );
+			border-image-slice: 1;
+			box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 2px 5px rgba(0, 0, 0, 0.1);
 			outline: none;
 		}
 
 		@include app.mobile {
 			font-size: 15px;
-			padding: 10px 12px;
-			border-radius: 6px;
+			padding: 12px;
+			border-radius: 8px;
 		}
-	}
-}
-
-// Status indicators
-.user-status {
-	border-radius: 6px;
-	font-size: 14px;
-	margin-top: 8px;
-	padding: 8px;
-
-	&.exists {
-		background-color: rgba(var(--accent-color), 0.1);
-		color: var(--accent-color);
-	}
-
-	&.not-exists {
-		background-color: rgba(var(--warning-color), 0.1);
-		color: var(--warning-color);
 	}
 }
 
 // Error messages
 .error {
-	color: var(--error-color);
+	color: rgba(255, 100, 100, 0.9);
 	font-size: 13px;
 	font-weight: normal;
 	margin-top: 6px;
+	text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 // Button group
 .button-group {
 	display: flex;
-	gap: 12px;
-	justify-content: flex-end;
-	margin: 25px 0 10px;
+	gap: 15px;
+	width: 100%;
+	margin: 50px 0 15px;
+	position: relative;
+	z-index: 3;
+	justify-content: center;
 
 	@include app.mobile {
 		flex-direction: column;
 	}
-
 	// Style for my-ui-button
 	my-ui-button {
 		display: inline-block;
-		transition: transform 0.2s;
+		transition: all 0.3s;
 
 		&:hover {
-			transform: translateY(-2px);
+			transform: translateY(-3px);
 		}
 
 		@include app.mobile {
@@ -142,32 +207,49 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 	}
 }
 
-// Enhanced button styling
+// Enhanced button styling with glassmorphism
 .visible-button {
 	&::ng-deep button {
-		background: linear-gradient(to right, #3f51b5, #5c6bc0) !important;
-		border: none !important;
-		border-radius: 8px !important;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+		background: rgb(41, 65, 199, 0.65) !important;
+		backdrop-filter: blur(5px) !important;
+		border: -1px solid rgb(255, 255, 255, 0.8) !important;
+		border-radius: 10px !important;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
 		color: white !important;
 		font-weight: 600 !important;
-		letter-spacing: 0.5px !important;
+		letter-spacing: 1px !important;
 		min-width: 120px !important;
 		opacity: 1 !important;
-		padding: 12px 24px !important;
+		padding: 14px 24px !important;
 		text-transform: uppercase !important;
 		transition: all 0.3s !important;
 		visibility: visible !important;
+		position: relative !important;
+		overflow: hidden !important;
+		// Effetto bordo illuminato per i pulsanti
+		&::after {
+			content: "" !important;
+			position: absolute !important;
+			inset: 0 !important;
+			border-radius: 10px !important;
+			padding: 1px !important;
+			background: linear-gradient( 145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.1) 70%, rgba(0, 0, 0, 0.05) 100% ) !important;
+			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+			-webkit-mask-composite: xor !important;
+			mask-composite: exclude !important;
+			pointer-events: none !important;
+		}
 
 		&:hover:not(:disabled) {
-			background: linear-gradient(to right, #324090, #4a5ab0) !important;
-			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+			background: rgba(77, 97, 208, 0.8) !important;
+			box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25) !important;
+			transform: translateY(-1px) !important;
 		}
 
 		&:disabled {
-			background: #b0b0b0 !important;
+			background: rgba(176, 176, 176, 0.4) !important;
 			box-shadow: none !important;
-			opacity: 0.6 !important;
+			opacity: 0.7 !important;
 		}
 
 		@include app.mobile {
@@ -180,9 +262,16 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 // Form status display
 p {
 	font-size: 14px;
-	margin: 10px 25px;
-	opacity: 0.8;
+	margin: 10px 25px 20px;
+	opacity: 0.7;
+	text-align: center;
+	font-style: italic;
+	position: relative;
+	z-index: 3;
 }
+
+
+
 
 // Data display section
 .data-display {

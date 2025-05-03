@@ -40,7 +40,15 @@ namespace terranova.Server.Controllers
             UserManager<IdentityUserExtended> userManager)
         {
             string userID = user.Claims.First(x => x.Type == "UserID").Value;
+            if (userID == null)
+            {
+                return Results.BadRequest(new { message = "User not found" });
+            }
             var userDetails = await userManager.FindByIdAsync(userID);
+            if (userDetails == null)
+            {
+                return Results.BadRequest(new { message = "User not found" });
+            }
             return Results.Ok(new
             {
                 UserName = userDetails?.UserName,
