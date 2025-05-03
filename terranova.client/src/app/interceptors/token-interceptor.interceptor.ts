@@ -1,7 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { from, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { TokenStoreService } from '../services/token-store.service';
+import { LoginPopupService } from '../services/login-popup.service';
 
 /**
  * HTTP interceptor for adding authentication tokens to requests
@@ -12,7 +15,8 @@ import { TokenStoreService } from '../services/token-store.service';
  * @returns An observable of the HTTP event stream
  */
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
-  const tokenStore = inject(TokenStoreService);
+	const tokenStore = inject(TokenStoreService);
+	const loginPopupService = inject(LoginPopupService);
   
   // List of authentication URLs that don't require tokens
   const authUrls: string[] = [
@@ -27,16 +31,30 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // Get token from token store
-  const token = tokenStore.getAccessToken();
+	const token = tokenStore.ensureValidAccessToken();
 
   // Add the Authorization header if we have a token
-  if (token) {
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  }
+	return from(tokenStore.ensureValidAccessToken()).pipe(
+		switchMap((token) => {
+			if (token) {
+				req = req.clone({
+					setHeaders: {
+						Authorization: `Bearer ${token}`
+					}
+				});
+				console.log('Token added to request:', token);
+			}
+			return next(req);
+		}),
+		catchError((error) => {
+			console.error('Error during token renewal:', error);
 
-  return next(req);
+			// Handle token renewal failure (e.g., redirect to login)
+			tokenStore.clearTokens();
+			loginPopupService.show();
+			console.log('showing popup from refresh interceptor');
+			// Return an error observable
+			return throwError(() => error);
+		})
+	);
 };
