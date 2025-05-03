@@ -22,7 +22,7 @@
 	</div>
 
 	<!-- Only show results if there's a search term -->
-	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value">
+	<div class="search-results" *ngIf="searchForm.get('searchTerm')?.value && searchMode() === 'dropdown'">
 		<p-card
 			styleClass="search-results-card"
 			[style]="{ width: '100%' }"

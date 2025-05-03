@@ -1,75 +1,83 @@
+<!-- filepath: /home/lollo/Documents/terranova/terranova.client/src/app/filters/filters.component.html -->
 <div class="filters-container">
   <h3>{{ 'FilterCocktails' | translate }}</h3>
-  
+
   <form [formGroup]="filtersForm">
     <!-- Alcoholic/Non-Alcoholic Filter -->
     <div class="filter-section">
       <label class="block mb-2">{{ 'AlcoholContent' | translate }}</label>
-      <p-selectButton 
-        [options]="alcolOption" 
-        formControlName="Alcoholic" 
-        optionLabel="label" 
+      <p-selectButton
+        [options]="alcolOption"
+        formControlName="Alcoholic"
+        optionLabel="label"
         optionValue="value"
         [style]="{'width': '100%'}"
       ></p-selectButton>
     </div>
-    
+
     <p-divider></p-divider>
-    
-    <!-- Glasses MultiSelect -->
+
+    <!-- Glasses Selector -->
     <div class="filter-section">
-      <label class="block mb-2">{{ 'GlassType' | translate }}</label>
-      <p-multiSelect
-        [options]="glasses"
-        formControlName="Glasses"
-        optionLabel="name"
-        selectedItemsLabel="{0} glasses selected"
-        [filter]="true"
-        [virtualScroll]="true"
-        [virtualScrollItemSize]="38"
-        placeholder="{{ 'SelectGlasses' | translate }}"
-        [style]="{'width': '100%'}"
-      >
-        <!-- Custom item template -->
-        <ng-template let-glass pTemplate="item">
-          <div class="glass-item">
-            <span class="glass-name">{{ glass.name }}</span>
-            <span class="glass-measure" *ngIf="glass.measure">({{ glass.measure }})</span>
-          </div>
-        </ng-template>
-      </p-multiSelect>
-    </div>
-    
+        <label class="block mb-2">{{ 'GlassType' | translate }}</label>
+        <app-glass-selector
+          formControlName="Glasses"
+          [placeholder]="'SearchAndAddGlasses' | translate"
+          [maxGlasses]="5"
+        ></app-glass-selector>
+      </div>
+
     <p-divider></p-divider>
-    
-    <!-- Ingredients MultiSelect with API filtering -->
+
+    <!-- Ingredients Selector -->
     <div class="filter-section">
-      <label class="block mb-2">{{ 'Ingredients' | translate }}</label>
-      <p-multiSelect
-        [options]="filteredIngredients"
-        formControlName="Ingredients"
-        optionLabel="name"
-        selectedItemsLabel="{0} ingredients selected"
-        [filter]="true"
-        [filterBy]="'name'"
-        [showClear]="true"
-        [virtualScroll]="true"
-        [virtualScrollItemSize]="38"
-        (onFilter)="searchIngredients($event)"
-        placeholder="{{ 'SearchIngredients' | translate }}"
-        [style]="{'width': '100%'}"
-      >
-        <!-- Custom item template for ingredients -->
-        <ng-template let-ingredient pTemplate="item">
-          <div class="ingredient-item">
-            <span class="ingredient-name">{{ ingredient.name }}</span>
-            <span class="ingredient-type" *ngIf="ingredient.type">({{ ingredient.type }})</span>
-          </div>
-        </ng-template>
-      </p-multiSelect>
+        <label class="block mb-2">{{ 'Ingredients' | translate }}</label>
+        <app-ingredient-selector
+            formControlName="Ingredients"
+            [placeholder]="'SearchAndAddIngredients' | translate"
+            [maxIngredients]="10"
+        ></app-ingredient-selector>
     </div>
-    
-    <div class="filter-actions">
+
+    <p-divider></p-divider>
+
+    <!-- Category Filter -->
+    <div class="filter-section">
+      <label for="category" class="block mb-2">{{ 'Category' | translate }}</label>
+      <input id="category" type="text" pInputText formControlName="Category" class="w-full" />
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Creators Filter REMOVED -->
+    <!--
+     <div class="filter-section">
+      <label for="creators" class="block mb-2">{{ 'Creators' | translate }}</label>
+      <p-chips inputId="creators" formControlName="Creators" class="w-full" [addOnBlur]="true" [separator]="','"></p-chips>
+      <small class="block mt-1">Enter creator names separated by comma or enter.</small>
+    </div>
+
+    <p-divider></p-divider>
+    -->
+
+    <!-- Boolean Switches -->
+    <div class="filter-section flex flex-col gap-3">
+       <div class="flex align-items-center">
+            <!-- Use the boolean form control name -->
+            <p-inputSwitch inputId="allIngredients" formControlName="AllIngredientsSwitch"></p-inputSwitch>
+            <label for="allIngredients" class="ml-2">{{ 'MatchAllIngredients' | translate }}</label>
+        </div>
+         <div class="flex align-items-center">
+            <!-- Use the boolean form control name -->
+            <p-inputSwitch inputId="showOnlyOriginal" formControlName="ShowOnlyOriginalSwitch"></p-inputSwitch>
+            <label for="showOnlyOriginal" class="ml-2">{{ 'ShowOnlyOriginals' | translate }}</label>
+        </div>
+    </div>
+
+
+    <p-divider></p-divider>
+
+    <div class="filter-actions mt-4">
       <button type="button" class="p-button p-button-text" (click)="resetFilters()">
         {{ 'ResetFilters' | translate }}
       </button>

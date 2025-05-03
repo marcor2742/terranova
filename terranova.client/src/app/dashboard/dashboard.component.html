@@ -1,23 +1,75 @@
 <div class="user-card">
-    @defer () {
-        <p-card>
-            <ng-container *ngIf="user.hasValue()">
-                <div class="user-info">
-                    <img *ngIf="user" [src]="user.value().propicUrl" class="user-avatar" />
-                    <h2>{{ user.value().username }}</h2>
-                    <p>{{ user.value().email }}</p>
-                </div>
-            </ng-container>
-        </p-card>
-    } @placeholder {
-        <!-- Skeleton placeholder while loading -->
-        <p-skeleton shape="circle" height="120px" width="100%" styleClass="mb-2"></p-skeleton>
-        <p-skeleton height="24px" width="60%" styleClass="mb-2"></p-skeleton>
-        <p-skeleton height="18px" width="40%"></p-skeleton>
-    }
+	@defer () {
+	<p-card>
+		<ng-container *ngIf="user.hasValue()">
+			<div class="user-info">
+				<img
+					*ngIf="user"
+					[src]="user.value().propicUrl"
+					class="user-avatar"
+				/>
+				<h2>{{ user.value().username }}</h2>
+				<p>{{ user.value().email }}</p>
+			</div>
+		</ng-container>
+	</p-card>
+	} @placeholder {
+	<!-- Skeleton placeholder while loading -->
+	<p-skeleton
+		shape="circle"
+		height="120px"
+		width="100%"
+		styleClass="mb-2"
+	></p-skeleton>
+	<p-skeleton height="24px" width="60%" styleClass="mb-2"></p-skeleton>
+	<p-skeleton height="18px" width="40%"></p-skeleton>
+	}
 </div>
 <div class="user-favorites">
-	<p-carousel [value]="favCocktails.value()" [numVisible]="getNumvis()">
-
-</p-carousel>
+	<p-carousel
+		[value]="carouselItems"
+		[numVisible]="getNumvis()"
+		[responsiveOptions]="[
+			{ breakpoint: '1024px', numVisible: 3, numScroll: 3 },
+			{ breakpoint: '600px', numVisible: 2, numScroll: 2 },
+			{ breakpoint: '480px', numVisible: 1, numScroll: 1 }
+		]"
+		circular="false"
+	>
+		<ng-template pTemplate="item" let-cocktail>
+			<div class="border border-surface rounded-border m-2 p-4">
+				<img [src]="cocktail.imageUrl" />
+				<div class="flex items-center mb-4 font-medium">
+					<span class="mr-2">{{ cocktail.name }}</span>
+					<img
+						*ngIf="cocktail.isAlcoholic === true"
+						src="./assets/icons/drink.svg"
+						alt="Alcoholic drink"
+						width="20"
+						height="20"
+					/>
+					<img
+						*ngIf="cocktail.isAlcoholic === false"
+						src="./assets/icons/no_drink.svg"
+						alt="Non-alcoholic drink"
+						width="20"
+						height="20"
+					/>
+				</div>
+				<p class="text-sm text-gray-600 flex-grow">
+					{{ cocktail.category }}
+				</p>
+			</div>
+		</ng-template>
+		<ng-template pTemplate="footer">
+			<div class="carousel-footer">
+				<p-button
+					label="Load More"
+					icon="pi pi-plus"
+					(onClick)="loadMoreCocktails()"
+					[disabled]="favCocktails.isLoading()"
+				></p-button>
+			</div>
+		</ng-template>
+	</p-carousel>
 </div>

@@ -7,6 +7,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { CocktailCardComponent } from '../cocktail-card/cocktail-card.component';
 import { Cocktail } from '../Classes/cocktail';
 
+
 @Component({
   selector: 'app-cocktail-list',
   imports: [CommonModule, TranslateModule, ScrollerModule, DividerModule, SkeletonModule, CocktailCardComponent],
