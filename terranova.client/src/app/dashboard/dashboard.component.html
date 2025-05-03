@@ -39,23 +39,26 @@
 		<ng-template pTemplate="item" let-cocktail>
 			<div class="border border-surface rounded-border m-2 p-4">
 				<img [src]="cocktail.imageUrl" />
-				<div class="mb-4 font-medium">{{ cocktail.name }}</div>
-				<div class="flex justify-between items-center">
+				<div class="flex items-center mb-4 font-medium">
+					<span class="mr-2">{{ cocktail.name }}</span>
 					<img
 						*ngIf="cocktail.isAlcoholic === true"
 						src="./assets/icons/drink.svg"
 						alt="Alcoholic drink"
-						width="24"
-						height="24"
+						width="20"
+						height="20"
 					/>
 					<img
 						*ngIf="cocktail.isAlcoholic === false"
 						src="./assets/icons/no_drink.svg"
 						alt="Non-alcoholic drink"
-						width="24"
-						height="24"
+						width="20"
+						height="20"
 					/>
 				</div>
+				<p class="text-sm text-gray-600 flex-grow">
+					{{ cocktail.category }}
+				</p>
 			</div>
 		</ng-template>
 		<ng-template pTemplate="footer">

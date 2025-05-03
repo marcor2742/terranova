@@ -1,5 +1,9 @@
 import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
-import { SearchbarComponent } from '../searchbar/searchbar.component';
+import {
+	bigSearch,
+	SearchbarComponent,
+	SearchFilters,
+} from '../searchbar/searchbar.component';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
@@ -15,7 +19,8 @@ import { FiltersComponent } from '../filters/filters.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CocktailListComponent } from '../cocktail-list/cocktail-list.component';
-import { DashboardComponent } from "../dashboard/dashboard.component";
+import { DashboardComponent } from '../dashboard/dashboard.component';
+import { Cocktail } from '../Classes/cocktail';
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -24,33 +29,45 @@ import { DashboardComponent } from "../dashboard/dashboard.component";
 	selector: 'app-home',
 	standalone: true,
 	imports: [
-    SearchbarComponent,
-    CommonModule,
-    SettingsComponent,
-    ScrollerModule,
-    DividerModule,
-    SkeletonModule,
-    ButtonModule,
-    ToolbarModule,
-    SelectButtonModule,
-    TranslateModule,
-    FiltersComponent,
-    ReactiveFormsModule,
-    CocktailListComponent,
-    DashboardComponent,
-],
+		SearchbarComponent,
+		CommonModule,
+		SettingsComponent,
+		ScrollerModule,
+		DividerModule,
+		SkeletonModule,
+		ButtonModule,
+		ToolbarModule,
+		SelectButtonModule,
+		TranslateModule,
+		FiltersComponent,
+		ReactiveFormsModule,
+		CocktailListComponent,
+		DashboardComponent,
+	],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
 	encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent {
-
-
 	private fb = inject(FormBuilder);
 
 	sidebarForm = this.fb.group({
 		sidebarMode: ['navigation'],
 	});
+
+	activeFilters = signal<SearchFilters>({
+		SearchString: '',
+		PageSize: 10,
+		Page: 1,
+		IsAlcoholic: 'NoPreference',
+		GlassNames: [],
+		Creators: [],
+		Category: '',
+		Ingredients: [],
+		AllIngredients: 'false',
+		ShowOnlyOriginal: 'false',
+	});
+
 	sidebarExpanded = signal<boolean>(true);
 
 	selectedCocktails = signal<number[]>([]);
@@ -58,7 +75,8 @@ export class HomeComponent {
 
 	searchModeActive = signal<boolean>(false);
 	currentSearchTerm = signal<string>('');
-	// searchResults = signal<Cocktail[]>([]);
+	listMode = signal<string>('list');
+	searchMode = signal<string>('dropdown');
 	/**
 	 * Current active view in the main content area
 	 */
@@ -66,12 +84,10 @@ export class HomeComponent {
 		'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
 	>('home');
 
-	readonly sidebarMode = signal<'navigation' | 'filters'>('navigation');
-
 	sidebarModeOptions = [
 		{ label: 'Menu', value: 'navigation', icon: 'pi pi-bars' },
-		{ label: 'Filters', value: 'filters', icon: 'pi pi-filter' }
-	  ];
+		{ label: 'Filters', value: 'filters', icon: 'pi pi-filter' },
+	];
 
 	/**
 	 * Theme service for managing application theme
@@ -118,7 +134,13 @@ export class HomeComponent {
 	 * Sets the active view in the content area
 	 */
 	setActiveView(
-		view: 'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
+		view:
+			| 'home'
+			| 'settings'
+			| 'dashboard'
+			| 'cocktails'
+			| 'favorites'
+			| 'search'
 	) {
 		this.activeView.set(view);
 	}
@@ -130,14 +152,18 @@ export class HomeComponent {
 				...this.selectedCocktails(),
 				Searches.id,
 			]);
+			this.listMode.set('list');
 		} else if (Searches.add === 'only') {
 			this.selectedCocktails.set([Searches.id]);
+			this.listMode.set('list');
 		}
 		if (this.selectedCocktails().length > 0) {
 			this.showCocktailDetails.set(true);
 			this.activeView.set('cocktails');
+			this.listMode.set('list');
 		} else {
 			this.showCocktailDetails.set(false);
+			this.listMode.set('list');
 		}
 	}
 	closeCocktailDetails() {
@@ -145,21 +171,35 @@ export class HomeComponent {
 		this.selectedCocktails.set([]);
 		this.activeView.set('home');
 	}
-	handleFullSearch(searchTerm: string) {
-		this.currentSearchTerm.set(searchTerm);
+	handleFullSearch(filterSearch: bigSearch) {
+		this.currentSearchTerm.set(filterSearch.searchString);
 		this.searchModeActive.set(true);
 		this.sidebarExpanded.set(true);
+		this.sidebarForm.get('sidebarMode')?.setValue('filters');
+		this.activeView.set('cocktails');
+		this.searchMode.set('full');
+		
+		// Update activeFilters with the search term
+		const updatedFilters = {
+		  ...this.activeFilters(),
+		  SearchString: filterSearch.searchString
+		};
+		this.activeFilters.set(updatedFilters);
+		
+		this.selectedCocktails.set(
+		  filterSearch.cocktails.map((cocktail) => cocktail.id)
+		);
+	  }
 
-		this.activeView.set('search');
-	}
-
-
-	changeSidebarMode(mode: 'navigation' | 'filters'): string {
-		this.sidebarMode.set(mode);
-		if (mode === 'navigation') {
-			return 'pi pi-bars';
-		} else {
-			return 'pi pi-filter';
-		}
-	}
+	  pushFilters(filters: SearchFilters) {
+		// Preserve the current search term when updating filters
+		const currentSearchTerm = this.activeFilters().SearchString;
+		
+		this.activeFilters.set({
+		  ...filters,
+		  SearchString: currentSearchTerm || filters.SearchString
+		});
+		
+		this.searchMode.set('full');
+	  }
 }
