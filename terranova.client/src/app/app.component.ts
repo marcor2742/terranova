@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ThemeService } from './services/theme.service';
 import { RouterOutlet } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { LoginRequiredPopupComponent } from './login-required-popup/login-required-popup.component';
 
 /**
@@ -17,14 +17,14 @@ import { LoginRequiredPopupComponent } from './login-required-popup/login-requir
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [RouterOutlet, LoginRequiredPopupComponent],
+	imports: [RouterOutlet, LoginRequiredPopupComponent, CommonModule],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, AfterViewInit {
 	/** Application title */
 	title = 'FrontEnd';
-
+	showLoginPopup = false;
 	/**
 	 * Creates a new AppComponent instance
 	 * @param themeService - Service for managing application themes
