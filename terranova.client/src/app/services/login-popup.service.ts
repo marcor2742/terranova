@@ -1,34 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, Inject } from '@angular/core';
 
-@Injectable({
-	providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LoginPopupService {
-	isVisible = false;
+	private visibilitySubject = new BehaviorSubject<boolean>(false);
+	isVisible$ = this.visibilitySubject.asObservable();
 
-	constructor(private router: Router) { }
+	constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
-	show(): void {
-		this.isVisible = true;
+	get isVisible(): boolean {
+		return this.visibilitySubject.value;
 	}
 
-	hide(): void {
-		this.isVisible = false;
+	showLoginPopup() {
+		// Mostra il popup solo se siamo nel browser
+		if (isPlatformBrowser(this.platformId)) {
+			this.visibilitySubject.next(true);
+		}
 	}
 
-	redirectToLogin(): void {
-		this.hide();
-		this.router.navigateByUrl('/login');
-	}
-
-	onLogin()
-	{
-		this.hide();
-		this.router.navigateByUrl('/login');
-	}
-
-	onClose() {
-		this.hide();
+	hideLoginPopup() {
+		if (isPlatformBrowser(this.platformId)) {
+			this.visibilitySubject.next(false);
+		}
 	}
 }

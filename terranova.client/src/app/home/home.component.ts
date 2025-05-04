@@ -1,10 +1,9 @@
 import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
 import {
-	bigSearch,
 	SearchbarComponent,
 	SearchFilters,
 } from '../searchbar/searchbar.component';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
 import { SettingsComponent } from '../settings/settings.component';
@@ -21,6 +20,9 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CocktailListComponent } from '../cocktail-list/cocktail-list.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { Cocktail } from '../Classes/cocktail';
+import { Router, ActivatedRoute } from '@angular/router';
+import { StateService } from '../services/state-service.service'
+
 /**
  * Main home component of the application
  * Displays the home page with sidebar navigation and theme toggling
@@ -31,7 +33,6 @@ import { Cocktail } from '../Classes/cocktail';
 	imports: [
 		SearchbarComponent,
 		CommonModule,
-		SettingsComponent,
 		ScrollerModule,
 		DividerModule,
 		SkeletonModule,
@@ -41,8 +42,7 @@ import { Cocktail } from '../Classes/cocktail';
 		TranslateModule,
 		FiltersComponent,
 		ReactiveFormsModule,
-		CocktailListComponent,
-		DashboardComponent,
+		RouterModule
 	],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
@@ -50,6 +50,22 @@ import { Cocktail } from '../Classes/cocktail';
 })
 export class HomeComponent {
 	private fb = inject(FormBuilder);
+	private router = inject(Router);
+	private stateService = inject(StateService);
+	private route = inject(ActivatedRoute);
+	themeService = inject(ThemeService);
+
+	constructor() {
+		this.stateService.selectedCocktails$.subscribe((cocktails) => {
+			this.selectedCocktails.set(cocktails);
+		});
+		this.stateService.filters$.subscribe((filters) => {
+			this.activeFilters.set(filters);
+		});
+		this.stateService.searchResults$.subscribe((results) => {
+			this.selectedCocktails.set(results.map((cocktail) => cocktail.id));
+		});
+	}
 
 	sidebarForm = this.fb.group({
 		sidebarMode: ['navigation'],
@@ -92,7 +108,7 @@ export class HomeComponent {
 	/**
 	 * Theme service for managing application theme
 	 */
-	themeService = inject(ThemeService);
+
 
 	/**
 	 * Toggles the sidebar between expanded and collapsed states
@@ -144,62 +160,74 @@ export class HomeComponent {
 	) {
 		this.activeView.set(view);
 	}
-
 	modifySelectedCocktails(Searches: Searchres) {
-		console.log('Cocktail selected:', Searches);
+		let updatedCocktails = [...this.selectedCocktails()];
+
 		if (Searches.add === 'add') {
-			this.selectedCocktails.set([
-				...this.selectedCocktails(),
-				Searches.id,
-			]);
-			this.listMode.set('list');
+			if (!updatedCocktails.includes(Searches.id)) {
+				updatedCocktails.push(Searches.id);
+			}
 		} else if (Searches.add === 'only') {
-			this.selectedCocktails.set([Searches.id]);
-			this.listMode.set('list');
+			updatedCocktails = [Searches.id];
 		}
-		if (this.selectedCocktails().length > 0) {
-			this.showCocktailDetails.set(true);
-			this.activeView.set('cocktails');
-			this.listMode.set('list');
-		} else {
-			this.showCocktailDetails.set(false);
-			this.listMode.set('list');
+
+		this.selectedCocktails.set(updatedCocktails);
+		this.stateService.updateSelectedCocktails(updatedCocktails);
+
+		// Naviga solo se non sei già sulla pagina dei cocktail
+		if (this.router.url !== '/home/cocktails') {
+			this.router.navigate(['cocktails'], { relativeTo: this.route });
 		}
 	}
+
+
+	handleFullSearch(event: { searchString: string, cocktails: any[], page: number }) {
+		if (!event.searchString || event.cocktails.length === 0) {
+			console.warn('Ricerca non valida o nessun risultato trovato.');
+			return;
+		}
+
+		this.stateService.updateSearchResults(event.cocktails);
+		this.router.navigate(['search', event.searchString], { relativeTo: this.route });
+	}
+
+
 	closeCocktailDetails() {
 		this.showCocktailDetails.set(false);
 		this.selectedCocktails.set([]);
 		this.activeView.set('home');
 	}
-	handleFullSearch(filterSearch: bigSearch) {
-		this.currentSearchTerm.set(filterSearch.searchString);
-		this.searchModeActive.set(true);
-		this.sidebarExpanded.set(true);
-		this.sidebarForm.get('sidebarMode')?.setValue('filters');
-		this.activeView.set('cocktails');
-		this.searchMode.set('full');
-		
-		// Update activeFilters with the search term
-		const updatedFilters = {
-		  ...this.activeFilters(),
-		  SearchString: filterSearch.searchString
-		};
-		this.activeFilters.set(updatedFilters);
-		
-		this.selectedCocktails.set(
-		  filterSearch.cocktails.map((cocktail) => cocktail.id)
-		);
-	  }
 
-	  pushFilters(filters: SearchFilters) {
+
+	//handleFullSearch(filterSearch: bigSearch) {
+	//	this.currentSearchTerm.set(filterSearch.searchString);
+	//	this.searchModeActive.set(true);
+	//	this.sidebarExpanded.set(true);
+	//	this.sidebarForm.get('sidebarMode')?.setValue('filters');
+	//	this.activeView.set('cocktails');
+	//	this.searchMode.set('full');
+
+	//	// Update activeFilters with the search term
+	//	const updatedFilters = {
+	//	  ...this.activeFilters(),
+	//	  SearchString: filterSearch.searchString
+	//	};
+	//	this.activeFilters.set(updatedFilters);
+
+	//	this.selectedCocktails.set(
+	//	  filterSearch.cocktails.map((cocktail) => cocktail.id)
+	//	);
+	//  }
+
+	pushFilters(filters: SearchFilters) {
 		// Preserve the current search term when updating filters
 		const currentSearchTerm = this.activeFilters().SearchString;
-		
+
 		this.activeFilters.set({
-		  ...filters,
-		  SearchString: currentSearchTerm || filters.SearchString
+			...filters,
+			SearchString: currentSearchTerm || filters.SearchString
 		});
-		
+
 		this.searchMode.set('full');
-	  }
+	}
 }
