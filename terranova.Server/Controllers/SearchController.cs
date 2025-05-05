@@ -28,7 +28,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapGet("/search", SearchCocktails)
-               .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata con filtri. se non sei loggato o se il parametro showOnlyOriginal é true allora non verranno mostrati i drink con un creator nel db")
+               .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata con filtri. se non sei loggato o se il parametro showOnlyOriginal é true allora non verranno mostrati i drink con un creator nel db. contenuto alcolico: Alcoholic, NonAlcoholic, NoPreference")
                .WithOpenApi();
 
             app.MapGet("/search/{id}", SearchById)
@@ -500,8 +500,11 @@ namespace terranova.Server.Controllers
 
             if (!string.IsNullOrWhiteSpace(data.IsAlcoholic))
             {
-                bool isAlcoholic = data.IsAlcoholic.ToLower() == "true";
-                query = query.Where(c => c.IsAlcoholic == isAlcoholic);
+                if (!(data.IsAlcoholic.ToLower() == "nopreference"))
+                {
+                    bool isAlcoholic = data.IsAlcoholic.ToLower() == "alcoholic";
+                    query = query.Where(c => c.IsAlcoholic == isAlcoholic);
+                }
             }
 
             if (data.GlassNames != null && data.GlassNames.Length > 0)
