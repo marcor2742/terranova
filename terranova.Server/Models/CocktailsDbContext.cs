@@ -10,6 +10,7 @@ namespace terranova.Server.Models
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<CocktailIngredient> CocktailsIngredients { get; set; }
         public DbSet<Glass> Glasses { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Instructions> Instructions { get; set; }
         public DbSet<Measure> Measures { get; set; }
 
@@ -23,11 +24,17 @@ namespace terranova.Server.Models
             modelBuilder.Entity<IdentityUser>()
                 .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
 
-            //relation of cocktail - glass, instructions, creator (userId)
+            //relation of cocktail - glass, category, instructions, e creator (userId?)
             modelBuilder.Entity<Cocktail>()
                 .HasOne(c => c.Glass)
                 .WithMany()
                 .HasForeignKey(c => c.GlassKey)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Cocktail>()
+                .HasOne(c => c.Category)
+                .WithMany()
+                .HasForeignKey(c => c.CategoryKey)
                 .IsRequired(false);
 
             modelBuilder.Entity<Cocktail>()

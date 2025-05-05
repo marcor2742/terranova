@@ -17,12 +17,19 @@
         public string? It { get; set; }
     }
 
+    public class Category
+    {
+        public long Id { get; set; }
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+    }
+
     public class Cocktail
     {
         public long Id { get; set; }
         public long? OldId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string? Category { get; set; }
+        public long? CategoryKey { get; set; }
         public bool IsAlcoholic { get; set; }
         public long GlassKey { get; set; }
         public long InstructionsKey { get; set; }
@@ -35,6 +42,7 @@
         public string? Creator { get; set; }
 
         public Glass? Glass { get; set; }
+        public Category? Category { get; set; }
         public Instructions? Instructions { get; set; }
         public List<CocktailIngredient> CocktailIngredients { get; set; } = new();
     }
