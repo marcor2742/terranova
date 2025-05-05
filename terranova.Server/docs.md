@@ -145,3 +145,5 @@ vedere come si fa la ricerca per simili. penso di non farlo. magari elastic sear
 ripensare all'admin
 
 testare suggested drinks quando c'è il forntend. testare soprattutto per utenti minorenni che hanno pochi drink disponibili. commentare la parte di DEBUG
+
+perchè TablesController.cs sono tutti AllowAnonymous?
