@@ -1,118 +1,86 @@
 <div style="width: 180px; height: 180px; position: fixed; z-index: -1; top: 50%; left: 50%; transform: translateX(150px) translateY(-320px);">
-	<img src="assets/login/limone.png" class="lemon-slice" alt="Fetta di limone">
+    <img src="assets/login/limone.png" class="lemon-slice" alt="Fetta di limone">
 </div>
 <div style="width: 180px; height: 180px; position: fixed; z-index: -1; top: 50%; left: 50%; transform: translateX(-350px) translateY(90px);">
-	<img src="assets/login/menta.png" class="mint-leaf" alt="Foglia di menta" style="transform: rotate(-45deg);">
+    <img src="assets/login/menta.png" class="mint-leaf" alt="Foglia di menta" style="transform: rotate(-45deg);">
 </div>
 
 <div class="box">
-	@if (showEmailConfirmation()) {
-	<h2>{{ "RegisterPage" | translate }}</h2>
-	} @else {
-	<h2>{{ "LoginPage" | translate }}</h2>
-	}
+    @if (showEmailConfirmation()) {
+    <h2>{{ "RegisterPage" | translate }}</h2>
+    } @else {
+    <h2>{{ "LoginPage" | translate }}</h2>
+    }
 
-	<form [formGroup]="loginForm" (ngSubmit)="showEmailConfirmation() ? register() : login()">
-		<!-- Username field with user existence check -->
-		<div class="form-field">
-			<label for="username">Username:</label>
-			<input id="username" type="text" formControlName="username" />
-			<div *ngIf="
-					loginForm.get('username')?.touched &&
-					loginForm.get('username')?.errors
-				"
-				 class="error">
-				<div *ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))">
-					Username is required
-				</div>
-				<div *ngIf="loginForm.get('username')?.errors?.['minlength']">
-					Username must be at least 4 characters
-				</div>
-			</div>
-		</div>
+    <!-- Remove the ngSubmit from the form -->
+    <form [formGroup]="loginForm">
+        <!-- Username field with user existence check -->
+        <div class="form-field">
+            <label for="username">Username:</label>
+            <input id="username" type="text" formControlName="username" />
+            <div *ngIf="
+                    loginForm.get('username')?.touched &&
+                    loginForm.get('username')?.errors
+                "
+                 class="error">
+                <div *ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))">
+                    Username is required
+                </div>
+                <div *ngIf="loginForm.get('username')?.errors?.['minlength']">
+                    Username must be at least 4 characters
+                </div>
+            </div>
+        </div>
 
-		<div class="form-field" *ngIf="showEmailConfirmation()">
-			<label for="email">Full Email:</label>
-			<input id="email" type="email" formControlName="email" />
-			<div *ngIf="
-					loginForm.get('email')?.touched &&
-					loginForm.get('email')?.errors
-				"
-				 class="error">
-				<div *ngIf="loginForm.get('email')?.errors">
-					Please enter a valid email
-				</div>
-			</div>
-			<!-- Email existence feedback -->
-			<div *ngIf="emailError()" class="error email-exists">
-				{{ emailError() }}
-			</div>
-		</div>
+        <div class="form-field" *ngIf="showEmailConfirmation()">
+            <label for="email">Full Email:</label>
+            <input id="email" type="email" formControlName="email" />
+            <div *ngIf="
+                    loginForm.get('email')?.touched &&
+                    loginForm.get('email')?.errors
+                "
+                 class="error">
+                <div *ngIf="loginForm.get('email')?.errors">
+                    Please enter a valid email
+                </div>
+            </div>
+            <!-- Email existence feedback -->
+            <div *ngIf="emailError()" class="error email-exists">
+                {{ emailError() }}
+            </div>
+        </div>
 
-		<!-- Password field -->
+        <!-- Password field -->
+        <div class="form-field">
+            <label for="password">Password:</label>
+            <input id="password" type="password" formControlName="password" />
+            <div *ngIf="
+                    loginForm.get('password')?.touched &&
+                    loginForm.get('password')?.errors
+                "
+                 class="error">
+                <div *ngIf="loginForm.get('password')?.errors?.['required']">
+                    Password is required
+                </div>
+            </div>
+        </div>
 
-		<div class="form-field">
-			<label for="password">Password:</label>
-			<input id="password" type="password" formControlName="password" />
-			<div *ngIf="
-					loginForm.get('password')?.touched &&
-					loginForm.get('password')?.errors
-				"
-				 class="error">
-				<div *ngIf="loginForm.get('password')?.errors?.['required']">
-					Password is required
-				</div>
-			</div>
-		</div>
+        <!-- In your button group div -->
+        <div class="button-group">
+            <my-ui-button text="LOGIN"
+                          variant="default"
+                          size="lg"
+                          type="button"
+                          [disabled]="!loginForm.valid"
+                          (buttonClick)="login()"
+                          class="visible-button"></my-ui-button>
 
-		<!-- In your button group div -->
-		<div class="button-group">
-			<my-ui-button text="LOGIN"
-						  variant="default"
-						  size="lg"
-						  [disabled]="!loginForm.valid"
-						  (buttonClick)="login()"
-						  class="visible-button"></my-ui-button>
-
-			<my-ui-button text="REGISTER"
-						  variant="outline"
-						  size="lg"
-						  (buttonClick)="register()"
-						  class="visible-button"></my-ui-button>
-		</div>
-	</form>
-
-	<p>Form Status: {{ loginForm.status }}</p>
-	<!-- Email Confirmation Modal -->
-	<!-- <app-confirmation-modal
-		*ngIf="showEmailConfirmation()"
-		[show]="showEmailConfirmation()"
-		title="Account Found"
-		[message]="
-			'An account with the email ' +
-			(loginForm.get('email')?.value || '') +
-			' already exists.'
-		"
-		description="Would you like to sign in as"
-		[highlightedText]="foundUsername()"
-		confirmText="Yes, that's me"
-		cancelText="No, use different email"
-		(confirmed)="confirmEmailUser()"
-		(cancelled)="cancelEmailConfirmation()"
-	>
-		<p>ciao</p>
-	</app-confirmation-modal> -->
+            <my-ui-button text="REGISTER"
+                          variant="outline"
+                          size="lg"
+                          type="button"
+                          (buttonClick)="register()"
+                          class="visible-button"></my-ui-button>
+        </div>
+    </form>
 </div>
-
-<!-- Display data when available -->
-<!--<div *ngIf="dataAvailable(); else noData" class="data-display">
-	<h3>Form Data:</h3>
-	<p>Username = {{ loginForm.get("username")?.value || "" }}</p>
-	<p>Password = {{ loginForm.get("password")?.value || "" }}</p>
-	<p>Email Provider = {{ loginForm.get("email.provider")?.value || "" }}</p>
-	<p>Email = {{ loginForm.get("email.emailString")?.value || "" }}</p>
-</div>
-
-<ng-template #noData>
-	<h2 style="color: chartreuse">Complete the form to see data</h2>
-</ng-template>-->

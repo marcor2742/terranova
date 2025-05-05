@@ -1,4 +1,12 @@
-import { Component, input, Resource, signal, computed, Inject, PLATFORM_ID } from '@angular/core';
+import {
+	Component,
+	input,
+	Resource,
+	signal,
+	computed,
+	Inject,
+	PLATFORM_ID,
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { CardModule } from 'primeng/card';
@@ -41,14 +49,22 @@ export class DashboardComponent {
 	constructor(@Inject(PLATFORM_ID) private platformId: Object) {
 		if (isPlatformBrowser(this.platformId)) {
 			this.user = httpResource<User>(this.userProfileUrl, {
-				defaultValue: new User(
-					'stuff', 'stuff@stuff.cm', 'stuffers'
-				)
+				defaultValue: new User('stuff', 'stuff@stuff.cm', 'stuffers'),
 			});
 
 			this.favCocktails = httpResource<Cocktail[]>(
-				`${this.favoriteUrl}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`
-				, {
+				() => {
+					console.log('fav carousel called');
+					console.log(
+						`${
+							this.favoriteUrl
+						}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`
+					);
+					return `${
+						this.favoriteUrl
+					}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`;
+				},
+				{
 					defaultValue: [
 						new Cocktail(
 							1,
@@ -66,17 +82,27 @@ export class DashboardComponent {
 							],
 							'Mix all ingredients in a glass and stir well.',
 							'https://example.com/mojito.jpg'
-						)]
-				});
+						),
+					],
+				}
+			);
 		}
 	}
 	ngDoCheck() {
 		if (this.favCocktails && this.favCocktails.hasValue()) {
-			const newOnes = this.favCocktails.value()!.filter(
-				c => !this.cachedCocktails().some(existing => existing.id === c.id)
-			);
+			const newOnes = this.favCocktails
+				.value()!
+				.filter(
+					(c) =>
+						!this.cachedCocktails().some(
+							(existing) => existing.id === c.id
+						)
+				);
 			if (newOnes.length > 0) {
-				this.cachedCocktails.set([...this.cachedCocktails(), ...newOnes]);
+				this.cachedCocktails.set([
+					...this.cachedCocktails(),
+					...newOnes,
+				]);
 			}
 		}
 	}
@@ -98,10 +124,13 @@ export class DashboardComponent {
 	}
 	get Disabled(): boolean {
 		if (isPlatformBrowser(this.platformId)) {
-			return this.favCocktails?.isLoading() || this.user?.isLoading() || false;
-		}
-		else {
-			return false
+			return (
+				this.favCocktails?.isLoading() ||
+				this.user?.isLoading() ||
+				false
+			);
+		} else {
+			return false;
 		}
 	}
 }
