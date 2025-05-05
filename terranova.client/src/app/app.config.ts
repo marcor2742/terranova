@@ -108,3 +108,5 @@ export const appConfig: ApplicationConfig = (() => {
 		return { providers: [] }; // Return an empty configuration or handle as needed
 	}
 })();
+
+									//ciao
