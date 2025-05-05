@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System.Security.Claims;
 using terranova.Server.Models;
 using terranova.Server.Services;
@@ -39,11 +40,22 @@ namespace terranova.Server.Controllers
                 .Select(f => f.CocktailId)
                 .ToListAsync();
 
+            var maxCount = await userContext.SearchHistories
+                .Where(s => s.UserId == userId)
+                .MaxAsync(s => s.Count);
+            if (maxCount == 0) maxCount = 1;
+
             var searchHistoryQuery = await userContext.SearchHistories
                 .Where(s => s.UserId == userId)
-                .OrderBy(s => s.Count)
-                .Select(s => s.CocktailId)
+            .OrderBy(s => s.Count)
+                .SelectMany(s => Enumerable.Repeat(s.CocktailId, (int)(s.Count / (double)maxCount * 10)))
                 .ToListAsync();
+
+            var createdDrinksQuery = await dbContext.Cocktails
+                .Where(c => c.Creator == userId)
+                .Select(c => c.Id)
+                .ToListAsync();
+
 
             var isOver18 = user.FindFirstValue("Over18") == "true";
             var PreferAlcoholic = user.FindFirstValue("AlcoholContentPreference");
@@ -74,8 +86,17 @@ namespace terranova.Server.Controllers
                     .ThenInclude(ci => ci.Measure)
                 .ToListAsync();
 
+            var createdDrinks = await dbContext.Cocktails
+                .Where(s => createdDrinksQuery.Contains(s.Id))
+                .Include(s => s.Glass)
+                .Include(s => s.CocktailIngredients)
+                    .ThenInclude(ci => ci.Ingredient)
+                .Include(f => f.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
+                .ToListAsync();
+
             //to avoid suggesting drinks that are already in favorites or search history
-            var seenCocktailIds = favoritesQuery.Concat(searchHistoryQuery).Distinct().ToHashSet();
+            var seenCocktailIds = favoritesQuery.Concat(searchHistoryQuery).Concat(createdDrinksQuery).Distinct().ToHashSet();
 
             var userIngredientVector = new Dictionary<string, double>();
             var userGlassPreferences = new Dictionary<string, double>();
@@ -95,9 +116,18 @@ namespace terranova.Server.Controllers
                 userIngredientVector,
                 userGlassPreferences,
                 userCategoryPreferences,
-                ingredientWeight: 2.0,
-                glassWeight: 0.2,
-                categoryWeight: 0.5);
+                ingredientWeight: 1.0,
+                glassWeight: 0.1,
+                categoryWeight: 0.2);
+
+            AnalyzeUserPreferences(
+                createdDrinks,
+                userIngredientVector,
+                userGlassPreferences,
+                userCategoryPreferences,
+                ingredientWeight: 4.0,
+                glassWeight: 0.6,
+                categoryWeight: 1.2);
 
             if (!string.IsNullOrEmpty(bestIngredientPref))
             {
