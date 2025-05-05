@@ -84,7 +84,8 @@
 
 		<!-- Main Content -->
 		<main class="content">
-			@switch (activeView()) {
+			<router-outlet></router-outlet>
+			<!--@switch (activeView()) {
 				@case ('home') {
 					<div class="content-inner">
 						<h1>Welcome to Terranova</h1>
@@ -152,7 +153,7 @@
 						<p>Filters are active (integration pending).</p>
 					</div>
 				}
-			}
+			}-->
 		</main>
 	</div>
 </div>

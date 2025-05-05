@@ -1,9 +1,11 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
 	Component,
 	computed,
 	effect,
+	Inject,
 	inject,
+	PLATFORM_ID,
 	Resource,
 	signal,
 } from '@angular/core';
@@ -51,7 +53,7 @@ export class LoginPageComponent {
 		email: ['', Validators.email],
 	});
 
-	constructor() {
+	constructor (@Inject(PLATFORM_ID) private platformId: Object) {
 		// Setup form value change listeners
 		this.loginForm.get('username')?.valueChanges.subscribe((value) => {
 			this.username.set(value || '');
@@ -183,7 +185,9 @@ export class LoginPageComponent {
 					const { token, refreshToken } = response.body!;
 					this.AuthService.setTokens(token, refreshToken);
 					const userId = this.AuthService.getUserIdFromToken(token);
-					localStorage.setItem('userId', userId);
+					if (isPlatformBrowser(this.platformId)) {
+						localStorage.setItem('userId', userId);
+					}
 					this.router.navigate(['/home']);
 				} else {
 					// Handle non-200 status codes

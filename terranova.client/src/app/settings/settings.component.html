@@ -7,13 +7,13 @@
 
 			<div class="setting-row">
 				<label for="theme">Theme</label>
-				<p-dropdown
+				<p-select
 					id="theme"
 					formControlName="theme"
 					[options]="themeOptions"
 					optionLabel="label"
 					optionValue="value"
-				></p-dropdown>
+				></p-select>
 			</div>
 		</div>
 
@@ -23,24 +23,24 @@
 				<label for="searchPreference">{{
 					"searchpreferences" | translate
 				}}</label>
-				<p-dropdown
+				<p-select
 					id="searchPreference"
 					formControlName="searchPreference"
 					[options]="searchPreferenceModes"
 					optionLabel="label"
 					optionValue="value"
-				></p-dropdown>
+				></p-select>
 			</div>
 
 			<div class="setting-row">
 				<label for="language">Language</label>
-				<p-dropdown
+				<p-select
 					id="language"
 					formControlName="language"
 					[options]="languageOptions"
 					optionLabel="label"
 					optionValue="value"
-				></p-dropdown>
+				></p-select>
 			</div>
 
 			<div class="setting-row">

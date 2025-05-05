@@ -149,7 +149,7 @@ export class SearchbarComponent implements OnInit {
 		effect(() => {
 			// Only trigger this effect when the resource is loaded, not pending
 			if (this.SearchResource.isLoading()) return;
-			
+
 			// Only proceed if we're in 'full' mode and have search results
 			const mode = this.searchMode();
 			const results = this.SearchResource.value();
@@ -181,18 +181,18 @@ export class SearchbarComponent implements OnInit {
 					this.lastEmittedSearch = current;
 				}
 			}
-		//	if (mode === 'full' && results && results.length > 0) {
-		//		console.log('Auto-emitting search results in full mode:', results.length, 'cocktails found');
-				
-		//		// Don't emit empty search string results to prevent API errors
-		//		if (searchString && searchString.trim().length > 0) {
-		//			this.continuedSearch.emit({
-		//				cocktails: results,
-		//				searchString: searchString,
-		//				page: this.currentPage()
-		//			});
-		//		}
-		//	}
+			//	if (mode === 'full' && results && results.length > 0) {
+			//		console.log('Auto-emitting search results in full mode:', results.length, 'cocktails found');
+
+			//		// Don't emit empty search string results to prevent API errors
+			//		if (searchString && searchString.trim().length > 0) {
+			//			this.continuedSearch.emit({
+			//				cocktails: results,
+			//				searchString: searchString,
+			//				page: this.currentPage()
+			//			});
+			//		}
+			//	}
 		});
 	}
 
@@ -329,7 +329,7 @@ export class SearchbarComponent implements OnInit {
 				});
 
 		}
-		
+
 	}
 
 	/**
