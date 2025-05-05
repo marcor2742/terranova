@@ -40,6 +40,22 @@ namespace terranova.Server.Data
                     }
                     context.SaveChanges();
 
+                    // Passo 1.5: Aggiungi tutte le categorie
+                    var allCategoriesDict = new Dictionary<string, Category>();
+                    foreach (var cocktailJson in cocktails)
+                    {
+                        if (cocktailJson.StrCategory == null || string.IsNullOrEmpty(cocktailJson.StrCategory)) continue;
+
+                        var categoryName = cocktailJson.StrCategory.Trim().ToLower();
+                        if (!allCategoriesDict.ContainsKey(categoryName))
+                        {
+                            var category = new Category { Name = cocktailJson.StrCategory.Trim() };
+                            allCategoriesDict.Add(categoryName, category);
+                            context.Categories.Add(category);
+                        }
+                    }
+                    context.SaveChanges();
+
                     // Passo 2: Aggiungi tutti gli ingredienti
                     var allIngredientsDict = new Dictionary<string, Ingredient>();
                     foreach (var cocktailJson in cocktails)
@@ -63,6 +79,7 @@ namespace terranova.Server.Data
 
                     // Carica tutti i bicchieri e ingredienti salvati per avere i loro ID
                     var glassesDict = context.Glasses.ToDictionary(g => g.Name.ToLower(), g => g.Id);
+                    var categoriesDict = context.Categories.ToDictionary(c => c.Name.ToLower(), c => c.Id);
                     var ingredientsDict = context.Ingredients.ToDictionary(i => i.Name.ToLower(), i => i.Id);
 
                     // Passo 3: Processa i cocktail uno alla volta
@@ -88,6 +105,17 @@ namespace terranova.Server.Data
 
                             var glassId = glassesDict[glassName];
 
+                            // Categoria
+                            long? categoryId = null;
+                            if (!string.IsNullOrEmpty(cocktailJson.StrCategory))
+                            {
+                                var categoryName = cocktailJson.StrCategory.Trim().ToLower();
+                                if (categoriesDict.ContainsKey(categoryName))
+                                {
+                                    categoryId = categoriesDict[categoryName];
+                                }
+                            }
+
                             // Crea le istruzioni
                             var instructions = new Instructions
                             {
@@ -107,7 +135,7 @@ namespace terranova.Server.Data
                                 OldId = !string.IsNullOrEmpty(cocktailJson.IdDrink) ?
                                     Convert.ToInt64(cocktailJson.IdDrink) : null,
                                 Name = cocktailJson.StrDrink,
-                                Category = cocktailJson.StrCategory,
+                                CategoryKey = categoryId,
                                 Iba = cocktailJson.StrIBA,
                                 IsAlcoholic = cocktailJson.StrAlcoholic == "Alcoholic",
                                 ImageUrl = cocktailJson.StrDrinkThumb,
