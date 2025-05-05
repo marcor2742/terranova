@@ -169,7 +169,6 @@ export class SearchbarComponent implements OnInit {
 					page
 				};
 
-				// Confronta con l'ultimo stato emesso
 				const isSame =
 					this.lastEmittedSearch &&
 					this.lastEmittedSearch.searchString === current.searchString &&
@@ -181,18 +180,6 @@ export class SearchbarComponent implements OnInit {
 					this.lastEmittedSearch = current;
 				}
 			}
-			//	if (mode === 'full' && results && results.length > 0) {
-			//		console.log('Auto-emitting search results in full mode:', results.length, 'cocktails found');
-
-			//		// Don't emit empty search string results to prevent API errors
-			//		if (searchString && searchString.trim().length > 0) {
-			//			this.continuedSearch.emit({
-			//				cocktails: results,
-			//				searchString: searchString,
-			//				page: this.currentPage()
-			//			});
-			//		}
-			//	}
 		});
 	}
 
@@ -347,15 +334,26 @@ export class SearchbarComponent implements OnInit {
 	}
 
 	performSearch() {
-		const searchTerm = this.searchForm.get('searchTerm')?.value;
-		if (searchTerm && searchTerm.length >= this.MIN_SEARCH_LENGTH) {
-			this.continuedSearch.emit({
-				cocktails: this.SearchResource.value() || [],
-				searchString: searchTerm,
-				page: this.currentPage(),
-			});
-			// this.searchForm.get('searchTerm')?.setValue('');
-			// this.searchParams.set('');
-		}
+	  const searchTerm = this.searchForm.get('searchTerm')?.value;
+	  
+	  if (!searchTerm || searchTerm.trim().length < this.MIN_SEARCH_LENGTH) {
+		console.warn(`Search term too short: "${searchTerm}"`);
+		return;
+	  }
+	  
+	  console.log(`Executing search for: "${searchTerm}"`);
+	  
+	  // First, update the search params to trigger the HTTP resource
+	  this.searchParams.set(searchTerm);
+	  
+	  // Wait briefly for the resource to load if it's not already loaded
+	  setTimeout(() => {
+		this.continuedSearch.emit({
+		  cocktails: this.SearchResource.value() || [],
+		  searchString: searchTerm,
+		  page: this.currentPage(),
+		});
+		console.log(`Emitted search with ${this.SearchResource.value()?.length || 0} results`);
+	  }, 100);
 	}
 }

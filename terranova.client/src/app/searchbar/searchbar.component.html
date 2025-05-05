@@ -1,6 +1,6 @@
 <div class="search-wrapper p-fluid">
 	<div class="search-container">
-		<form [formGroup]="searchForm" class="search-form">
+		<form [formGroup]="searchForm" (ngSubmit)="performSearch()" class="search-form">
 			<p-button
 				icon="pi pi-search"
 				styleClass="search-button p-button-rounded p-button-text"

@@ -21,7 +21,7 @@ import { CocktailListComponent } from '../cocktail-list/cocktail-list.component'
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { Cocktail } from '../Classes/cocktail';
 import { Router, ActivatedRoute } from '@angular/router';
-import { StateService } from '../services/state-service.service'
+import { StateService } from '../services/state-service.service';
 
 /**
  * Main home component of the application
@@ -42,7 +42,7 @@ import { StateService } from '../services/state-service.service'
 		TranslateModule,
 		FiltersComponent,
 		ReactiveFormsModule,
-		RouterModule
+		RouterModule,
 	],
 	templateUrl: './home.component.html',
 	styleUrl: './home.component.scss',
@@ -109,7 +109,6 @@ export class HomeComponent {
 	 * Theme service for managing application theme
 	 */
 
-
 	/**
 	 * Toggles the sidebar between expanded and collapsed states
 	 */
@@ -160,6 +159,7 @@ export class HomeComponent {
 	) {
 		this.activeView.set(view);
 	}
+
 	modifySelectedCocktails(Searches: Searchres) {
 		let updatedCocktails = [...this.selectedCocktails()];
 
@@ -180,24 +180,59 @@ export class HomeComponent {
 		}
 	}
 
-
-	handleFullSearch(event: { searchString: string, cocktails: any[], page: number }) {
-		if (!event.searchString || event.cocktails.length === 0) {
-			console.warn('Ricerca non valida o nessun risultato trovato.');
+	handleFullSearch(event: {
+		searchString: string;
+		cocktails: any[];
+		page: number;
+	}) {
+		if (!event.searchString || event.searchString.trim().length === 0) {
+			console.warn('Empty search string, not navigating');
 			return;
 		}
 
+		// Set UI state (from old implementation)
+		this.currentSearchTerm.set(event.searchString);
+		this.searchModeActive.set(true);
+		this.sidebarExpanded.set(true);
+		this.sidebarForm.get('sidebarMode')?.setValue('filters');
+		this.activeView.set('search');
+		this.searchMode.set('full');
+
+		// Update filters with search term
+		const updatedFilters = {
+			...this.activeFilters(),
+			SearchString: event.searchString,
+			Page: event.page || 1,
+		};
+
+		// Update state
+		this.activeFilters.set(updatedFilters);
+		this.stateService.updateFilters(updatedFilters);
+
+		// Process cocktail IDs and update selected cocktails
+		if (event.cocktails && event.cocktails.length > 0) {
+			const cocktailIds = event.cocktails.map((cocktail) => cocktail.id);
+			this.selectedCocktails.set(cocktailIds);
+			this.stateService.updateSelectedCocktails(cocktailIds);
+		}
+
+		// Update search results in state service
 		this.stateService.updateSearchResults(event.cocktails);
-		this.router.navigate(['search', event.searchString], { relativeTo: this.route });
+
+		// Navigate using router
+		this.router.navigate(['search', event.searchString], {
+			relativeTo: this.route,
+		});
+
+		console.log(
+			`Navigating to search with ${event.cocktails.length} results for "${event.searchString}"`
+		);
 	}
-
-
 	closeCocktailDetails() {
 		this.showCocktailDetails.set(false);
 		this.selectedCocktails.set([]);
 		this.activeView.set('home');
 	}
-
 
 	//handleFullSearch(filterSearch: bigSearch) {
 	//	this.currentSearchTerm.set(filterSearch.searchString);
@@ -218,16 +253,36 @@ export class HomeComponent {
 	//	  filterSearch.cocktails.map((cocktail) => cocktail.id)
 	//	);
 	//  }
-
 	pushFilters(filters: SearchFilters) {
 		// Preserve the current search term when updating filters
 		const currentSearchTerm = this.activeFilters().SearchString;
 
-		this.activeFilters.set({
+		const updatedFilters = {
 			...filters,
-			SearchString: currentSearchTerm || filters.SearchString
-		});
+			SearchString: currentSearchTerm || filters.SearchString,
+		};
 
+		// Update both local and state service
+		this.activeFilters.set(updatedFilters);
+		this.stateService.updateFilters(updatedFilters);
 		this.searchMode.set('full');
+
+		// If we have a search term, navigate to search route
+		if (updatedFilters.SearchString) {
+			this.router.navigate(['search', updatedFilters.SearchString], {
+				relativeTo: this.route,
+			});
+		}
 	}
+	// pushFilters(filters: SearchFilters) {
+	// 	// Preserve the current search term when updating filters
+	// 	const currentSearchTerm = this.activeFilters().SearchString;
+
+	// 	this.activeFilters.set({
+	// 		...filters,
+	// 		SearchString: currentSearchTerm || filters.SearchString,
+	// 	});
+
+	// 	this.searchMode.set('full');
+	// }
 }
