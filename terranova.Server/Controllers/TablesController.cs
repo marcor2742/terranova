@@ -16,7 +16,29 @@ namespace terranova.Server.Controllers
                .WithDescription("mostra tutta la tabella degli ingredients. con paginazione")
                .WithOpenApi();
 
+            app.MapGet("/categoriesTable", showCategories)
+               .WithDescription("mostra tutta la tabella degli ingredients. con paginazione")
+               .WithOpenApi();
+
             return app;
+        }
+
+        [AllowAnonymous]
+        private static async Task<IResult> showCategories(
+            [AsParameters] DataForTables data,
+            CocktailsDbContext dbContext)
+        {
+            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 1000) : 100;
+            int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
+            int skip = (page - 1) * pageSize;
+
+            var query = await dbContext.Categories
+                .OrderBy(x => x.Name)
+                .Skip(skip)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Results.Ok(query);
         }
 
         [AllowAnonymous]
