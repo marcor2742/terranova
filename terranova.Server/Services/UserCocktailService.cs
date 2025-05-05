@@ -92,6 +92,7 @@ namespace terranova.Server.Services
             var cocktails = await _cocktailContext.Cocktails
                 .Where(c => favoriteIds.Contains(c.Id))
                 .Include(c => c.Glass)
+                .Include(c => c.Category)
                 .Include(c => c.Instructions)
                 .Include(c => c.CocktailIngredients)
                     .ThenInclude(ci => ci.Ingredient)
@@ -105,7 +106,7 @@ namespace terranova.Server.Services
                 {
                     c.Id,
                     c.Name,
-                    c.Category,
+                    Category = c.Category?.Name,
                     c.IsAlcoholic,
                     Glass = c.Glass?.Name,
                     Instructions = new
