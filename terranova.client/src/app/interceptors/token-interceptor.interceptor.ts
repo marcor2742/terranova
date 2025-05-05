@@ -1,4 +1,4 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
 import { from, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { isPlatformBrowser } from '@angular/common';
 /**
  * HTTP interceptor for adding authentication tokens to requests
  * Automatically adds the Bearer token to all non-auth endpoints
- * 
+ *
  * @param req - The outgoing HTTP request
  * @param next - The next interceptor in the chain
  * @returns An observable of the HTTP event stream
@@ -32,36 +32,40 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
 		return next(req);
 	}
 
-	// Get token from token store
-	const token = tokenStore.ensureValidAccessToken();
-
 	// Add the Authorization header if we have a token
 	if (!isPlatformBrowser(platformId)) {
 		return next(req);
 	}
+
 	return from(tokenStore.ensureValidAccessToken()).pipe(
 		switchMap((token) => {
 			if (token) {
 				req = req.clone({
 					setHeaders: {
-						Authorization: `Bearer ${token}`
-					}
+						Authorization: `Bearer ${token}`,
+					},
 				});
 				console.log('Token added to request:', token);
 			}
 			return next(req);
 		}),
 		catchError((error) => {
-			console.error('Error during token renewal:', error);
+			console.error('Error during request:', error);
 
-			// Handle token renewal failure (e.g., redirect to login)
-			tokenStore.clearTokens();
-			if (isPlatformBrowser(platformId)) {
-				loginPopupService.showLoginPopup();
-				console.log('showing popup from token interceptor');
+			// Only handle 401 Unauthorized errors
+			if (error instanceof HttpErrorResponse && error.status === 401) {
+				console.log('401 Unauthorized error detected');
+
+				// Clear tokens and show login popup only for 401 errors
+				tokenStore.clearTokens();
+
+				if (isPlatformBrowser(platformId)) {
+					loginPopupService.showLoginPopup();
+					console.log('Showing login popup due to 401 error');
+				}
 			}
-			console.log('showing popup from refresh interceptor');
-			// Return an error observable
+
+			// Always return the error regardless of status
 			return throwError(() => error);
 		})
 	);

@@ -17,6 +17,7 @@ export class LoginPopupService {
 	showLoginPopup() {
 		// Mostra il popup solo se siamo nel browser
 		if (isPlatformBrowser(this.platformId)) {
+			console.log('LoginPopupService: showing popup');
 			this.visibilitySubject.next(true);
 		}
 	}
