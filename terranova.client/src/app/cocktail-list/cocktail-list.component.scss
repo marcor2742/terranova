@@ -1,0 +1,34 @@
+.no-results-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.no-results-message {
+  background-color: var(--surface-card);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  width: 100%;
+  
+  h3 {
+    margin: 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--text-color);
+  }
+  
+  p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary-color);
+  }
+  
+  i {
+    color: var(--primary-color);
+    opacity: 0.8;
+  }
+}

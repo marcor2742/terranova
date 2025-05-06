@@ -15,9 +15,24 @@
 			<span class="material-icons">close</span>
 		</button> -->
 	</div>
+	<div
+		*ngIf="displayedCocktails.length === 0 && searchOrList() === 'search'"
+		class="no-results-container"
+	>
+		<div class="no-results-message">
+			<i
+				class="pi pi-search"
+				style="font-size: 3rem; margin-bottom: 1rem"
+			></i>
+			<h3>{{ "NoResultsFound" | translate }}</h3>
+			<p>{{ "TryDifferentSearch" | translate }}</p>
+		</div>
+	</div>
 
 	<p-scroller
-		[items]="displayedCocktails.length > 0 ? displayedCocktails : cockTailList()"
+		[items]="
+			displayedCocktails.length > 0 ? displayedCocktails : cockTailList()
+		"
 		[style]="{ width: '100%', height: '80vh' }"
 		styleClass="cocktail-scroller"
 		[delay]="250"

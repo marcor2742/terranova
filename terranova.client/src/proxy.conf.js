@@ -24,6 +24,7 @@ const PROXY_CONFIG = [
 			'/api/isInFavorites',
 			'/api/glassesTable',
 			'/api/preferences',
+			'/api/categoriesTable',
 		],
 		target: apiTarget,
 		secure: false,

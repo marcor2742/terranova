@@ -1,8 +1,18 @@
-import { Component, inject, signal, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { SearchbarComponent, SearchFilters } from '../searchbar/searchbar.component';
+import {
+	Component,
+	inject,
+	signal,
+	ViewEncapsulation,
+	OnDestroy,
+	PLATFORM_ID,
+} from '@angular/core';
+import {
+	SearchbarComponent,
+	SearchFilters,
+} from '../searchbar/searchbar.component';
 import { NavigationEnd, RouterModule } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ScrollerModule } from 'primeng/scroller';
 import { DividerModule } from 'primeng/divider';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -29,322 +39,413 @@ import { MenuItem } from 'primeng/api';
  * Displays the home page with sidebar navigation and theme toggling
  */
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    SearchbarComponent,
-    CommonModule,
-    ScrollerModule,
-    DividerModule,
-    SkeletonModule,
-    ButtonModule,
-    ToolbarModule,
-    SelectButtonModule,
-    TranslateModule,
-    FiltersComponent,
-    ReactiveFormsModule,
-    RouterModule,
-    SidebarModule,
-    PanelMenuModule,
-    TabMenuModule,
-  ],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
-  encapsulation: ViewEncapsulation.None,
+	selector: 'app-home',
+	standalone: true,
+	imports: [
+		SearchbarComponent,
+		CommonModule,
+		ScrollerModule,
+		DividerModule,
+		SkeletonModule,
+		ButtonModule,
+		ToolbarModule,
+		SelectButtonModule,
+		TranslateModule,
+		FiltersComponent,
+		ReactiveFormsModule,
+		RouterModule,
+		SidebarModule,
+		PanelMenuModule,
+		TabMenuModule,
+	],
+	templateUrl: './home.component.html',
+	styleUrl: './home.component.scss',
+	encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements OnDestroy {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
-  private stateService = inject(StateService);
-  private route = inject(ActivatedRoute);
-  themeService = inject(ThemeService);
-  
-  // Track all subscriptions
-  private subscriptions = new Subscription();
+	private fb = inject(FormBuilder);
+	private router = inject(Router);
+	private stateService = inject(StateService);
+	private route = inject(ActivatedRoute);
+	themeService = inject(ThemeService);
 
-  // Sidebar state
-  sidebarVisible = signal<boolean>(true);
-  menuItems: MenuItem[] = [];
-  tabItems: MenuItem[] = [];
-  activeTabItem: MenuItem | undefined;
-  sidebarForm = this.fb.group({
-    sidebarMode: ['navigation'],
-  });
+	// Track all subscriptions
+	private subscriptions = new Subscription();
 
-  // Application state
-  activeFilters = signal<SearchFilters>({
-    SearchString: '',
-    PageSize: 10,
-    Page: 1,
-    IsAlcoholic: 'NoPreference',
-    GlassNames: [],
-    Creators: [],
-    Categories: [],
-    Ingredients: [],
-    AllIngredients: 'false',
-    ShowOnlyOriginal: 'false',
-  });
-  selectedCocktails = signal<number[]>([]);
-  showCocktailDetails = signal<boolean>(false);
-  searchModeActive = signal<boolean>(false);
-  currentSearchTerm = signal<string>('');
-  searchMode = signal<string>('dropdown');
-  activeView = signal<
-    'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
-  >('home');
+	// Sidebar state
+	sidebarVisible = signal<boolean>(true);
+	menuItems: MenuItem[] = [];
+	tabItems: MenuItem[] = [];
+	activeTabItem: MenuItem | undefined;
+	sidebarForm = this.fb.group({
+		sidebarMode: ['navigation'],
+	});
 
-  constructor() {
-    // Subscribe to state service
-    this.subscriptions.add(
-      this.stateService.selectedCocktails$.subscribe((cocktails) => {
-        if (cocktails) this.selectedCocktails.set(cocktails);
-      })
-    );
-    
-    this.subscriptions.add(
-      this.stateService.filters$.subscribe((filters) => {
-        if (filters) this.activeFilters.set(filters);
-      })
-    );
-    
-    // Listen to route changes
-    this.subscriptions.add(
-      this.router.events
-        .pipe(filter((event) => event instanceof NavigationEnd))
-        .subscribe(() => {
-          const urlSegments = this.router.url.split('/');
-          const currentSegment = urlSegments[urlSegments.length - 1];
+	// Application state
+	activeFilters = signal<SearchFilters>({
+		SearchString: '',
+		PageSize: 10,
+		Page: 1,
+		IsAlcoholic: 'NoPreference',
+		GlassNames: [],
+		Creators: [],
+		Categories: [],
+		Ingredients: [],
+		AllIngredients: 'false',
+		ShowOnlyOriginal: 'false',
+	});
+	selectedCocktails = signal<number[]>([]);
+	showCocktailDetails = signal<boolean>(false);
+	searchModeActive = signal<boolean>(false);
+	currentSearchTerm = signal<string>('');
+	searchMode = signal<string>('dropdown');
+	activeView = signal<
+		'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
+	>('home');
 
-          if (currentSegment.startsWith('search')) {
-            this.activeView.set('search');
-            
-            // Extract search term from URL if available
-            const searchTermMatch = currentSegment.match(/search\/(.+)/);
-            if (searchTermMatch && searchTermMatch[1]) {
-              this.currentSearchTerm.set(decodeURIComponent(searchTermMatch[1]));
-            }
-          } else if (
-            ['dashboard', 'settings', 'cocktails', 'favorites'].includes(currentSegment)
-          ) {
-            this.activeView.set(currentSegment as any);
-          }
-        })
-    );
+	constructor() {
+		const platformId = inject(PLATFORM_ID);
 
-    this.initMenuItems();
-    this.initTabItems();
-  }
+		// Only execute client-side code when in browser environment
+		if (isPlatformBrowser(platformId)) {
+			// Get the initial URL
+			const initialUrl = this.router.url;
 
-  ngOnDestroy() {
-    // Clean up all subscriptions
-    this.subscriptions.unsubscribe();
-  }
+			// Check if we're starting on a search route
+			if (initialUrl.includes('/search/')) {
+				const urlParts = initialUrl.split('/');
+				const searchIndex = urlParts.indexOf('search');
 
-  /**
-   * Initialize panel menu items for sidebar navigation
-   */
-  initMenuItems() {
-    this.menuItems = [
-      {
-        label: 'Dashboard',
-        icon: 'pi pi-chart-bar',
-        command: () => this.setActiveView('dashboard'),
-        expanded: this.activeView() === 'dashboard',
-      },
-      {
-        label: 'Cocktail List',
-        icon: 'pi pi-list',
-        command: () => this.setActiveView('cocktails'),
-        expanded: this.activeView() === 'cocktails',
-      },
-      {
-        label: 'Favorites',
-        icon: 'pi pi-heart',
-        command: () => this.setActiveView('favorites'),
-        expanded: this.activeView() === 'favorites',
-      },
-      {
-        label: `Search: "${this.currentSearchTerm()}"`,
-        icon: 'pi pi-search',
-        command: () => this.goToSearch(),
-        expanded: this.activeView() === 'search',
-        visible: !!this.currentSearchTerm(),
-      },
-      {
-        label: 'Settings',
-        icon: 'pi pi-cog',
-        command: () => this.setActiveView('settings'),
-        expanded: this.activeView() === 'settings',
-      },
-    ];
-  }
+				if (searchIndex >= 0 && searchIndex + 1 < urlParts.length) {
+					const searchTerm = decodeURIComponent(
+						urlParts[searchIndex + 1]
+					);
+					console.log(
+						'Starting on direct search URL with term:',
+						searchTerm
+					);
 
-  /**
-   * Initialize tab menu items for sidebar mode switching
-   */
-  initTabItems() {
-    this.tabItems = [
-      {
-        label: 'Menu',
-        icon: 'pi pi-bars',
-        command: () => this.setSidebarMode('navigation'),
-      },
-      {
-        label: 'Filters',
-        icon: 'pi pi-filter',
-        command: () => this.setSidebarMode('filters'),
-      },
-    ];
-    this.activeTabItem = this.tabItems[0];
-  }
+					// Update search state
+					this.currentSearchTerm.set(searchTerm);
+					this.activeView.set('search');
+					this.searchMode.set('full');
+					this.setSidebarMode('filters');
 
-  /**
-   * Set sidebar mode and update active tab
-   */
-  setSidebarMode(mode: 'navigation' | 'filters') {
-    this.sidebarForm.get('sidebarMode')?.setValue(mode);
-    this.activeTabItem = this.tabItems.find(
-      (item) =>
-        (mode === 'navigation' && item.icon === 'pi pi-bars') ||
-        (mode === 'filters' && item.icon === 'pi pi-filter')
-    );
-  }
+					// Update filters with search term
+					const updatedFilters = {
+						...this.activeFilters(),
+						SearchString: searchTerm,
+						Page: 1,
+					};
 
-  /**
-   * Toggles the sidebar between expanded and collapsed states
-   */
-  toggleSidebar() {
-    this.sidebarVisible.update((val) => !val);
-  }
+					this.activeFilters.set(updatedFilters);
+					this.stateService.updateFilters(updatedFilters);
 
-  /**
-   * Toggles between light and dark theme
-   */
-  toggleTheme() {
-    this.themeService.toggleTheme();
-  }
+					// Explicitly trigger search after component initialization
+					setTimeout(() => {
+						console.log(
+							'Triggering initial search from URL parameters'
+						);
+						this.stateService.performSearch(updatedFilters);
+					}, 100);
+				}
+			}
+		}
 
-  /**
-   * Sets the active view in the content area and navigates to it
-   */
-  setActiveView(
-    view: 'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
-  ) {
-    this.activeView.set(view);
-    this.router.navigate([view], { relativeTo: this.route });
-  }
+		// Existing subscription code
+		this.subscriptions.add(
+			this.stateService.selectedCocktails$.subscribe((cocktails) => {
+				if (cocktails) this.selectedCocktails.set(cocktails);
+			})
+		);
 
-  /**
-   * Adds or replaces cocktails in the selection and navigates to cocktail list
-   */
-  modifySelectedCocktails(search: Searchres) {
-    let updatedCocktails = [...this.selectedCocktails()];
+		this.subscriptions.add(
+			this.stateService.filters$.subscribe((filters) => {
+				if (filters) this.activeFilters.set(filters);
+			})
+		);
 
-    if (search.add === 'add') {
-      if (!updatedCocktails.includes(search.id)) {
-        updatedCocktails.push(search.id);
-      }
-    } else if (search.add === 'only') {
-      updatedCocktails = [search.id];
-    }
+		// Listen to route changes
+		this.subscriptions.add(
+			this.router.events
+				.pipe(filter((event) => event instanceof NavigationEnd))
+				.subscribe(() => {
+					const urlSegments = this.router.url.split('/');
+					const currentSegment = urlSegments[urlSegments.length - 1];
 
-    this.selectedCocktails.set(updatedCocktails);
-    this.stateService.updateSelectedCocktails(updatedCocktails);
+					if (currentSegment.includes('search')) {
+						this.activeView.set('search');
 
-    // Only navigate if not already on the cocktails page
-    if (this.router.url !== '/home/cocktails') {
-      this.router.navigate(['cocktails'], { relativeTo: this.route });
-    }
-  }
+						// Extract search term from URL if available
+						const searchTermMatch =
+							currentSegment.match(/search\/(.+)/);
+						if (searchTermMatch && searchTermMatch[1]) {
+							const decodedTerm = decodeURIComponent(
+								searchTermMatch[1]
+							);
+							this.currentSearchTerm.set(decodedTerm);
 
-  /**
-   * Handle full search request and navigate to search results
-   */
-  handleFullSearch(event: {
-    searchString: string;
-    cocktails: any[];
-    page: number;
-  }) {
-    if (!event.searchString || event.searchString.trim().length === 0) {
-      console.warn('Empty search string, not navigating');
-      return;
-    }
+							// Update sidebar mode to filters when on search page
+							this.setSidebarMode('filters');
 
-    // Update UI state
-    this.currentSearchTerm.set(event.searchString);
-    this.searchModeActive.set(true);
-    this.sidebarForm.get('sidebarMode')?.setValue('filters');
-    this.activeView.set('search');
-    this.searchMode.set('full');
+							// Make sure the search mode is set to full
+							this.searchMode.set('full');
 
-    // Update filters
-    const updatedFilters = {
-      ...this.activeFilters(),
-      SearchString: event.searchString,
-      Page: event.page || 1,
-    };
-    this.activeFilters.set(updatedFilters);
-    this.stateService.updateFilters(updatedFilters);
+							// Update menu items to show the search entry
+							this.initMenuItems();
+						}
+					} else if (
+						[
+							'dashboard',
+							'settings',
+							'cocktails',
+							'favorites',
+						].includes(currentSegment)
+					) {
+						this.activeView.set(currentSegment as any);
+					}
+				})
+		);
 
-    // Update cocktail selection
-    if (event.cocktails && event.cocktails.length > 0) {
-      const cocktailIds = event.cocktails.map((cocktail) => cocktail.id);
-      this.selectedCocktails.set(cocktailIds);
-      this.stateService.updateSelectedCocktails(cocktailIds);
-    }
+		this.initMenuItems();
+		this.initTabItems();
+	}
 
-    // Update search results
-    this.stateService.updateSearchResults(event.cocktails);
+	ngOnDestroy() {
+		// Clean up all subscriptions
+		this.subscriptions.unsubscribe();
+	}
 
-    // Navigate to search results
-    this.router.navigate(['search', event.searchString], {
-      relativeTo: this.route,
-    });
+	/**
+	 * Initialize panel menu items for sidebar navigation
+	 */
+	initMenuItems() {
+		this.menuItems = [
+			{
+				label: 'Dashboard',
+				icon: 'pi pi-chart-bar',
+				command: () => this.setActiveView('dashboard'),
+				expanded: this.activeView() === 'dashboard',
+			},
+			{
+				label: 'Cocktail List',
+				icon: 'pi pi-list',
+				command: () => this.setActiveView('cocktails'),
+				expanded: this.activeView() === 'cocktails',
+			},
+			{
+				label: 'Favorites',
+				icon: 'pi pi-heart',
+				command: () => this.setActiveView('favorites'),
+				expanded: this.activeView() === 'favorites',
+			},
+			{
+				label: `Search: "${this.currentSearchTerm()}"`,
+				icon: 'pi pi-search',
+				command: () => this.goToSearch(),
+				expanded: this.activeView() === 'search',
+				visible: !!this.currentSearchTerm(),
+			},
+			{
+				label: 'Settings',
+				icon: 'pi pi-cog',
+				command: () => this.setActiveView('settings'),
+				expanded: this.activeView() === 'settings',
+			},
+		];
+	}
 
-    console.log(
-      `Navigating to search with ${event.cocktails.length} results for "${event.searchString}"`
-    );
-  }
+	/**
+	 * Initialize tab menu items for sidebar mode switching
+	 */
+	initTabItems() {
+		this.tabItems = [
+			{
+				label: 'Menu',
+				icon: 'pi pi-bars',
+				command: () => this.setSidebarMode('navigation'),
+			},
+			{
+				label: 'Filters',
+				icon: 'pi pi-filter',
+				command: () => this.setSidebarMode('filters'),
+			},
+		];
+		this.activeTabItem = this.tabItems[0];
+	}
 
-  /**
-   * Close cocktail details and reset selection
-   */
-  closeCocktailDetails() {
-    this.showCocktailDetails.set(false);
-    this.selectedCocktails.set([]);
-    this.activeView.set('home');
-  }
+	/**
+	 * Set sidebar mode and update active tab
+	 */
+	setSidebarMode(mode: 'navigation' | 'filters') {
+		this.sidebarForm.get('sidebarMode')?.setValue(mode);
+		this.activeTabItem = this.tabItems.find(
+			(item) =>
+				(mode === 'navigation' && item.icon === 'pi pi-bars') ||
+				(mode === 'filters' && item.icon === 'pi pi-filter')
+		);
+	}
 
-  /**
-   * Navigate to search results with current search term
-   */
-  goToSearch() {
-    if (this.currentSearchTerm()) {
-      this.activeView.set('search');
-      this.router.navigate(['search', this.currentSearchTerm()], {
-        relativeTo: this.route,
-      });
-    }
-  }
+	/**
+	 * Toggles the sidebar between expanded and collapsed states
+	 */
+	toggleSidebar() {
+		this.sidebarVisible.update((val) => !val);
+	}
 
-  /**
-   * Update filters while preserving search term and navigate if needed
-   */
-  pushFilters(filters: SearchFilters) {
-    const currentSearchTerm = this.activeFilters().SearchString;
-    const updatedFilters = {
-      ...filters,
-      SearchString: currentSearchTerm || filters.SearchString,
-    };
+	/**
+	 * Toggles between light and dark theme
+	 */
+	toggleTheme() {
+		this.themeService.toggleTheme();
+	}
 
-    this.activeFilters.set(updatedFilters);
-    this.stateService.updateFilters(updatedFilters);
-    this.searchMode.set('full');
+	/**
+	 * Sets the active view in the content area and navigates to it
+	 */
+	setActiveView(
+		view:
+			| 'home'
+			| 'settings'
+			| 'dashboard'
+			| 'cocktails'
+			| 'favorites'
+			| 'search'
+	) {
+		this.activeView.set(view);
+		this.router.navigate([view], { relativeTo: this.route });
+	}
 
-    if (updatedFilters.SearchString) {
-      this.router.navigate(['search', updatedFilters.SearchString], {
-        relativeTo: this.route,
-      });
-    }
-  }
+	/**
+	 * Adds or replaces cocktails in the selection and navigates to cocktail list
+	 */
+	modifySelectedCocktails(search: Searchres) {
+		let updatedCocktails = [...this.selectedCocktails()];
+
+		if (search.add === 'add') {
+			if (!updatedCocktails.includes(search.id)) {
+				updatedCocktails.push(search.id);
+			}
+		} else if (search.add === 'only') {
+			updatedCocktails = [search.id];
+		}
+
+		this.selectedCocktails.set(updatedCocktails);
+		this.stateService.updateSelectedCocktails(updatedCocktails);
+
+		// Only navigate if not already on the cocktails page
+		if (this.router.url !== '/home/cocktails') {
+			this.router.navigate(['cocktails'], { relativeTo: this.route });
+		}
+	}
+
+	/**
+	 * Close cocktail details and reset selection
+	 */
+	closeCocktailDetails() {
+		this.showCocktailDetails.set(false);
+		this.selectedCocktails.set([]);
+		this.activeView.set('home');
+	}
+
+	/**
+	 * Navigate to search results with current search term
+	 */
+	goToSearch() {
+		if (this.currentSearchTerm()) {
+			this.activeView.set('search');
+			this.router.navigate(['search', this.currentSearchTerm()], {
+				relativeTo: this.route,
+			});
+		}
+	}
+
+	/**
+	 * Update filters while preserving search term and navigate if needed
+	 */
+	pushFilters(filters: SearchFilters) {
+		const currentSearchTerm = this.activeFilters().SearchString;
+
+		// Create a merged filter object that includes current filters plus new ones
+		const updatedFilters = {
+			...this.activeFilters(), // Start with ALL current filters
+			...filters, // Apply new filters on top
+			SearchString: currentSearchTerm || filters.SearchString,
+		};
+
+		// Update state
+		this.activeFilters.set(updatedFilters);
+		this.stateService.updateFilters(updatedFilters);
+		this.searchMode.set('full');
+
+		if (updatedFilters.SearchString) {
+			// Get current query params and merge with new ones
+			const queryParams: any = {};
+
+			// Build query params (leave this part unchanged)
+			// ...
+
+			// Navigate with both path parameter and query parameters
+			this.router.navigate(['search', updatedFilters.SearchString], {
+				relativeTo: this.route,
+				queryParams,
+				queryParamsHandling: 'merge',
+			});
+
+			// Instead of triggering search in cocktail-list, use the centralized method
+			this.stateService.performSearch(updatedFilters);
+		}
+	}
+
+	handleFullSearch(event: {
+		searchString: string;
+		cocktails: any[];
+		page: number;
+	}) {
+		if (!event.searchString || event.searchString.trim().length === 0) {
+			console.warn('Empty search string, not navigating');
+			return;
+		}
+
+		console.log(
+			`HomeComponent: Navigating to search with term "${event.searchString}"`
+		);
+
+		// Update UI state
+		this.currentSearchTerm.set(event.searchString);
+		this.searchModeActive.set(true);
+		this.sidebarForm.get('sidebarMode')?.setValue('filters');
+		this.activeView.set('search');
+		this.searchMode.set('full');
+
+		// Update filters
+		const updatedFilters = {
+			...this.activeFilters(),
+			SearchString: event.searchString,
+			Page: event.page || 1,
+		};
+		this.activeFilters.set(updatedFilters);
+		this.stateService.updateFilters(updatedFilters);
+
+		// Update search results if provided
+		if (event.cocktails && event.cocktails.length > 0) {
+			const cocktailIds = event.cocktails.map((cocktail) => cocktail.id);
+			this.selectedCocktails.set(cocktailIds);
+			this.stateService.updateSelectedCocktails(cocktailIds);
+			this.stateService.updateSearchResults(event.cocktails);
+		}
+
+		this.router
+			.navigate(['search', event.searchString], {
+				relativeTo: this.route,
+			})
+			.then(() => {
+				console.log(
+					`Navigation sto cazto search/${event.searchString} completed`
+				);
+			})
+			.catch((err) => {
+				console.error('Navigation failed:', err);
+			});
+	}
 }
