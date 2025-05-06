@@ -15,4 +15,5 @@ export const environment = {
 	ingredientUrl: 'localhost:8000/ingredientsTable',
 	isFavoriteUrl: 'localhost:8000/isInFavorites',
 	userProfileUrl: 'localhost:8000/userProfile',
+	categoriesUrl: 'localhost:8000/categoriesTable',
 };

@@ -15,7 +15,7 @@ export class StateService {
 		IsAlcoholic: 'NoPreference',
 		GlassNames: [],
 		Creators: [],
-		Category: '',
+		Categories: [],
 		Ingredients: [],
 		AllIngredients: 'false',
 		ShowOnlyOriginal: 'false'

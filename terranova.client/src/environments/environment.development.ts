@@ -15,4 +15,5 @@ export const environment = {
 	favoriteUrl: '/api/favorites',
 	isFavoriteUrl: '/api/isInFavorites',
 	userProfileUrl: '/api/userProfile',
+	categoriesUrl: '/api/categoriesTable',
 };
