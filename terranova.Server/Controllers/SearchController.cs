@@ -556,10 +556,11 @@ namespace terranova.Server.Controllers
             }
             #endregion
 
-            if (!string.IsNullOrWhiteSpace(data.Category))
+            if (data.Categories != null && data.Categories.Length > 0)
             {
+                var categoriesList = data.Categories.ToArray();
                 query = query.Where(c => c.Category != null &&
-                    c.Category.Name.ToLower().Contains(data.Category.ToLower()));
+                    categoriesList.Contains(c.Category.Name));
             }
 
             if (!allIngredients && data.Ingredients != null && data.Ingredients.Length > 0)
@@ -790,7 +791,7 @@ namespace terranova.Server.Controllers
         public string? IsAlcoholic { get; set; }
         public string[]? GlassNames { get; set; }
         public string[]? Creators { get; set; } // per username (per i propri mandi il proprio username). e guardare come mettere piu filtri dello stesso tipo. ad esempio piu glassname
-        public string? Category { get; set; } // modificare il seeder per creare una nuova tabella? sennò rimuovere
+        public string[]? Categories { get; set; }
         public string[]? Ingredients { get; set; }
         public string? AllIngredients { get; set; } //false se non specificato. vuol dire che se ci sono più ingredienti come parametro, allora se true devono esserci tutti in un drink
         public string? showOnlyOriginal { get; set; } //false se non specificato (o non loggato). true se non vuoi vedere i drink creati da altri utenti, compresi i propri.
