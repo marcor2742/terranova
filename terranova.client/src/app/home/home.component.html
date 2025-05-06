@@ -36,85 +36,30 @@
 		</p-toolbar>
 	</div>
 
-	<!-- Main Content Area with Sidebar -->
+	<!-- Main Content Area with Sidebar (fixed layout) -->
 	<div class="main-container">
-		<div class="sidebar" [class.collapsed]="!sidebarExpanded()">
+		<!-- Custom sidebar implementation -->
+		<div class="app-sidebar" [class.sidebar-hidden]="!sidebarVisible()">
 			<div class="sidebar-header">
-				<form [formGroup]="sidebarForm">
-					<p-selectButton
-						[options]="sidebarModeOptions"
-						formControlName="sidebarMode"
-						[style]="{ width: '100%' }"
-						optionLabel="label"
-						optionValue="value"
-					>
-						<ng-template let-item pTemplate="item">
-							<div class="sidebar-mode-option">
-								<i [class]="item.icon"></i>
-								<span>{{ item.label }}</span>
-							</div>
-						</ng-template>
-					</p-selectButton>
-				</form>
+				<p-tabMenu
+					[model]="tabItems"
+					[activeItem]="activeTabItem"
+					[style]="{ width: '100%' }"
+				></p-tabMenu>
 			</div>
 
-			<!-- Show different content based on sidebar mode form control value -->
-			<div [ngSwitch]="sidebarForm.get('sidebarMode')?.value">
+			<div
+				[ngSwitch]="sidebarForm.get('sidebarMode')?.value"
+				class="sidebar-content"
+			>
 				<div *ngSwitchCase="'navigation'" class="sidebar-navigation">
-					<nav class="sidebar-menu">
-						<div
-							class="menu-item"
-							[class.active]="activeView() === 'dashboard'"
-							(click)="setActiveView('dashboard')"
-						>
-							<i class="pi pi-chart-bar"></i>
-							<span>{{ "Dashboard" | translate }}</span>
-						</div>
-
-						<div
-							class="menu-item"
-							[class.active]="activeView() === 'cocktails'"
-							(click)="setActiveView('cocktails')"
-						>
-							<i class="pi pi-list"></i>
-							<span>{{ "CocktailList" | translate }}</span>
-						</div>
-
-						<div
-							class="menu-item"
-							[class.active]="activeView() === 'favorites'"
-							(click)="setActiveView('favorites')"
-						>
-							<i class="pi pi-heart"></i>
-							<span>{{ "Favorites" | translate }}</span>
-						</div>
-
-						<div
-							class="menu-item"
-							[class.active]="activeView() === 'search'"
-							(click)="goToSearch()"
-							*ngIf="currentSearchTerm()"
-						>
-							<i class="pi pi-search"></i>
-							<span
-								>{{ "Search" | translate }}: "{{
-									currentSearchTerm()
-								}}"</span
-							>
-						</div>
-
-						<div
-							class="menu-item"
-							[class.active]="activeView() === 'settings'"
-							(click)="setActiveView('settings')"
-						>
-							<i class="pi pi-cog"></i>
-							<span>{{ "Settings" | translate }}</span>
-						</div>
-					</nav>
+					<p-panelMenu
+						[model]="menuItems"
+						[style]="{ width: '100%' }"
+						[multiple]="false"
+					></p-panelMenu>
 				</div>
 
-				<!-- Filters content -->
 				<div *ngSwitchCase="'filters'" class="sidebar-filters">
 					<app-filters
 						(filtersChanged)="pushFilters($event)"
@@ -123,8 +68,11 @@
 			</div>
 		</div>
 
-		<!-- Main Content -->
-		<main class="content">
+		<!-- Main Content Area -->
+		<main
+			class="content"
+			[ngClass]="{ 'content-with-sidebar': sidebarVisible() }"
+		>
 			<router-outlet></router-outlet>
 		</main>
 	</div>
