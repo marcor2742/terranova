@@ -24,7 +24,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapGet("/allCocktails/", ShowAllCocktails)
-               .WithDescription("Restituisce tutti i drink del database visibili dall'utente, con paginazione ma senza filtri")
+               .WithDescription("Restituisce tutti i drink del database visibili dall'utente, con paginazione e filtro per l'ordinamento")
                .WithOpenApi();
 
             app.MapGet("/search", SearchCocktails)
@@ -656,18 +656,32 @@ namespace terranova.Server.Controllers
         }
 
 
-        [AllowAnonymous]
+        [AllowAnonymous] 
         private static async Task<IResult> ShowAllCocktails(
-            [AsParameters] DataForQuery data,
+            [AsParameters] DataForAllQuery data,
             CocktailsDbContext dbContext)
         {
             int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 50) : 20;
             int page = data.Page.HasValue && data.Page.Value > 0 ? data.Page.Value : 1;
             int skip = (page - 1) * pageSize;
 
-            var cocktails = await dbContext.Cocktails
-                .OrderBy(c => c.Name.ToLower())
-                .ThenBy(c => c.Name)
+            var query = dbContext.Cocktails.AsQueryable();
+
+            if (data.OrderBy == "random")
+            {
+                query = query.OrderBy(c => Guid.NewGuid());
+            }
+            else if(data.OrderBy == "id")
+            {
+                query = query.OrderBy(c => c.Id);
+            }
+            else
+            {
+                query = query.OrderBy(c => c.Name.ToLower())
+                    .ThenBy(c => c.Name);
+            }
+
+            var cocktails = await query
                 .Include(c => c.Glass)
                 .Include(c => c.Category)
                 .Include(c => c.Instructions)
@@ -780,5 +794,14 @@ namespace terranova.Server.Controllers
         public string[]? Ingredients { get; set; }
         public string? AllIngredients { get; set; } //false se non specificato. vuol dire che se ci sono più ingredienti come parametro, allora se true devono esserci tutti in un drink
         public string? showOnlyOriginal { get; set; } //false se non specificato (o non loggato). true se non vuoi vedere i drink creati da altri utenti, compresi i propri.
+    }
+
+    public class DataForAllQuery
+    {
+        public int? PageSize { get; set; }
+        public int? Page { get; set; }
+
+        [System.ComponentModel.Description("Parametro per specificare l'ordinamento: \"name\" (predefinito), \"id\", \"random\"")]
+        public string? OrderBy { get; set; } //name (default), id, random
     }
 }

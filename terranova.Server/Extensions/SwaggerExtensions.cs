@@ -27,6 +27,22 @@ namespace terranova.Server.Extensions
         }
     }
 
+    public class EnumSchemaFilter : ISchemaFilter
+    {
+        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        {
+            if (context.Type.IsEnum)
+            {
+                schema.Enum.Clear();
+                foreach (var enumName in Enum.GetNames(context.Type))
+                {
+                    schema.Enum.Add(new Microsoft.OpenApi.Any.OpenApiString(enumName));
+                }
+                schema.Type = "string";
+                schema.Format = null;
+            }
+        }
+    }
 
     public static class SwaggerExtensions
     {
@@ -60,6 +76,13 @@ namespace terranova.Server.Extensions
                     }
                 });
 
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+
+                // Schema per i tipi enum per mostrarli come stringhe con descrizioni
+                options.SchemaFilter<EnumSchemaFilter>();
+
                 //images
                 options.OperationFilter<FileUploadOperationFilter>();
                 options.OperationFilter<DefaultResponsesOperationFilter>();
@@ -69,6 +92,18 @@ namespace terranova.Server.Extensions
                     if (api.RelativePath?.Contains("uploadProfileImage") == true)
                         return "UploadProfileImage";
                     return api.TryGetMethodInfo(out var methodInfo) ? methodInfo.Name : null;
+                });
+
+                // Configura il titolo e la descrizione dello Swagger
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Terranova API",
+                    Version = "v1",
+                    Description = "API per l'applicazione di cocktails Terranova",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Terranova Team"
+                    }
                 });
             });
             return services;
