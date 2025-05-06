@@ -38,6 +38,7 @@ import {
 	filter,
 	takeUntil,
 } from 'rxjs';
+import { Category } from '../services/categories.service';
 
 export interface bigSearch {
 	cocktails: Cocktail[];
@@ -52,7 +53,7 @@ export interface SearchFilters {
 	IsAlcoholic: 'Alcoholic' | 'NonAlcoholic' | 'NoPreference';
 	GlassNames: string[];
 	Creators: string[];
-	Categories: string[];
+	Categories: Category[];
 	Ingredients: string[];
 	AllIngredients: 'true' | 'false';
 	ShowOnlyOriginal: 'true' | 'false';
@@ -128,8 +129,11 @@ export class SearchbarComponent implements OnInit {
 
 	/** Tracks search count for debugging */
 	private searchCount = 0;
-	private lastEmittedSearch: { cocktails: Cocktail[]; searchString: string; page: number } | null = null;
-
+	private lastEmittedSearch: {
+		cocktails: Cocktail[];
+		searchString: string;
+		page: number;
+	} | null = null;
 
 	/**
 	 * Creates a new SearchbarComponent instance
@@ -150,34 +154,36 @@ export class SearchbarComponent implements OnInit {
 			// Only trigger this effect when the resource is loaded, not pending
 			if (this.SearchResource.isLoading()) return;
 
-			// Only proceed if we're in 'full' mode and have search results
+			// Only proceed if we're in 'dropdown' mode (NOT full mode) and have search results
 			const mode = this.searchMode();
-			const results = this.SearchResource.value();
-			const searchString = this.searchParams();
-			const page = this.currentPage();
+			if (mode === 'dropdown') {
+				const results = this.SearchResource.value();
+				const searchString = this.searchParams();
+				const page = this.currentPage();
 
-			if (
-				mode === 'full' &&
-				results &&
-				results.length > 0 &&
-				searchString &&
-				searchString.trim().length > 0
-			) {
-				const current = {
-					cocktails: results,
-					searchString,
-					page
-				};
+				if (
+					results &&
+					results.length > 0 &&
+					searchString &&
+					searchString.trim().length > 0
+				) {
+					const current = {
+						cocktails: results,
+						searchString,
+						page,
+					};
 
-				const isSame =
-					this.lastEmittedSearch &&
-					this.lastEmittedSearch.searchString === current.searchString &&
-					this.lastEmittedSearch.page === current.page &&
-					JSON.stringify(this.lastEmittedSearch.cocktails) === JSON.stringify(current.cocktails);
+					const isSame =
+						this.lastEmittedSearch &&
+						this.lastEmittedSearch.searchString ===
+							current.searchString &&
+						this.lastEmittedSearch.page === current.page &&
+						JSON.stringify(this.lastEmittedSearch.cocktails) ===
+							JSON.stringify(current.cocktails);
 
-				if (!isSame) {
-					this.continuedSearch.emit(current);
-					this.lastEmittedSearch = current;
+					if (!isSame) {
+						this.lastEmittedSearch = current;
+					}
 				}
 			}
 		});
@@ -192,7 +198,6 @@ export class SearchbarComponent implements OnInit {
 			const page = this.currentPage();
 			const mode = this.searchMode();
 
-
 			let params = new HttpParams()
 				.set('SearchString', searchString)
 				.set('PageSize', pageSize.toString())
@@ -201,40 +206,63 @@ export class SearchbarComponent implements OnInit {
 			if (mode !== 'dropdown') {
 				// Add filter parameters only if not in dropdown mode
 				if (currentFilters.IsAlcoholic !== 'NoPreference') {
-					params = params.set('IsAlcoholic', currentFilters.IsAlcoholic);
+					params = params.set(
+						'IsAlcoholic',
+						currentFilters.IsAlcoholic
+					);
 				}
-				if (currentFilters.GlassNames && currentFilters.GlassNames.length > 0) {
-					currentFilters.GlassNames.forEach(glass => {
+				if (
+					currentFilters.GlassNames &&
+					currentFilters.GlassNames.length > 0
+				) {
+					currentFilters.GlassNames.forEach((glass) => {
 						params = params.append('GlassNames', glass);
 					});
 				}
-				if (currentFilters.Ingredients && currentFilters.Ingredients.length > 0) {
-					currentFilters.Ingredients.forEach(ingredient => {
+				if (
+					currentFilters.Ingredients &&
+					currentFilters.Ingredients.length > 0
+				) {
+					currentFilters.Ingredients.forEach((ingredient) => {
 						params = params.append('Ingredients', ingredient);
 					});
 				}
-				if (currentFilters.Creators && currentFilters.Creators.length > 0) {
-					currentFilters.Creators.forEach(creator => {
+				if (
+					currentFilters.Creators &&
+					currentFilters.Creators.length > 0
+				) {
+					currentFilters.Creators.forEach((creator) => {
 						params = params.append('Creators', creator);
 					});
 				}
-				if (currentFilters.Categories && currentFilters.Categories.length > 0) {
-					currentFilters.Categories.forEach(category => {
-						params = params.append('Category', category);
+				if (
+					currentFilters.Categories &&
+					currentFilters.Categories.length > 0
+				) {
+					currentFilters.Categories.forEach((category) => {
+						params = params.append('Category', category.name);
 					});
 				}
 				if (currentFilters.AllIngredients) {
-					params = params.set('AllIngredients', currentFilters.AllIngredients);
+					params = params.set(
+						'AllIngredients',
+						currentFilters.AllIngredients
+					);
 				}
 				if (currentFilters.ShowOnlyOriginal) {
-					params = params.set('ShowOnlyOriginal', currentFilters.ShowOnlyOriginal);
+					params = params.set(
+						'ShowOnlyOriginal',
+						currentFilters.ShowOnlyOriginal
+					);
 				}
 			}
 
 			// debug log
 			this.searchCount++;
 			console.log(
-				`[Search Resource] Search Count: ${this.searchCount}, Search String: "${searchString}", Page: ${page}, Filters: ${JSON.stringify(
+				`[Search Resource] Search Count: ${
+					this.searchCount
+				}, Search String: "${searchString}", Page: ${page}, Filters: ${JSON.stringify(
 					currentFilters
 				)}`
 			);
@@ -316,9 +344,7 @@ export class SearchbarComponent implements OnInit {
 						this.currentPage.set(1);
 					}
 				});
-
 		}
-
 	}
 
 	/**
@@ -335,27 +361,35 @@ export class SearchbarComponent implements OnInit {
 		this.cocktailSelected.emit(Searchres);
 	}
 
+	// Update performSearch in searchbar.component.ts
 	performSearch() {
-	  const searchTerm = this.searchForm.get('searchTerm')?.value;
-	  
-	  if (!searchTerm || searchTerm.trim().length < this.MIN_SEARCH_LENGTH) {
-		console.warn(`Search term too short: "${searchTerm}"`);
-		return;
-	  }
-	  
-	  console.log(`Executing search for: "${searchTerm}"`);
-	  
-	  // First, update the search params to trigger the HTTP resource
-	  this.searchParams.set(searchTerm);
-	  
-	  // Wait briefly for the resource to load if it's not already loaded
-	  setTimeout(() => {
+		const searchTerm = this.searchForm.get('searchTerm')?.value;
+
+		if (!searchTerm || searchTerm.trim().length < this.MIN_SEARCH_LENGTH) {
+			console.warn(`Search term too short: "${searchTerm}"`);
+			return;
+		}
+
+		console.log(`Executing search for: "${searchTerm}"`);
+
+		// In full mode, we need to emit the event AND navigate
+		const searchFilters: SearchFilters = {
+			...this.filters(),
+			SearchString: searchTerm,
+			Page: 1,
+		};
+
+		// Get current results if available
+		const currentResults = this.SearchResource.value() || [];
+
+		// Emit event with the search information
 		this.continuedSearch.emit({
-		  cocktails: this.SearchResource.value() || [],
-		  searchString: searchTerm,
-		  page: this.currentPage(),
+			cocktails: currentResults,
+			searchString: searchTerm,
+			page: 1,
 		});
-		console.log(`Emitted search with ${this.SearchResource.value()?.length || 0} results`);
-	  }, 100);
+
+		// Clear the search input after performing search
+		this.searchForm.get('searchTerm')?.setValue('');
 	}
 }

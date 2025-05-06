@@ -16,7 +16,7 @@ import { SearchFilters } from '../searchbar/searchbar.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { CategoriesService } from '../services/categories.service';
+import { CategoriesService, Category } from '../services/categories.service';
 
 @Component({
 	selector: 'app-filters',
@@ -42,7 +42,7 @@ export class FiltersComponent implements OnInit {
 
 	filtersChanged = output<SearchFilters>();
 
-	categories: string[] = [];
+	categories: Category[] = [];
 
 	alcolOption = [
 		// Keep 'NoPreference' value consistent with SearchFilters default if needed
@@ -57,7 +57,7 @@ export class FiltersComponent implements OnInit {
 		Glasses: new FormControl<Glass[]>([]),
 		// Use IngredientSearch if that's what the selector provides
 		Ingredients: new FormControl<IngredientSearch[]>([]),
-		Categories: new FormControl<string[]>([]),
+		Categories: new FormControl<Category[]>([]),
 		AllIngredientsSwitch: [false],
 		ShowOnlyOriginalSwitch: [false],
 	});
@@ -65,15 +65,16 @@ export class FiltersComponent implements OnInit {
 	constructor() {}
 
 	ngOnInit() {
-		this.categoriesService.getCategories().subscribe(
-			(categories) => {
+		this.categoriesService.getCategories().subscribe({
+			next: (categories) => {
 				this.categories = categories;
 				console.log('Categories loaded:', categories);
 			},
-			(error) => {
+			error: (error) => {
 				console.error('Error loading categories:', error);
-			}
-		);
+			},
+		});
+
 		this.filtersForm.valueChanges
 			.pipe(
 				debounceTime(350),
@@ -121,7 +122,6 @@ export class FiltersComponent implements OnInit {
 			Glasses: [],
 			Ingredients: [],
 			Categories: [],
-			// Reset the boolean switch controls
 			AllIngredientsSwitch: false,
 			ShowOnlyOriginalSwitch: false,
 		});
