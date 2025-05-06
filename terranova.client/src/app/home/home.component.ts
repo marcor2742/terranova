@@ -3,7 +3,7 @@ import {
 	SearchbarComponent,
 	SearchFilters,
 } from '../searchbar/searchbar.component';
-import { RouterLink, RouterModule } from '@angular/router';
+import { NavigationEnd, RouterLink, RouterModule } from '@angular/router';
 import { ThemeService } from '../services/theme.service';
 import { CommonModule } from '@angular/common';
 import { SettingsComponent } from '../settings/settings.component';
@@ -22,6 +22,7 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
 import { Cocktail } from '../Classes/cocktail';
 import { Router, ActivatedRoute } from '@angular/router';
 import { StateService } from '../services/state-service.service';
+import { filter } from 'rxjs';
 
 /**
  * Main home component of the application
@@ -65,6 +66,25 @@ export class HomeComponent {
 		this.stateService.searchResults$.subscribe((results) => {
 			this.selectedCocktails.set(results.map((cocktail) => cocktail.id));
 		});
+		this.router.events
+			.pipe(filter((event) => event instanceof NavigationEnd))
+			.subscribe(() => {
+				// Extract the first segment from the URL
+				const urlSegments = this.router.url.split('/');
+				const currentSegment = urlSegments[urlSegments.length - 1];
+
+				if (currentSegment.startsWith('search')) {
+					this.activeView.set('search');
+				}
+				else if (
+					currentSegment === 'dashboard' ||
+					currentSegment === 'settings' ||
+					currentSegment === 'cocktails' ||
+					currentSegment === 'favorites'
+				) {
+					this.activeView.set(currentSegment as any);
+				}
+			});
 	}
 
 	sidebarForm = this.fb.group({
@@ -158,6 +178,7 @@ export class HomeComponent {
 			| 'search'
 	) {
 		this.activeView.set(view);
+		this.router.navigate([view], { relativeTo: this.route });
 	}
 
 	modifySelectedCocktails(Searches: Searchres) {
@@ -232,6 +253,17 @@ export class HomeComponent {
 		this.showCocktailDetails.set(false);
 		this.selectedCocktails.set([]);
 		this.activeView.set('home');
+	}
+	/**
+	 * Navigate to the search results page with the current search term
+	 */
+	goToSearch() {
+		if (this.currentSearchTerm()) {
+			this.activeView.set('search');
+			this.router.navigate(['search', this.currentSearchTerm()], {
+				relativeTo: this.route,
+			});
+		}
 	}
 
 	//handleFullSearch(filterSearch: bigSearch) {
