@@ -46,6 +46,7 @@ export class DashboardComponent {
 	//);
 
 	cachedCocktails = signal<Cocktail[]>([]);
+
 	constructor(@Inject(PLATFORM_ID) private platformId: Object) {
 		if (isPlatformBrowser(this.platformId)) {
 			this.user = httpResource<User>(this.userProfileUrl, {
@@ -53,17 +54,9 @@ export class DashboardComponent {
 			});
 
 			this.favCocktails = httpResource<Cocktail[]>(
-				() => {
-					console.log('fav carousel called');
-					console.log(
-						`${
-							this.favoriteUrl
-						}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`
-					);
-					return `${
-						this.favoriteUrl
-					}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`;
-				},
+				`${
+					this.favoriteUrl
+				}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`,
 				{
 					defaultValue: [
 						new Cocktail(
@@ -88,6 +81,7 @@ export class DashboardComponent {
 			);
 		}
 	}
+
 	ngDoCheck() {
 		if (this.favCocktails && this.favCocktails.hasValue()) {
 			const newOnes = this.favCocktails
