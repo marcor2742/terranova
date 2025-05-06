@@ -14,8 +14,9 @@ import { GlassSelectorComponent } from '../glass-selector/glass-selector.compone
 import { SearchFilters } from '../searchbar/searchbar.component';
 
 import { InputTextModule } from 'primeng/inputtext';
-
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { CategoriesService } from '../services/categories.service';
 
 @Component({
 	selector: 'app-filters',
@@ -30,14 +31,19 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 		GlassSelectorComponent,
 		InputTextModule,
 		InputSwitchModule,
+		MultiSelectModule,
 	],
 	templateUrl: './filters.component.html',
 	styleUrl: './filters.component.scss',
 })
 export class FiltersComponent implements OnInit {
 	private formBuilder = inject(FormBuilder);
+	private categoriesService = inject(CategoriesService);
 
 	filtersChanged = output<SearchFilters>();
+
+	categories: string[] = [];
+
 	alcolOption = [
 		// Keep 'NoPreference' value consistent with SearchFilters default if needed
 		{ label: 'All', value: 'NoPreference' }, // Or null, depending on API/SearchFilters
@@ -45,20 +51,29 @@ export class FiltersComponent implements OnInit {
 		{ label: 'Non Alcoholic', value: 'NonAlcoholic' }, // Or false
 	];
 	filtersForm = this.formBuilder.group({
-		// Adjust initial value based on alcolOption values
 		Alcoholic: [
 			'NoPreference' as 'Alcoholic' | 'NonAlcoholic' | 'NoPreference',
 		],
 		Glasses: new FormControl<Glass[]>([]),
 		// Use IngredientSearch if that's what the selector provides
 		Ingredients: new FormControl<IngredientSearch[]>([]),
-		Category: [''],
+		Categories: new FormControl<string[]>([]),
 		AllIngredientsSwitch: [false],
 		ShowOnlyOriginalSwitch: [false],
 	});
+
 	constructor() {}
 
 	ngOnInit() {
+		this.categoriesService.getCategories().subscribe(
+			(categories) => {
+				this.categories = categories;
+				console.log('Categories loaded:', categories);
+			},
+			(error) => {
+				console.error('Error loading categories:', error);
+			}
+		);
 		this.filtersForm.valueChanges
 			.pipe(
 				debounceTime(350),
@@ -79,7 +94,7 @@ export class FiltersComponent implements OnInit {
 						Ingredients:
 							formValues.Ingredients?.map((ing) => ing.name) ??
 							[],
-						Category: formValues.Category ?? '',
+						Categories: formValues.Categories ?? [],
 						Creators: [],
 						AllIngredients: formValues.AllIngredientsSwitch
 							? 'true'
@@ -98,18 +113,17 @@ export class FiltersComponent implements OnInit {
 				);
 				this.filtersChanged.emit(transformedFilters);
 			});
-			
 	}
 
 	resetFilters() {
 		this.filtersForm.reset({
-            Alcoholic: 'NoPreference',
-            Glasses: [],
-            Ingredients: [],
-            Category: '',
-            // Reset the boolean switch controls
-            AllIngredientsSwitch: false,
-            ShowOnlyOriginalSwitch: false
+			Alcoholic: 'NoPreference',
+			Glasses: [],
+			Ingredients: [],
+			Categories: [],
+			// Reset the boolean switch controls
+			AllIngredientsSwitch: false,
+			ShowOnlyOriginalSwitch: false,
 		});
 	}
 }

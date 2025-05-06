@@ -52,7 +52,7 @@ export interface SearchFilters {
 	IsAlcoholic: 'Alcoholic' | 'NonAlcoholic' | 'NoPreference';
 	GlassNames: string[];
 	Creators: string[];
-	Category: string;
+	Categories: string[];
 	Ingredients: string[];
 	AllIngredients: 'true' | 'false';
 	ShowOnlyOriginal: 'true' | 'false';
@@ -109,7 +109,7 @@ export class SearchbarComponent implements OnInit {
 		IsAlcoholic: 'NoPreference',
 		GlassNames: [],
 		Creators: [],
-		Category: '',
+		Categories: [],
 		Ingredients: [],
 		AllIngredients: 'false',
 		ShowOnlyOriginal: 'false',
@@ -218,8 +218,10 @@ export class SearchbarComponent implements OnInit {
 						params = params.append('Creators', creator);
 					});
 				}
-				if (currentFilters.Category) {
-					params = params.set('Category', currentFilters.Category);
+				if (currentFilters.Categories && currentFilters.Categories.length > 0) {
+					currentFilters.Categories.forEach(category => {
+						params = params.append('Category', category);
+					});
 				}
 				if (currentFilters.AllIngredients) {
 					params = params.set('AllIngredients', currentFilters.AllIngredients);

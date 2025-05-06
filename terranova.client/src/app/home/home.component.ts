@@ -79,7 +79,7 @@ export class HomeComponent implements OnDestroy {
     IsAlcoholic: 'NoPreference',
     GlassNames: [],
     Creators: [],
-    Category: '',
+    Categories: [],
     Ingredients: [],
     AllIngredients: 'false',
     ShowOnlyOriginal: 'false',
