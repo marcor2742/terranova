@@ -1,0 +1,66 @@
+<div class="for-you-container">
+	@if (isLoggedIn()) {
+	<div class="section-container">
+		<h2 class="section-title">
+			{{ "PersonalizedSuggestions" | translate }}
+		</h2>
+		<p class="section-description">
+			{{ "SuggestionsBasedOnPreferences" | translate }}
+		</p>
+
+		@if (isLoadingSuggestions() && suggestedCocktails().length === 0) {
+		<div class="loading-state">
+			<p>{{ "LoadingYourSuggestions" | translate }}...</p>
+		</div>
+		} @else if (suggestedCocktails().length > 0) {
+		<app-dashboard-carousel
+			[cocktails]="suggestedCocktails()"
+			[numVisible]="4"
+			[disabled]="isLoadingSuggestions()"
+		></app-dashboard-carousel>
+		} @else {
+		<p-card styleClass="no-suggestions-card">
+			<div class="no-data-message">
+				<i class="pi pi-info-circle" style="font-size: 2rem"></i>
+				<h3>{{ "NoSuggestionsYet" | translate }}</h3>
+				<p>{{ "ExploreMoreToGetSuggestions" | translate }}</p>
+			</div>
+		</p-card>
+		}
+	</div>
+
+	<p-divider></p-divider>
+	}
+
+	<!-- Discover New Cocktails Section (for everyone) -->
+	<div class="section-container">
+		<h2 class="section-title">{{ "DiscoverNew" | translate }}</h2>
+		<p class="section-description">
+			{{ "ExploreRandomCocktails" | translate }}
+		</p>
+
+		@if (isLoadingRandom() && randomCocktails().length === 0) {
+		<div class="loading-state">
+			<p>{{ "LoadingCocktails" | translate }}...</p>
+		</div>
+		} @else if (randomCocktails().length > 0) {
+		<app-dashboard-carousel
+			[cocktails]="randomCocktails()"
+			[numVisible]="4"
+			[disabled]="isLoadingRandom()"
+			(loadMore)="loadMoreRandomCocktails()"
+		></app-dashboard-carousel>
+		} @else {
+		<p-card styleClass="no-cocktails-card">
+			<div class="no-data-message">
+				<i
+					class="pi pi-exclamation-triangle"
+					style="font-size: 2rem"
+				></i>
+				<h3>{{ "NoCocktailsFound" | translate }}</h3>
+				<p>{{ "TryAgainLater" | translate }}</p>
+			</div>
+		</p-card>
+		}
+	</div>
+</div>

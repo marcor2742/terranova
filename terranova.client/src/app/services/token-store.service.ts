@@ -20,7 +20,7 @@ interface TokenPayload {
  * Handles token storage, retrieval, and validation
  */
 @Injectable({
-	providedIn: 'root'
+	providedIn: 'root',
 })
 export class TokenStoreService {
 	private readonly TOKEN_KEY = 'access_token';
@@ -117,13 +117,11 @@ export class TokenStoreService {
 		}
 	}
 
-
 	/**
 	 * Ensures the access token is valid, refreshing it if necessary
 	 * @returns A promise that resolves to a valid access token
 	 */
 	async ensureValidAccessToken(): Promise<string | null> {
-
 		const token = this.getAccessToken();
 		if (token && !this.isTokenExpired(token)) {
 			return token;
@@ -138,5 +136,21 @@ export class TokenStoreService {
 		}
 
 		return null;
+	}
+
+	isLoggedin(): boolean {
+		const token = this.getAccessToken();
+		if (token) {
+			const decoded = jwtDecode<TokenPayload>(token);
+			return decoded.exp * 1000 > Date.now();
+		}
+
+		// Check if refresh token exists as a fallback
+		const refreshToken = this.getRefreshToken();
+		if (refreshToken) {
+			const decoded = jwtDecode<TokenPayload>(refreshToken);
+			return decoded.exp * 1000 > Date.now();
+		}
+		return false;
 	}
 }

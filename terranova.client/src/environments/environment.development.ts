@@ -16,4 +16,6 @@ export const environment = {
 	isFavoriteUrl: '/api/isInFavorites',
 	userProfileUrl: '/api/userProfile',
 	categoriesUrl: '/api/categoriesTable',
+	suggestedDrinksUrl: '/api/suggestedDrinks',
+	allCocktailsUrl: '/api/allCocktails',
 };

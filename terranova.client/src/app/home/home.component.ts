@@ -222,16 +222,16 @@ export class HomeComponent implements OnDestroy {
 	initMenuItems() {
 		this.menuItems = [
 			{
+				label: 'Home',
+				icon: 'pi pi-list',
+				command: () => this.setActiveView('home'),
+				expanded: this.activeView() === 'home',
+			},
+			{
 				label: 'Dashboard',
 				icon: 'pi pi-chart-bar',
 				command: () => this.setActiveView('dashboard'),
 				expanded: this.activeView() === 'dashboard',
-			},
-			{
-				label: 'Cocktail List',
-				icon: 'pi pi-list',
-				command: () => this.setActiveView('cocktails'),
-				expanded: this.activeView() === 'cocktails',
 			},
 			{
 				label: 'Favorites',
