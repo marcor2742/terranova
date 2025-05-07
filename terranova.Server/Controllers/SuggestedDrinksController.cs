@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using terranova.Server.Models;
 using terranova.Server.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace terranova.Server.Controllers
 {
@@ -19,6 +20,7 @@ namespace terranova.Server.Controllers
         }
 
         private static async Task<IResult> SuggestedDrinks(
+            [AsParameters] DataForTables data,
             ClaimsPrincipal user,
             CocktailsDbContext dbContext,
             IdentityUserContext userContext,
@@ -167,18 +169,18 @@ namespace terranova.Server.Controllers
             }
 
             //DEBUG rimuovere anche dal return
-            var ingredientPreferences = userIngredientVector
-                .OrderByDescending(kv => kv.Value)
-                .Select(kv => new { Ingredient = kv.Key, Weight = kv.Value })
-                .ToList();
-            var glassPreferences = userGlassPreferences
-                .OrderByDescending(kv => kv.Value)
-                .Select(kv => new { Glass = kv.Key, Weight = kv.Value })
-                .ToList();
-            var categoryPreferences = userCategoryPreferences
-                .OrderByDescending(kv => kv.Value)
-                .Select(kv => new { Category = kv.Key, Weight = kv.Value })
-                .ToList();
+            //var ingredientPreferences = userIngredientVector
+            //    .OrderByDescending(kv => kv.Value)
+            //    .Select(kv => new { Ingredient = kv.Key, Weight = kv.Value })
+            //    .ToList();
+            //var glassPreferences = userGlassPreferences
+            //    .OrderByDescending(kv => kv.Value)
+            //    .Select(kv => new { Glass = kv.Key, Weight = kv.Value })
+            //    .ToList();
+            //var categoryPreferences = userCategoryPreferences
+            //    .OrderByDescending(kv => kv.Value)
+            //    .Select(kv => new { Category = kv.Key, Weight = kv.Value })
+            //    .ToList();
 
 
             var potentialFavoritesQuery = dbContext.Cocktails.AsQueryable();
@@ -267,6 +269,8 @@ namespace terranova.Server.Controllers
                 recommendationsWithScore.Add((candidate, finalScore));
             }
 
+            int pageSize = data.PageSize.HasValue && data.PageSize.Value > 0 ? Math.Min(data.PageSize.Value, 100) : 10;
+
             Random random = new Random();
             var topRecommendations = recommendationsWithScore
                 .Select(item => {
@@ -275,48 +279,13 @@ namespace terranova.Server.Controllers
                     return (item.Cocktail, Score: item.Score * randomFactor);
                 })
                 .OrderByDescending(item => item.Score)
-                .Take(10)
+                .Take(pageSize)
                 .Select(item => item.Cocktail)
                 .ToList();
 
-            #region "if not sufficent data"
-            // Popular random cocktail if not enough drinks in recommendations
-            var popularCocktails = new List<Cocktail>();
-            if (topRecommendations.Count < 10 || (searchHistoryDrinks.Count < 2 && favoriteDrinks.Count < 2))
-            {
-                var remainingToFetch = 10 - topRecommendations.Count;
-                var allSeenIds = seenCocktailIds.Concat(topRecommendations.Select(r => r.Id)).ToHashSet();
-
-                popularCocktails = await dbContext.Cocktails
-                    .Where(c => !allSeenIds.Contains(c.Id))
-                    .Where(c => isOver18 || !c.IsAlcoholic)
-                    .Include(c => c.Glass)
-                    .Include(c => c.Instructions)
-                    .Include(c => c.CocktailIngredients)
-                        .ThenInclude(ci => ci.Ingredient)
-                    .Include(c => c.CocktailIngredients)
-                        .ThenInclude(ci => ci.Measure)
-                    .OrderBy(c => Guid.NewGuid()) 
-                    .Take(remainingToFetch)
-                    .ToListAsync();
-            }
-
-            var randoms = popularCocktails.Select(c => new
-            {
-                c.Id,
-                c.Name,
-                c.Category,
-                c.IsAlcoholic,
-                Glass = c.Glass?.Name,
-                c.ImageUrl,
-                Ingredients = c.CocktailIngredients.Select(ci => new
-                {
-                    Name = ci.Ingredient.Name,
-                    MetricMeasure = ci.Measure?.Metric,
-                    ImperialMeasure = ci.Measure?.Imperial
-                }).ToList()
-            }).ToList();
-            #endregion
+            // if not sufficent data
+            if (topRecommendations.Count < pageSize || (searchHistoryDrinks.Count < 2 && favoriteDrinks.Count < 2))
+                return Results.Ok(new List<object>());
 
             var favorites = topRecommendations.Select(c => new
             {
@@ -342,14 +311,16 @@ namespace terranova.Server.Controllers
                 }).ToList()
             }).ToList();
 
-            return Results.Ok(new { favorites, randoms,
-                diagnostics = new
-                {
-                    ingredientPreferences,
-                    glassPreferences,
-                    categoryPreferences
-                }
-            });
+            return Results.Ok(favorites
+                //new { 
+                //diagnostics = new
+                //{
+                //    ingredientPreferences,
+                //    glassPreferences,
+                //    categoryPreferences
+                //}
+                //}
+            );
         }
 
         private static void AnalyzeUserPreferences(
@@ -407,6 +378,11 @@ namespace terranova.Server.Controllers
             };
 
             return commonIngredients.Contains(ingredientName);
+        }
+
+        public class DataForTables
+        {
+            public int? PageSize { get; set; }
         }
     }
 }
