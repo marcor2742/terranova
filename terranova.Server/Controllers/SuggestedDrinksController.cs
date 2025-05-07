@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Linq;
 using System.Security.Claims;
 using terranova.Server.Models;
 using terranova.Server.Services;
@@ -40,16 +41,36 @@ namespace terranova.Server.Controllers
                 .Select(f => f.CocktailId)
                 .ToListAsync();
 
-            var maxCount = await userContext.SearchHistories
+            int maxCount = 1;
+            var hasSearchHistory = await userContext.SearchHistories
                 .Where(s => s.UserId == userId)
-                .MaxAsync(s => s.Count);
-            if (maxCount == 0) maxCount = 1;
+                .AnyAsync();
 
-            var searchHistoryQuery = await userContext.SearchHistories
+            if (hasSearchHistory)
+            {
+                maxCount = await userContext.SearchHistories
+                    .Where(s => s.UserId == userId)
+                    .MaxAsync(s => s.Count);
+
+                if (maxCount == 0)
+                    maxCount = 1;
+            }
+
+            var searchHistories = await userContext.SearchHistories
                 .Where(s => s.UserId == userId)
-            .OrderBy(s => s.Count)
-                .SelectMany(s => Enumerable.Repeat(s.CocktailId, (int)(s.Count / (double)maxCount * 10)))
+                .OrderBy(s => s.Count)
+                .Select(s => new { s.CocktailId, s.Count })
                 .ToListAsync();
+
+            var searchHistoryQuery = new List<long>();
+            foreach (var item in searchHistories)
+            {
+                int repeatCount = (int)(item.Count / (double)maxCount * 10);
+                for (int i = 0; i < repeatCount; i++)
+                {
+                    searchHistoryQuery.Add(item.CocktailId);
+                }
+            }
 
             var createdDrinksQuery = await dbContext.Cocktails
                 .Where(c => c.Creator == userId)
@@ -261,9 +282,9 @@ namespace terranova.Server.Controllers
             #region "if not sufficent data"
             // Popular random cocktail if not enough drinks in recommendations
             var popularCocktails = new List<Cocktail>();
-            if (topRecommendations.Count < 20)
+            if (topRecommendations.Count < 10 || (searchHistoryDrinks.Count < 2 && favoriteDrinks.Count < 2))
             {
-                var remainingToFetch = 20 - topRecommendations.Count;
+                var remainingToFetch = 10 - topRecommendations.Count;
                 var allSeenIds = seenCocktailIds.Concat(topRecommendations.Select(r => r.Id)).ToHashSet();
 
                 popularCocktails = await dbContext.Cocktails

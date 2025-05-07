@@ -25,6 +25,8 @@ const PROXY_CONFIG = [
 			'/api/glassesTable',
 			'/api/preferences',
 			'/api/categoriesTable',
+			'/api/suggestedDrinks',
+			'/api/allCocktails'
 		],
 		target: apiTarget,
 		secure: false,
