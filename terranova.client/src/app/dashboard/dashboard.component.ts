@@ -17,6 +17,7 @@ import { CarouselModule } from 'primeng/carousel';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Cocktail, Ingredient } from '../Classes/cocktail';
 import { ButtonModule } from 'primeng/button';
+import { CocktailCarouselComponent } from '../cocktail-carousel/cocktail-carousel.component';
 
 @Component({
 	selector: 'app-dashboard',
@@ -27,6 +28,7 @@ import { ButtonModule } from 'primeng/button';
 		CarouselModule,
 		SkeletonModule,
 		ButtonModule,
+		CocktailCarouselComponent
 	],
 	templateUrl: './dashboard.component.html',
 	styleUrl: './dashboard.component.scss',

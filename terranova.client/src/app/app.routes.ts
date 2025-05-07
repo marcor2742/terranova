@@ -5,6 +5,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { CocktailListComponent } from './cocktail-list/cocktail-list.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ForYouComponent } from './for-you/for-you.component';
 
 export const routes: Routes = [
 	{ path: 'login', component: LoginPageComponent },
@@ -12,7 +13,8 @@ export const routes: Routes = [
 		path: 'home',
 		component: HomeComponent,
 		children: [
-			{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+			{ path: '', redirectTo: 'home', pathMatch: 'full' },
+			{ path: 'home', component: ForYouComponent },
 			{ path: 'dashboard', component: DashboardComponent },
 			{ path: 'settings', component: SettingsComponent },
 			{ path: 'cocktails', component: CocktailListComponent },

@@ -1,0 +1,46 @@
+<div class="user-favorites">
+	<p-carousel
+		#carousel
+		[value]="cocktails()"
+		[numVisible]="numVisible()"
+		[responsiveOptions]="responsiveOptions()"
+		circular="false"
+	>
+		<ng-template pTemplate="item" let-cocktail>
+			<div class="border border-surface rounded-border m-2 p-4">
+				<img [src]="cocktail.imageUrl" />
+				<div class="flex items-center mb-4 font-medium">
+					<span class="mr-2">{{ cocktail.name }}</span>
+					<img
+						*ngIf="cocktail.isAlcoholic === true"
+						src="./assets/icons/drink.svg"
+						alt="Alcoholic drink"
+						width="20"
+						height="20"
+					/>
+					<img
+						*ngIf="cocktail.isAlcoholic === false"
+						src="./assets/icons/no_drink.svg"
+						alt="Non-alcoholic drink"
+						width="20"
+						height="20"
+					/>
+				</div>
+				<p class="text-sm text-gray-600 flex-grow">
+					{{ cocktail.category }}
+				</p>
+			</div>
+		</ng-template>
+	</p-carousel>
+	<div #loadMoreSentinel style="height: 1px;"></div> 
+</div>
+<!-- <ng-template pTemplate="footer">
+	<div class="carousel-footer">
+		<p-button
+			label="Load More"
+			icon="pi pi-plus"
+			(onClick)="loadMore.emit()"
+			[disabled]="disabled"
+		></p-button>
+	</div>
+</ng-template> -->
