@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Common;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -112,7 +113,7 @@ namespace terranova.Server.Controllers
             {
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(request.RefreshToken);
-                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId");
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserID");
                 if (userIdClaim == null)
                 {
                     return Results.BadRequest(new { message = "Refresh token non valido" });
@@ -192,7 +193,7 @@ namespace terranova.Server.Controllers
 
                 // nuovo refresh token
                 var newRefreshToken = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
-                           claims: new[] { new Claim("UserId", user.Id) },
+                           claims: new[] { new Claim("UserID", user.Id.ToString()) },
                            expires: DateTime.UtcNow.AddDays(7),
                            signingCredentials: new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
                        ));

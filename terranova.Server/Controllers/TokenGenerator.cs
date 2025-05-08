@@ -79,7 +79,7 @@ namespace terranova.Server.Controllers
 
             // refresh token
             var refreshToken = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
-                claims: new[] { new Claim("UserId", userDetails.Id) },
+                claims: new[] { new Claim("UserID", userDetails.Id.ToString()) },
                 expires: DateTime.UtcNow.AddDays(7),
                 signingCredentials: new SigningCredentials(signInKey, SecurityAlgorithms.HmacSha256Signature)
             ));

@@ -291,7 +291,7 @@ namespace terranova.Server.Controllers
             {
                 c.Id,
                 c.Name,
-                c.Category,
+                Category = c.Category?.Name,
                 c.IsAlcoholic,
                 Glass = c.Glass?.Name,
                 c.ImageUrl,

@@ -15,11 +15,11 @@ namespace terranova.Server.Controllers
                .WithDescription("Crea o aggiorna un cocktail con un ID specifico")
                .WithOpenApi();
 
-            app.MapPut("/editCocktails/{id}", UpdateCocktail)
+            app.MapPut("/editCocktails/{id:long?}", UpdateCocktail)
                .WithDescription("Aggiorna un cocktail esistente con ID specifico")
                .WithOpenApi();
 
-            app.MapDelete("/editCocktails/{id}", DeleteCocktail)
+            app.MapDelete("/editCocktails/{id:long?}", DeleteCocktail)
                .WithDescription("Elimina un cocktail con ID specifico")
                .WithOpenApi();
 
@@ -31,7 +31,7 @@ namespace terranova.Server.Controllers
                .WithDescription("Cerca cocktail per nome, ordinando prima quelli che iniziano con la parola cercata con filtri. se non sei loggato o se il parametro showOnlyOriginal é true allora non verranno mostrati i drink con un creator nel db. contenuto alcolico: Alcoholic, NonAlcoholic, NoPreference")
                .WithOpenApi();
 
-            app.MapGet("/search/{id}", SearchById)
+            app.MapGet("/search/{id:long?}", SearchById)
                .WithDescription("Cerca cocktail per un id, e aggiunge la ricerca a searchHistory")
                .WithOpenApi();
 
@@ -164,11 +164,16 @@ namespace terranova.Server.Controllers
         }
 
         private static async Task<IResult> UpdateCocktail(
-            long id,
+            long? id,
             ClaimsPrincipal user,
             CocktailRequest cocktailData,
             CocktailsDbContext dbContext)
         {
+            if (!id.HasValue)
+            {
+                return Results.BadRequest(new { message = "ID del cocktail non valido o non specificato" });
+            }
+
             var userId = user.FindFirst("UserID")?.Value;
             if (userId == null)
             {
@@ -176,7 +181,7 @@ namespace terranova.Server.Controllers
             }
 
             // Cerca il cocktail esistente
-            var cocktail = await dbContext.Cocktails.FindAsync(id);
+            var cocktail = await dbContext.Cocktails.FindAsync(id.Value);
             if (cocktail == null)
             {
                 return Results.NotFound();
@@ -342,10 +347,14 @@ namespace terranova.Server.Controllers
 
 
         private static async Task<IResult> DeleteCocktail(
-            long id,
+            long? id,
             ClaimsPrincipal user,
             CocktailsDbContext dbContext)
         {
+            if (!id.HasValue)
+            {
+                return Results.BadRequest(new { message = "ID del cocktail non valido o non specificato" });
+            }
 
             var userId = user.FindFirst("UserID")?.Value;
             if (userId == null)
@@ -353,7 +362,7 @@ namespace terranova.Server.Controllers
                 return Results.BadRequest(new { message = "User not found" });
             }
 
-            var cocktail = await dbContext.Cocktails.FindAsync(id);
+            var cocktail = await dbContext.Cocktails.FindAsync(id.Value);
             if (cocktail == null)
             {
                 return Results.NotFound();
@@ -370,7 +379,7 @@ namespace terranova.Server.Controllers
 
             // 2. Trova e rimuovi le relazioni con gli ingredienti e le misure
             var cocktailIngredients = await dbContext.CocktailsIngredients
-                .Where(ci => ci.CocktailKey == id)
+                .Where(ci => ci.CocktailKey == id.Value)
                 .Include(ci => ci.Measure)
                 .ToListAsync();
 
@@ -723,14 +732,18 @@ namespace terranova.Server.Controllers
 
         [AllowAnonymous]
         private static async Task<IResult> SearchById(
-            long id,
+            long? id,
             ClaimsPrincipal user,
             CocktailsDbContext dbContext,
             UserCocktailService userCocktailService = null)
         {
+            if (!id.HasValue)
+            {
+                return Results.BadRequest(new { message = "ID del cocktail non valido o non specificato" });
+            }
 
             var cocktail = await dbContext.Cocktails
-                .Where(c => c.Id == id)
+                .Where(c => c.Id == id.Value)
                 .Include(c => c.Glass)
                 .Include(c => c.Category)
                 .Include(c => c.Instructions)
@@ -747,8 +760,8 @@ namespace terranova.Server.Controllers
             var userId = user.FindFirst("UserID")?.Value;
             if (userId != null && userCocktailService != null)
             {
-                await userCocktailService.AddToSearchHistoryAsync(userId, id);
-                isInFavorites = await userCocktailService.CheckIfInFavoritesAsync(userId, id);
+                await userCocktailService.AddToSearchHistoryAsync(userId, id.Value);
+                isInFavorites = await userCocktailService.CheckIfInFavoritesAsync(userId, id.Value);
             }
 
             var result = new
