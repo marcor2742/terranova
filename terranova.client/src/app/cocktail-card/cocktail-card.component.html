@@ -1,22 +1,25 @@
 <div [style.max-height]="cardHeight()" [style.max-width]="cardWidth()">
 	<div hlmCard class="cocktail-card">
-		@if (cocktail.isLoading()) {
+		@if (cocktail?.isLoading()) {
 		<hlm-skeleton class="h-full w-full" />
-		} @else if (cocktail.error()) {
+		} @else if (cocktail?.error()) {
 		<div class="error-container">
-			Error: {{ cocktail.error() || "Unknown error occurred" }}
+			Error: {{ cocktail?.error() || "Unknown error occurred" }}
 		</div>
-		} @else if (cocktail.hasValue()) {
-		<!-- Photo side -->
-		<div class="photo-side"
-			 [style.background-image]="
+		} @else if (cocktail?.hasValue()) { @let cocktailData =
+		cocktail!.value();
+		<div
+			class="photo-side"
+			[style.background-image]="
 				'url(' +
-				(cocktail.value().imageUrl || '/assets/default-cocktail.jpg') +
+				(cocktail?.value()?.imageUrl ||
+					'/assets/default-cocktail.jpg') +
 				')'
-			">
+			"
+		>
 			<div class="photo-overlay">
 				<div hlmCardTitle class="photo-title">
-					{{ cocktail.value().name }}
+					{{ cocktail?.value()?.name }}
 				</div>
 			</div>
 		</div>
@@ -29,55 +32,88 @@
 			<div class="card-header-row">
 				<div hlmCardHeader>
 					<div hlmCardTitle>
-						{{ "Type" | translate }}:	{{ cocktail.value().category }}
+						{{ "Type" | translate }}:
+						{{ cocktail?.value()?.category }}
 					</div>
 				</div>
 				@if (IsRemovable()) {
 				<div class="action-buttons">
-					<my-ui-button text="{{ 'Remove' | translate }}"
-								  variant="outline"
-								  size="sm"
-								  (buttonClick)="remCock(cocktail.value().id)"
-								  class="remove-btn"></my-ui-button>
+					<my-ui-button
+						text="{{ 'Remove' | translate }}"
+						variant="outline"
+						size="sm"
+						(buttonClick)="remCock(cocktail?.value()?.id || 0)"
+						class="remove-btn"
+					></my-ui-button>
 				</div>
 				}
 			</div>
 
 			<div hlmCardContent>
-				@if (showAll()) {
+				@if (showAll()) { @defer {
 				<div class="cocktail-details">
 					<h4>{{ "ingredientsHeading" | translate }}</h4>
 					<ul class="ingredients-list">
-						@for (ingredient of cocktail.value().ingredients || [];
+						@for (ingredient of cocktailData.ingredients || [];
 						track $index) {
 						<li>
 							<span class="ingredient-name">
-								{{
-								ingredient.ingredient
-								}}
+								{{ ingredient.ingredient }}
 							</span>
 							<span class="ingredient-amount">
-								{{
-								ingredient | measurement
-								}}
+								{{ ingredient | measurement }}
 							</span>
 						</li>
 						}
 					</ul>
-					<div class="instructions-card" hlmCard>
-						<div hlmCardTitle>
-							{{ "preparationHeading" | translate }}
-						</div>
-						<div hlmCardContent>
-							{{ cocktail.value() | instructions }}
-						</div>
+				</div>
+				} @placeholder {
+				<div class="ingredients-placeholder">
+					<h4>{{ "ingredientsHeading" | translate }}</h4>
+					<div class="placeholder-list">
+						<hlm-skeleton
+							*ngFor="let i of [1, 2, 3]"
+							class="ingredient-placeholder"
+						></hlm-skeleton>
 					</div>
 				</div>
 				}
+
+				<!-- Use defer for instructions section -->
+				@defer {
+				<div class="instructions-card" hlmCard>
+					<div hlmCardTitle>
+						{{ "preparationHeading" | translate }}
+					</div>
+					<div hlmCardContent>
+						{{ cocktailData | instructions }}
+					</div>
+				</div>
+				} @placeholder {
+				<div class="instructions-placeholder" hlmCard>
+					<div hlmCardTitle>
+						{{ "preparationHeading" | translate }}
+					</div>
+					<div hlmCardContent>
+						<hlm-skeleton
+							class="instructions-text-placeholder"
+						></hlm-skeleton>
+						<hlm-skeleton
+							class="instructions-text-placeholder"
+						></hlm-skeleton>
+					</div>
+				</div>
+				} }
 				<div>
-					<p-button [icon]="isFavorite() ? 'pi pi-star-fill' : 'pi pi-star'"
-							  (onClick)="toggleFavorite()"
-							  [label]="isFavorite() ? 'Remove from favorites' : 'Add to favorite'">
+					<p-button
+						[icon]="isFavorite() ? 'pi pi-star-fill' : 'pi pi-star'"
+						(onClick)="toggleFavorite()"
+						[label]="
+							isFavorite()
+								? 'RemoveFromFavorites'
+								: 'AddToFavorites'
+						"
+					>
 					</p-button>
 				</div>
 			</div>

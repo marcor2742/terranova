@@ -4,25 +4,34 @@ import {
 	output,
 	ViewChild,
 	ElementRef,
-	OnDestroy,
-	AfterViewInit,
-	PLATFORM_ID,
 	inject,
+	OnDestroy,
+	Renderer2,
+	PLATFORM_ID,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Cocktail } from '../Classes/cocktail';
 import { ButtonModule } from 'primeng/button';
-import { CarouselModule } from 'primeng/carousel';
+import { CarouselModule, Carousel } from 'primeng/carousel';
+import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-dashboard-carousel',
 	standalone: true,
-	imports: [CommonModule, ButtonModule, CarouselModule],
+	imports: [
+		CommonModule,
+		ButtonModule,
+		CarouselModule,
+		RouterModule,
+		TranslateModule,
+	],
 	templateUrl: './cocktail-carousel.component.html',
 	styleUrl: './cocktail-carousel.component.scss',
 })
-export class CocktailCarouselComponent implements AfterViewInit, OnDestroy {
+export class CocktailCarouselComponent implements OnDestroy {
 	private platformId = inject(PLATFORM_ID);
+	private renderer = inject(Renderer2);
 
 	cocktails = input<Cocktail[]>([]);
 	numVisible = input<number>(5);
@@ -34,51 +43,52 @@ export class CocktailCarouselComponent implements AfterViewInit, OnDestroy {
 	loadMore = output<void>();
 	disabled = input<boolean>(false);
 
-	@ViewChild('loadMoreSentinel', { static: false })
-	loadMoreSentinel!: ElementRef;
-	private observer?: IntersectionObserver;
+	@ViewChild('carousel') carousel!: Carousel;
 
-	ngAfterViewInit() {
-		// Only run in browser environment
-		if (isPlatformBrowser(this.platformId)) {
-			this.setupIntersectionObserver();
+	private loadTriggered = false;
+	private loadResetTimeout: any = null;
+
+	ngOnDestroy() {
+		// Clear any pending timeouts
+		if (this.loadResetTimeout) {
+			clearTimeout(this.loadResetTimeout);
 		}
 	}
 
-	setupIntersectionObserver() {
-		// Verify we're in a browser and the loadMoreSentinel exists
-		if (!isPlatformBrowser(this.platformId) || !this.loadMoreSentinel) {
+	onPageChange(event: any) {
+		// Skip server-side execution completely
+		if (!isPlatformBrowser(this.platformId)) {
 			return;
 		}
 
-		// IntersectionObserver is only available in browser environments
-		const options: IntersectionObserverInit = {
-			root: null,
-			rootMargin: '0px',
-			threshold: 0.1,
-		};
+		if (this.disabled()) {
+			return;
+		}
 
-		this.observer = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting && !this.disabled()) {
-					console.log('Sentinel is visible, loading more items...');
-					this.loadMore.emit();
-				}
-			});
-		}, options);
+		// Calculate if we're near the end of available items
+		const cocktailsArr = this.cocktails();
+		if (!cocktailsArr || !cocktailsArr.length) {
+			return;
+		}
 
-		this.observer.observe(this.loadMoreSentinel.nativeElement);
-	}
+		const totalItems = cocktailsArr.length;
+		const itemsPerPage = event.rows || this.numVisible();
+		const currentFirstItem = event.first || 0;
+		const itemsLeft = totalItems - (currentFirstItem + itemsPerPage);
+		const loadThreshold = itemsPerPage; // Load more when less than one page left
 
-	ngOnDestroy() {
-		// Only cleanup in browser environment
-		if (
-			isPlatformBrowser(this.platformId) &&
-			this.observer &&
-			this.loadMoreSentinel
-		) {
-			this.observer.unobserve(this.loadMoreSentinel.nativeElement);
-			this.observer.disconnect();
+		if (itemsLeft <= loadThreshold && !this.loadTriggered) {
+			console.log(
+				`Near end of carousel (${itemsLeft} items left), loading more...`
+			);
+			this.loadTriggered = true;
+			this.loadMore.emit();
+
+			// Store timeout reference for cleanup
+			this.loadResetTimeout = setTimeout(() => {
+				this.loadTriggered = false;
+				this.loadResetTimeout = null;
+			}, 1000);
 		}
 	}
 }
