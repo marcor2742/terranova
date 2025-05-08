@@ -22,5 +22,15 @@
 	"MatchAllIngredients": "Tutti gli ingredienti inclusi",
 	"ShowOnlyOriginals": "Solo cocktail approvati",
 	"ResetFilters": "Cancella filtri",
-	"Dashboard": "Dashboard"
+	"Dashboard": "Dashboard",
+	"PersonalizedSuggestions": "I nostri suggeriti per te",
+	"SuggestionsBasedOnPreferences": "Suggerimenti basati sulle tue preferenze",
+	"LoadingYourSuggestions": "Caricando i tuoi suggerimenti",
+	"NoSuggestionsYet": "Non ci sono suggerimenti per te",
+	"ExploreMoreToGetSuggestions": "Esplora di più per ricevere suggerimenti",
+	"ExploreRandomCocktails": "Esplora cocktail casuali",
+	"LoadingCocktails": "Caricando i cocktail",
+	"NoCocktailsFound": "Nessun cocktail trovato",
+	"TryAgainLater": "Riprova più tardi",
+	"DiscoverNew": "Scopri nuovi cocktail"
 }

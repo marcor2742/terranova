@@ -6,6 +6,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { CocktailListComponent } from './cocktail-list/cocktail-list.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForYouComponent } from './for-you/for-you.component';
+import { CocktailCardComponent } from './cocktail-card/cocktail-card.component';
 
 export const routes: Routes = [
 	{ path: 'login', component: LoginPageComponent },
@@ -17,7 +18,7 @@ export const routes: Routes = [
 			{ path: 'home', component: ForYouComponent },
 			{ path: 'dashboard', component: DashboardComponent },
 			{ path: 'settings', component: SettingsComponent },
-			{ path: 'cocktails', component: CocktailListComponent },
+			{ path: 'cocktail/:id', component: CocktailCardComponent },
 			{ path: 'search/:term', component: CocktailListComponent },
 		],
 	},
