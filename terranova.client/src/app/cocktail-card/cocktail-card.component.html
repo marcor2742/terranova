@@ -18,9 +18,12 @@
 			"
 		>
 			<div class="photo-overlay">
-				<div hlmCardTitle class="photo-title">
-					{{ cocktail?.value()?.name }}
-				</div>
+			  <div class="photo-title">
+				{{ cocktailData.name }}
+				<span class="cocktail-glass">
+				  <i class="pi pi-glass"></i> {{ cocktailData.glass || "Standard" }}
+				</span>
+			  </div>
 			</div>
 		</div>
 
