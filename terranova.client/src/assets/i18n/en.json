@@ -22,5 +22,15 @@
 	"MatchAllIngredients": "Include all ingredients",
 	"ShowOnlyOriginals": "Only verified cocktails",
 	"ResetFilters": "Reset filters",
-	"Dashboard": "Dashboard"
+	"Dashboard": "Dashboard",
+	"PersonalizedSuggestions": "Our suggestions for you",
+	"SuggestionsBasedOnPreferences": "Suggestions based on your preferences",
+	"LoadingYourSuggestions": "Loading your suggestions",
+	"NoSuggestionsYet": "No suggestions for you yet",
+	"ExploreMoreToGetSuggestions": "Explore more to get suggestions",
+	"ExploreRandomCocktails": "Explore random cocktails",
+	"LoadingCocktails": "Loading cocktails",
+	"NoCocktailsFound": "No cocktails found",
+	"TryAgainLater": "Try again later",
+	"DiscoverNew": "Discover new cocktails"
 }
