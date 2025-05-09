@@ -18,4 +18,5 @@ export const environment = {
 	categoriesUrl: '/api/categoriesTable',
 	suggestedDrinksUrl: '/api/suggestedDrinks',
 	allCocktailsUrl: '/api/allCocktails',
+	editCocktailUrl: '/api/editCocktails',
 };
