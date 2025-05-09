@@ -75,11 +75,14 @@ export class SettingsComponent implements OnInit {
 			// Only update changed fields
 			Object.keys(formValues).forEach(key => {
 				const typedKey = key as keyof UserSettings;
-				const currentValue = this.settingsService.getSetting(typedKey);
+				const currentValue = this.settingsService.getSettingValue(typedKey);
 
 				if (currentValue !== formValues[typedKey]) {
 					updatePromises.push(
-						this.settingsService.updateSetting(typedKey, formValues[typedKey]).toPromise()
+						new Promise<void>((resolve) => {
+							this.settingsService.updateSetting(typedKey, formValues[typedKey]);
+							resolve();
+						})
 					);
 				}
 			});
