@@ -8,6 +8,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
+import { CookieService } from 'ngx-cookie-service';
 @Component({
 	selector: 'app-settings',
 	standalone: true,
@@ -23,7 +24,7 @@ import { SelectModule } from 'primeng/select';
 	],
 	templateUrl: './settings.component.html',
 	styleUrl: './settings.component.scss',
-	providers: [MessageService]
+	providers: [MessageService, CookieService]
 })
 export class SettingsComponent implements OnInit {
 	settingsForm: FormGroup;
@@ -79,7 +80,10 @@ export class SettingsComponent implements OnInit {
 
 				if (currentValue !== formValues[typedKey]) {
 					updatePromises.push(
-						this.settingsService.updateSetting(typedKey, formValues[typedKey]).toPromise()
+						new Promise<void>((resolve) => {
+							this.settingsService.updateSetting(typedKey, formValues[typedKey]);
+							resolve();
+						})
 					);
 				}
 			});

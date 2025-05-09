@@ -361,21 +361,29 @@ export class SearchbarComponent implements OnInit {
 		this.cocktailSelected.emit(Searchres);
 	}
 
-	// Update performSearch in searchbar.component.ts
 	performSearch() {
-		const searchTerm = this.searchForm.get('searchTerm')?.value;
+		const searchTerm = this.searchForm.get('searchTerm')?.value?.trim();
 
-		if (!searchTerm || searchTerm.trim().length < this.MIN_SEARCH_LENGTH) {
-			console.warn(`Search term too short: "${searchTerm}"`);
+		// Allow empty searches when filters are applied
+		const hasFilters =
+			this.filters().IsAlcoholic !== 'NoPreference' ||
+			this.filters().GlassNames?.length > 0 ||
+			this.filters().Ingredients?.length > 0 ||
+			this.filters().Categories?.length > 0 ||
+			this.filters().AllIngredients === 'true' ||
+			this.filters().ShowOnlyOriginal === 'true';
+
+		if (!searchTerm && !hasFilters) {
+			console.warn(`Empty search with no filters, not proceeding`);
 			return;
 		}
 
-		console.log(`Executing search for: "${searchTerm}"`);
+		console.log(`Executing search for: "${searchTerm || ''}"`);
 
 		// In full mode, we need to emit the event AND navigate
 		const searchFilters: SearchFilters = {
 			...this.filters(),
-			SearchString: searchTerm,
+			SearchString: searchTerm || '',
 			Page: 1,
 		};
 
@@ -385,7 +393,7 @@ export class SearchbarComponent implements OnInit {
 		// Emit event with the search information
 		this.continuedSearch.emit({
 			cocktails: currentResults,
-			searchString: searchTerm,
+			searchString: searchTerm || '',
 			page: 1,
 		});
 

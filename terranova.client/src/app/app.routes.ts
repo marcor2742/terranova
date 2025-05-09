@@ -7,6 +7,7 @@ import { CocktailListComponent } from './cocktail-list/cocktail-list.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ForYouComponent } from './for-you/for-you.component';
 import { CocktailCardComponent } from './cocktail-card/cocktail-card.component';
+import { CocktailCreatorComponent } from './cocktail-creator/cocktail-creator.component';
 
 export const routes: Routes = [
 	{ path: 'login', component: LoginPageComponent },
@@ -19,7 +20,9 @@ export const routes: Routes = [
 			{ path: 'dashboard', component: DashboardComponent },
 			{ path: 'settings', component: SettingsComponent },
 			{ path: 'cocktail/:id', component: CocktailCardComponent },
+			{ path: 'search', component: CocktailListComponent },
 			{ path: 'search/:term', component: CocktailListComponent },
+			{ path: 'create', component: CocktailCreatorComponent },
 		],
 	},
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },

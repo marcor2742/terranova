@@ -1,23 +1,32 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Ingredient } from '../Classes/cocktail';
 import { SettingsService } from '../services/setting-service.service';
 
 @Pipe({
   name: 'measurement',
-  standalone: true
+  standalone: true,
 })
 export class MeasurementPipe implements PipeTransform {
   constructor(private settingsService: SettingsService) {}
 
-  transform(ingredient: Ingredient): string {
-    if (!ingredient) return '';
-    
-    // Get user preference from settings service
-    const preferredUnit = this.settingsService.getSetting('locale');
-    
-    // Access properties directly instead of calling a method
-    return preferredUnit === 'metric' ? 
-           ingredient.metricMeasure : 
-           ingredient.imperialMeasure;
+  transform(value: any): string {
+    if (!value) return '';
+
+    // Use the synchronous method, not the Observable method
+    const preferredUnit = this.settingsService.getCurrentMeasurementSystem();
+
+    // Now the comparison will work correctly
+    return preferredUnit === 'metric'
+      ? this.formatMetric(value)
+      : this.formatImperial(value);
+  }
+
+  private formatMetric(value: any): string {
+    // Your metric formatting logic
+    return `${value.metric || ''}`;
+  }
+
+  private formatImperial(value: any): string {
+    // Your imperial formatting logic
+    return `${value.imperial || ''}`;
   }
 }

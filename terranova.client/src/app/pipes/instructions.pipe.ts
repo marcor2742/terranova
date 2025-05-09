@@ -3,25 +3,31 @@ import { Cocktail, Instructions } from '../Classes/cocktail';
 import { SettingsService } from '../services/setting-service.service';
 
 @Pipe({
-  name: 'instructions',
-  standalone: true
+	name: 'instructions',
+	standalone: true,
 })
 export class InstructionsPipe implements PipeTransform {
-  constructor(private settingsService: SettingsService) {}
+	constructor(private settingsService: SettingsService) {}
 
-  transform(cocktail: Cocktail): string {
-    if (!cocktail) return '';
-    
-    const language = this.settingsService.getSetting('language');
-    
-    if (typeof cocktail.instructions === 'string') {
-      return cocktail.instructions;
-    } else if (cocktail.instructions && typeof cocktail.instructions === 'object') {
-      return cocktail.instructions[language] || 
-             cocktail.instructions['en'] || 
-             '';
-    }
-    
-    return '';
-  }
+	transform(cocktail: Cocktail): string {
+		if (!cocktail) return '';
+
+		// Use the synchronous method instead of the observable one
+		const language = this.settingsService.getCurrentLanguage();
+
+		if (typeof cocktail.instructions === 'string') {
+			return cocktail.instructions;
+		} else if (
+			cocktail.instructions &&
+			typeof cocktail.instructions === 'object'
+		) {
+			return (
+				cocktail.instructions[language] ||
+				cocktail.instructions['en'] ||
+				''
+			);
+		}
+
+		return '';
+	}
 }
