@@ -66,6 +66,10 @@ app.ConfigureSwaggerExplorer();
 app.ConfigureCORS(builder.Configuration);
 app.UseHttpsRedirection();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapStaticAssets();
+
 app.AddIdentityAuthMiddlewares();
 #endregion
 
@@ -115,9 +119,7 @@ catch (Exception ex)
 #endregion
 
 // Angular
-app.UseDefaultFiles();
-app.UseStaticFiles();
-app.MapStaticAssets();
+
 app.MapFallbackToFile("/index.csr.html");
 
 

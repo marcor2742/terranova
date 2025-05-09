@@ -112,10 +112,41 @@ namespace terranova.Server.Extensions
             //enable fallback policy to require authentication for all endpoints with jwt
             services.AddAuthorization(options =>
             {
-                //options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                //    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                //    .RequireAuthenticatedUser()
-                //    .Build();
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAssertion(context =>
+                    {
+                        // Ottieni l'endpoint e il path
+                        var httpContext = context.Resource as HttpContext;
+                        if (httpContext == null) return false;
+
+                        var path = httpContext.Request.Path.Value?.ToLowerInvariant() ?? "";
+
+                        // Escludi risorse statiche e endpoint pubblici
+                        if (path.StartsWith("/wwwroot") ||
+                            path.StartsWith("/assets") ||
+                            path.EndsWith(".html") ||
+                            path.EndsWith(".js") ||
+                            path.EndsWith(".css") ||
+                            path.EndsWith(".png") ||
+                            path.EndsWith(".jpg") ||
+                            path.EndsWith(".ico") ||
+                            path == "/" ||
+                            path == "/home" ||
+                            path == "/login" ||
+                            path.StartsWith("/api/loginextended") ||
+                            path.StartsWith("/api/registerextended") ||
+                            path.StartsWith("/api/refreshextended"))
+                        {
+                            return true; // Consenti accesso senza autenticazione
+                        }
+
+                        // Per tutti gli altri percorsi, richiedi autenticazione
+                        return context.User?.Identity?.IsAuthenticated ?? false;
+                    })
+                    .Build();
+
+                options.InvokeHandlersAfterFailure = false;
 
                 options.AddPolicy("CanPurchaseAlcohol", policy =>
                 {
