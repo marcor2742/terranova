@@ -223,7 +223,7 @@ export class HomeComponent implements OnDestroy {
 		this.menuItems = [
 			{
 				label: 'Home',
-				icon: 'pi pi-list',
+				icon: 'pi pi-home',
 				command: () => this.setActiveView('home'),
 				expanded: this.activeView() === 'home',
 			},
@@ -383,10 +383,42 @@ export class HomeComponent implements OnDestroy {
 			const queryParams: any = {};
 
 			// Build query params (leave this part unchanged)
-			// ...
+			// Add filter parameters to queryParams
+			if (updatedFilters.IsAlcoholic !== 'NoPreference') {
+				queryParams.alc = updatedFilters.IsAlcoholic;
+			}
+			if (updatedFilters.GlassNames?.length > 0) {
+				queryParams.glasses = updatedFilters.GlassNames.join(',');
+			}
+			if (updatedFilters.Ingredients?.length > 0) {
+				queryParams.ing = updatedFilters.Ingredients.join(',');
+			}
+			if (updatedFilters.Categories?.length > 0) {
+				queryParams.cat = updatedFilters.Categories.map(
+					(c) => c.name
+				).join(',');
+			}
+			if (updatedFilters.AllIngredients === 'true') {
+				queryParams.allIng = 'true';
+			}
+			if (updatedFilters.ShowOnlyOriginal === 'true') {
+				queryParams.orig = 'true';
+			}
 
-			// Navigate with both path parameter and query parameters
-			this.router.navigate(['search', updatedFilters.SearchString], {
+			// Add page and pageSize to queryParams if they differ from defaults
+			if (updatedFilters.Page !== 1) {
+				queryParams.page = updatedFilters.Page;
+			}
+			if (updatedFilters.PageSize !== 10) {
+				queryParams.size = updatedFilters.PageSize;
+			}
+
+			// Even if no search term, we need to navigate to update URL with filter params
+			const routePath = updatedFilters.SearchString
+				? ['search', updatedFilters.SearchString]
+				: ['search'];
+
+			this.router.navigate(routePath, {
 				relativeTo: this.route,
 				queryParams,
 				queryParamsHandling: 'merge',

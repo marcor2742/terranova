@@ -1,0 +1,51 @@
+.cocktail-creator {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: var(--surface-card);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+}
+
+.creation-section {
+  margin-bottom: 1rem;
+}
+
+.ingredients-measures {
+  background-color: var(--surface-ground);
+  padding: 1rem;
+  border-radius: 6px;
+  
+  h4 {
+    margin-bottom: 1rem;
+  }
+  
+  .measure-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    
+    label {
+      font-weight: 500;
+    }
+  }
+}
+
+.form-actions {
+  margin-top: 2rem;
+}
+
+:host ::ng-deep {
+  .p-dropdown {
+    width: 100%;
+  }
+  
+  textarea {
+    resize: vertical;
+  }
+}

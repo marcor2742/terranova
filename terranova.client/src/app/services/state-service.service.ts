@@ -28,7 +28,6 @@ export class StateService {
 		ShowOnlyOriginal: 'false',
 	});
 
-	
 	private searchResultsSubject = new BehaviorSubject<Cocktail[]>([]);
 	private _searchTrigger = new Subject<SearchFilters>();
 
