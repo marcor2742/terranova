@@ -39,7 +39,7 @@ namespace terranova.Server.Controllers
         private static async Task<IResult> GetUserProfile(ClaimsPrincipal user,
             UserManager<IdentityUserExtended> userManager)
         {
-            string userId = user.Claims.First(x => x.Type == "UserID").Value;
+            var userId = user.FindFirstValue("UserID");
             if (userId == null)
             {
                 return Results.BadRequest(new { message = "User not found" });
