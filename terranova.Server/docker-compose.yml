@@ -9,7 +9,9 @@
       - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${DOKER_SQL_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/terranova.pfx
       - ConnectionStrings__DevDB=Server=sqlserver;Database=IdentityUserDB;User Id=sa;Password=${DOKER_SQL_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true;
       - ConnectionStrings__BlobAzuriteConnectionString=${BLOB_CONNECTION}
       - AppSettings__JWT_Secret=${JWT_SECRET}
