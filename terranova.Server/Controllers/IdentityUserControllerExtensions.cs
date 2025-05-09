@@ -40,7 +40,6 @@ namespace terranova.Server.Controllers
 
             var result = await userManager.CreateAsync(user, model.Password);
 
-            await userManager.AddToRoleAsync(user, "user");
 
             if (!result.Succeeded)
             {
@@ -59,6 +58,7 @@ namespace terranova.Server.Controllers
 
                 return Results.BadRequest(errorDict);
             }
+            await userManager.AddToRoleAsync(user, "user");
 
             return Results.Ok(new { message = "Utente registrato con successo" });
             //return Results.BadRequest(new { errors = result.Errors });
