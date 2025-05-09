@@ -1,0 +1,142 @@
+<div class="cocktail-creator">
+  <h2>{{ "createYourCocktail" | translate }}</h2>
+
+  <form [formGroup]="cocktailForm" (ngSubmit)="sendCocktail()">
+    <!-- Cocktail Name -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "cocktailName" | translate }}</label>
+      <input 
+        type="text" 
+        pInputText 
+        formControlName="name" 
+        class="w-full"
+        placeholder="{{ 'enterCocktailName' | translate }}"
+      />
+      <small *ngIf="cocktailForm.get('name')?.invalid && cocktailForm.get('name')?.touched" class="text-red-500">
+        {{ "nameIsRequired" | translate }}
+      </small>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Alcoholic/Non-Alcoholic Selection -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "AlcoholContent" | translate }}</label>
+      <p-selectButton
+        [options]="alcolOption"
+        formControlName="Alcoholic"
+        optionLabel="label"
+        optionValue="value"
+        [style]="{ width: '100%' }"
+      ></p-selectButton>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Category Selection -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "Category" | translate }}</label>
+      <p-dropdown
+        [options]="categories"
+        formControlName="Category"
+        optionLabel="name"
+        optionValue="name"
+        [style]="{ width: '100%' }"
+        placeholder="{{ 'selectCategory' | translate }}"
+      ></p-dropdown>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Glass Selection -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "GlassType" | translate }}</label>
+      <app-glass-selector
+        formControlName="Glass"
+        [placeholder]="'selectGlass' | translate"
+        [maxGlasses]="1"
+      ></app-glass-selector>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Ingredients Selection with Measures -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "Ingredients" | translate }}</label>
+      <app-ingredient-selector
+        formControlName="Ingredients"
+        [placeholder]="'addIngredients' | translate"
+        [maxIngredients]="15"
+      ></app-ingredient-selector>
+      
+      <!-- Show user's preferred measurement system -->
+      <div class="mt-2 mb-4 text-sm">
+        <span>{{ "measuringIn" | translate }}: {{ preferredMeasurementSystem === 'imperial' ? 'Imperial (oz, tsp, tbsp)' : 'Metric (ml, cl)' }}</span>
+      </div>
+      
+      <!-- Ingredients Measures -->
+      <div class="ingredients-measures mt-4" *ngIf="cocktailForm.get('Ingredients')?.value?.length">
+        <h4>{{ "ingredientMeasures" | translate }}</h4>
+        <div class="measure-item flex gap-3 mb-2" *ngFor="let ingredient of cocktailForm.get('Ingredients')?.value; let i = index">
+          <label class="ingredient-name flex-1">{{ ingredient.name }}</label>
+          <div class="flex-1">
+            <input type="text" pInputText 
+                  [placeholder]="preferredMeasurementSystem === 'imperial' ? 'e.g. 1.5 oz, 1 tsp' : 'e.g. 45 ml, 5 ml'" 
+                  [formControl]="getIngredientControl(i)" 
+                  class="w-full">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Instructions -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "preparationHeading" | translate }} ({{ preferredLanguage | uppercase }})</label>
+      <textarea 
+        pInputTextarea 
+        formControlName="Instructions" 
+        rows="4" 
+        class="w-full"
+        placeholder="{{ 'instructionsPlaceholder' | translate }}"
+      ></textarea>
+      <small *ngIf="cocktailForm.get('Instructions')?.invalid && cocktailForm.get('Instructions')?.touched" class="text-red-500">
+        {{ "instructionsRequired" | translate }}
+      </small>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Optional Image URL -->
+    <div class="creation-section">
+      <label class="block mb-2">{{ "imageUrl" | translate }} ({{ "optional" | translate }})</label>
+      <input 
+        type="text" 
+        pInputText 
+        formControlName="ImageUrl" 
+        class="w-full"
+        placeholder="https://example.com/image.jpg"
+      />
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions flex justify-between mt-5">
+      <button 
+        type="button" 
+        pButton 
+        label="{{ 'reset' | translate }}" 
+        class="p-button-outlined p-button-secondary" 
+        (click)="resetForm()"
+      ></button>
+      
+      <button 
+        type="submit" 
+        pButton 
+        label="{{ 'createCocktail' | translate }}" 
+        class="p-button-primary" 
+        [disabled]="!cocktailForm.valid"
+      ></button>
+    </div>
+  </form>
+</div>

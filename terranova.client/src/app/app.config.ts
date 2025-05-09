@@ -22,12 +22,9 @@ import { refreshTokenInterceptorInterceptor } from './interceptors/refresh-token
 
 // app.config.ts
 import { HttpClient } from '@angular/common/http';
-//import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-//import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { CookieService } from 'ngx-cookie-service';
 import {
 	TranslateModule,
 	TranslateLoader,
@@ -100,7 +97,6 @@ export const appConfig: ApplicationConfig = (() => {
 					},
 					ripple: true,
 				}),
-				CookieService,
 			],
 		};
 	} catch (error) {

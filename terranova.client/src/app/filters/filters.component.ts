@@ -45,8 +45,7 @@ export class FiltersComponent implements OnInit {
 	categories: Category[] = [];
 
 	alcolOption = [
-		// Keep 'NoPreference' value consistent with SearchFilters default if needed
-		{ label: 'All', value: 'NoPreference' }, // Or null, depending on API/SearchFilters
+		{ label: 'All', value: 'NoPreference' }, // Or null,
 		{ label: 'Alcoholic', value: 'Alcoholic' }, // Or true
 		{ label: 'Non Alcoholic', value: 'NonAlcoholic' }, // Or false
 	];
@@ -55,7 +54,6 @@ export class FiltersComponent implements OnInit {
 			'NoPreference' as 'Alcoholic' | 'NonAlcoholic' | 'NoPreference',
 		],
 		Glasses: new FormControl<Glass[]>([]),
-		// Use IngredientSearch if that's what the selector provides
 		Ingredients: new FormControl<IngredientSearch[]>([]),
 		Categories: new FormControl<Category[]>([]),
 		AllIngredientsSwitch: [false],

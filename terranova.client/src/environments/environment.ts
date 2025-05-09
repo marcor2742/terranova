@@ -18,4 +18,5 @@ export const environment = {
 	categoriesUrl: 'localhost:8000/categoriesTable',
 	suggestedDrinksUrl: 'localhost:8000/suggestedDrinks',
 	allCocktailsUrl: 'localhost:8000/allCocktails',
+	editCocktailUrl: 'localhost:8000/editCocktails',
 };
