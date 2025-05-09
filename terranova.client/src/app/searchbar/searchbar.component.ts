@@ -36,6 +36,7 @@ import {
 	debounceTime,
 	distinctUntilChanged,
 	filter,
+	of,
 	takeUntil,
 } from 'rxjs';
 import { Category } from '../services/categories.service';
@@ -197,6 +198,11 @@ export class SearchbarComponent implements OnInit {
 			const pageSize = this.MaxResoults();
 			const page = this.currentPage();
 			const mode = this.searchMode();
+
+			// Check if search string is empty
+			if (mode === 'dropdown' && searchString.trim() === '') {
+				return undefined;
+			}
 
 			let params = new HttpParams()
 				.set('SearchString', searchString)

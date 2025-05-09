@@ -4,7 +4,6 @@ import {
 	OnInit,
 	signal,
 	PLATFORM_ID,
-	Inject,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { GetCocktailsService } from '../services/get-cocktails.service';
@@ -54,6 +53,7 @@ export class ForYouComponent implements OnInit {
 
 			// Fetch suggested cocktails if logged in
 			if (this.isLoggedIn()) {
+				console.log('User is logged in, loading suggested cocktails');
 				this.loadSuggestedCocktails();
 			}
 

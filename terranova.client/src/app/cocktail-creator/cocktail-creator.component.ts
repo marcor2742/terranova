@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import {
 	FormBuilder,
 	FormGroup,
@@ -97,6 +97,7 @@ type CocktailCreator = {
 	],
 	templateUrl: './cocktail-creator.component.html',
 	styleUrl: './cocktail-creator.component.scss',
+	standalone: true,
 })
 export class CocktailCreatorComponent implements OnInit {
 	cocktailForm: FormGroup;
@@ -131,7 +132,7 @@ export class CocktailCreatorComponent implements OnInit {
 		private settingsService: SettingsService,
 		private cocktailModifierService: CocktailModifierService,
 		private router: Router,
-		private platformId: Object = inject(PLATFORM_ID)
+		@Inject(PLATFORM_ID) private platformId: Object
 	) {
 		this.ingredientMeasures = this.fb.array([]);
 

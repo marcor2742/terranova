@@ -1,22 +1,18 @@
 import {
 	Inject,
-	inject,
 	Injectable,
-	Optional,
 	PLATFORM_ID,
 } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, tap, of, map } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { CookieService } from 'ngx-cookie-service'; // You'll need to add this dependency
+
 import { isPlatformBrowser } from '@angular/common';
 
 export interface UserSettings {
 	theme: string;
-	language: 'en' | 'fr' | 'es' | 'de' | 'it';
+	language: string;
 	notifications: boolean;
-	searchPreference: 'original' | 'friend' | 'all';
-	locale: 'imperial' | 'metric';
+	searchPreference: string;
+	locale?: string;
 }
 
 @Injectable({
@@ -38,34 +34,44 @@ export class SettingsService {
 
 	// Store the current settings for synchronous access
 	private currentSettings: UserSettings = { ...this.defaultSettings };
+	private isBrowser: boolean;
 
 	constructor(
-		private cookieService: CookieService,
 		@Inject(PLATFORM_ID) private platformId: Object
 	) {
-		// Only use cookie service in browser context
-		if (isPlatformBrowser(this.platformId)) {
-			this.loadSettings();
-
-			// Keep our local copy updated whenever settings change
+		this.isBrowser = isPlatformBrowser(this.platformId);
+		
+		// Initialize with default settings first
+		this.currentSettings = { ...this.defaultSettings };
+		
+		// Only try to load settings from localStorage if we're in a browser
+		if (this.isBrowser) {
+			// Load settings asynchronously to avoid blocking
+			setTimeout(() => {
+				this.loadSettings();
+			}, 0);
+			
 			this.settings$.subscribe((settings) => {
 				this.currentSettings = settings;
 			});
-		} else {
-			// For SSR, just use defaults
-			this.currentSettings = this.defaultSettings;
 		}
 	}
 
 	private loadSettings() {
 		try {
-			const savedSettings = this.cookieService.get('userSettings');
-			if (savedSettings) {
-				const parsedSettings = JSON.parse(savedSettings);
-				this.settingsSubject.next({
-					...this.defaultSettings,
-					...parsedSettings,
-				});
+			if (this.isBrowser && typeof localStorage !== 'undefined') {
+				const savedSettings = localStorage.getItem('userSettings');
+				if (savedSettings && savedSettings.length > 0) {
+					try {
+						const parsedSettings = JSON.parse(savedSettings);
+						this.settingsSubject.next({
+							...this.defaultSettings,
+							...parsedSettings,
+						});
+					} catch (parseError) {
+						console.error('Error parsing settings JSON:', parseError);
+					}
+				}
 			}
 		} catch (e) {
 			console.error('Error loading settings:', e);
@@ -115,7 +121,13 @@ export class SettingsService {
 		// Update the settings
 		this.settingsSubject.next(updatedSettings);
 
-		// Save to cookies
-		this.cookieService.set('userSettings', JSON.stringify(updatedSettings));
+		// Save to localStorage only in browser context
+		if (this.isBrowser && typeof localStorage !== 'undefined') {
+			try {
+				localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
+			} catch (e) {
+				console.error('Error saving settings to localStorage:', e);
+			}
+		}
 	}
 }

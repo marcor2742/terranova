@@ -21,9 +21,11 @@ export class InstructionsPipe implements PipeTransform {
 			cocktail.instructions &&
 			typeof cocktail.instructions === 'object'
 		) {
+			// Use a type assertion to help TypeScript recognize this as a valid access
+			const instructions = cocktail.instructions as Instructions;
 			return (
-				cocktail.instructions[language] ||
-				cocktail.instructions['en'] ||
+				(language in instructions ? instructions[language as keyof Instructions] : null) ||
+				instructions.en ||
 				''
 			);
 		}
