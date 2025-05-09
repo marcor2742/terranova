@@ -116,32 +116,24 @@ namespace terranova.Server.Extensions
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                     .RequireAssertion(context =>
                     {
-                        // Ottieni l'endpoint e il path
                         var httpContext = context.Resource as HttpContext;
                         if (httpContext == null) return false;
 
-                        var path = httpContext.Request.Path.Value?.ToLowerInvariant() ?? "";
-
-                        // Escludi risorse statiche e endpoint pubblici
-                        if (path.StartsWith("/wwwroot") ||
-                            path.StartsWith("/assets") ||
-                            path.EndsWith(".html") ||
-                            path.EndsWith(".js") ||
-                            path.EndsWith(".css") ||
-                            path.EndsWith(".png") ||
-                            path.EndsWith(".jpg") ||
-                            path.EndsWith(".ico") ||
-                            path == "/" ||
-                            path == "/home" ||
-                            path == "/login" ||
-                            path.StartsWith("/api/loginextended") ||
-                            path.StartsWith("/api/registerextended") ||
-                            path.StartsWith("/api/refreshextended"))
+                        // 1. if [AllowAnonymous]
+                        var endpoint = httpContext.GetEndpoint();
+                        if (endpoint?.Metadata.GetMetadata<AllowAnonymousAttribute>() != null)
                         {
-                            return true; // Consenti accesso senza autenticazione
+                            return true;
                         }
 
-                        // Per tutti gli altri percorsi, richiedi autenticazione
+                        // 2. if static or non-API
+                        var path = httpContext.Request.Path.Value?.ToLowerInvariant() ?? "";
+                        if (!path.StartsWith("/api/"))
+                        {
+                            return true;
+                        }
+
+                        // 3. default
                         return context.User?.Identity?.IsAuthenticated ?? false;
                     })
                     .Build();

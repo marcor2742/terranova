@@ -18,4 +18,5 @@ export const environment = {
 	categoriesUrl: 'https://localhost:8081/api/categoriesTable',
 	suggestedDrinksUrl: 'https://localhost:8081/api/suggestedDrinks',
 	allCocktailsUrl: 'https://localhost:8081/api/allCocktails',
+	editCocktailUrl: 'https://localhost:8081/api/editCocktails',
 };
