@@ -36,11 +36,5 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Docker
-docker-compose.override.yml
-docker-compose.*
-Dockerfile*
-
 #secrets
-appsettings.json
-
+.env

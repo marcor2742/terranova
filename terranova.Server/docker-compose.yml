@@ -1,0 +1,54 @@
+﻿services:
+  terranova:
+    image: ${DOCKER_REGISTRY-}terranova
+    build:
+      context: ..
+      dockerfile: terranova.Server/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DevDB=Server=sqlserver;Database=IdentityUserDB;User Id=sa;Password=${DOKER_SQL_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true;
+      - ConnectionStrings__BlobAzuriteConnectionString=${BLOB_CONNECTION}
+      - AppSettings__JWT_Secret=${JWT_SECRET}
+      - AdminCredentials__Username=${ADMIN_USERNAME}
+      - AdminCredentials__Email=${ADMIN_EMAIL}
+      - AdminCredentials__Password=${ADMIN_PASSWORD}
+    depends_on:
+      - sqlserver
+      - azurite
+    networks:
+      - terranova-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DOKER_SQL_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - terranova-network
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite-data:/data
+    networks:
+      - terranova-network
+
+networks:
+  terranova-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:
+  azurite-data:
