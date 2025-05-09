@@ -17,21 +17,16 @@ COPY ["terranova.Server/terranova.Server.csproj", "terranova.Server/"]
 COPY ["terranova.client/terranova.client.esproj", "terranova.client/"]
 COPY ["terranova.client/package*.json", "terranova.client/"]
 
-# Installa dipendenze npm
 WORKDIR /src/terranova.client
 RUN npm ci --quiet
 
-# Torna alla directory principale e copia il resto dei file
 WORKDIR /src
 COPY . .
 
-# Build Angular con output esplicito
 WORKDIR "/src/terranova.client"
 RUN npm run build
-# Debug: mostra i file generati dal build
 RUN find /src/terranova.client/dist -type f | sort
 
-# Build .NET
 WORKDIR "/src/terranova.Server"
 RUN dotnet build "./terranova.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -43,11 +38,8 @@ RUN dotnet publish "./terranova.Server.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-# Assicuriamoci che la directory wwwroot esista
 RUN mkdir -p /app/wwwroot
-# Copia correttamente tutti i file Angular
 COPY --from=build /src/terranova.client/dist/terranova.client/browser/ /app/wwwroot/
-# Debug finale: verifica che i file siano stati copiati correttamente
 RUN find /app/wwwroot -type f | sort
 
 ENTRYPOINT ["dotnet", "terranova.Server.dll"]

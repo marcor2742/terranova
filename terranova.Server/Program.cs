@@ -190,7 +190,7 @@ async Task WaitForDbAsync(IServiceProvider services, int retryCount = 10, int re
             }
 
             await Task.Delay(retryDelay);
-            retryDelay = TimeSpan.FromMilliseconds(retryDelay.TotalMilliseconds * 1.5); // backoff esponenziale
+            retryDelay = TimeSpan.FromMilliseconds(retryDelay.TotalMilliseconds * 1.5);
         }
     }
 }
@@ -209,7 +209,6 @@ public static class ConfigurationExtensions
             }
         }
 
-        // Aggiungi nuovamente le variabili d'ambiente per assicurarti che abbiano la priorità
         builder.AddEnvironmentVariables();
         return builder;
     }
