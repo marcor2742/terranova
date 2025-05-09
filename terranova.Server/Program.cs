@@ -64,7 +64,7 @@ var app = builder.Build();
 app.ConfigureSwaggerExplorer();
 
 app.ConfigureCORS(builder.Configuration);
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.AddIdentityAuthMiddlewares();
 #endregion

@@ -20,6 +20,10 @@ namespace terranova.Server.Extensions
                     "http://127.0.0.1:7073",
                     "http://localhost:8080",
                     "http://127.0.0.1:8080",
+                    "https://localhost:8080",
+                    "https://127.0.0.1:8080",
+                    "http://localhost:8081",
+                    "http://127.0.0.1:8081",
                     "https://localhost:8081",
                     "https://127.0.0.1:8081"
                 );
