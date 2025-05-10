@@ -28,7 +28,20 @@ if (File.Exists(envFilePath))
     Console.WriteLine($"File .env caricato da: {envFilePath}");
 }
 
-var builder = WebApplication.CreateBuilder(args);
+var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+if (!Directory.Exists(wwwrootPath))
+{
+    Directory.CreateDirectory(wwwrootPath);
+    Console.WriteLine($"Directory wwwroot creata in: {wwwrootPath}");
+}
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = "wwwroot",
+    ContentRootPath = Directory.GetCurrentDirectory()
+});
+
 
 //env resolver
 builder.Configuration.AddPlaceholderResolver();

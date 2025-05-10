@@ -23,6 +23,14 @@ namespace terranova.Server.Controllers
                .WithDescription("Elimina un cocktail con ID specifico")
                .WithOpenApi();
 
+            app.MapPost("/uploadCocktailImage/{id:long?}", UploadCocktailImage)
+               .WithDescription("Carica l'immagine di un cocktail e restituisce l'URL per inserirlo nel form di creazione/modifica cocktail")
+               .WithOpenApi();
+
+            app.MapDelete("/deleteCocktailImage/{id:long?}", DeleteCocktailImage)
+               .WithDescription("Elimina l'immagine di un cocktail specificato dall'id")
+               .WithOpenApi();
+
             app.MapGet("/allCocktails/", ShowAllCocktails)
                .WithDescription("Restituisce tutti i drink del database visibili dall'utente, con paginazione e filtro per l'ordinamento")
                .WithOpenApi();
@@ -36,6 +44,91 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             return app;
+        }
+
+        private static async Task<IResult> UploadCocktailImage(
+            long? id,
+            HttpRequest request,
+            CocktailsDbContext dbContext,
+            ClaimsPrincipal user,
+            IAzureStorageService azureStorageService)
+        {
+            if (!id.HasValue)
+                return Results.BadRequest(new { message = "ID del cocktail non valido o non specificato" });
+
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+                return Results.BadRequest(new { message = "User not found" });
+
+            var cocktail = await dbContext.Cocktails.FindAsync(id.Value);
+            if (cocktail == null)
+                return Results.NotFound(new { message = "Cocktail not found" });
+
+            var isAdmin = user.IsInRole("Admin");
+            if (cocktail.Creator != userId && !isAdmin)
+                return Results.Forbid();
+
+            if (!request.HasFormContentType || request.Form.Files.Count == 0)
+                return Results.BadRequest(new { message = "No image file provided" });
+
+            var file = request.Form.Files[0];
+
+            if (file.Length == 0)
+                return Results.BadRequest(new { message = "Empty file" });
+
+            if (!file.ContentType.StartsWith("image/"))
+                return Results.BadRequest(new { message = "File is not an image" });
+
+            if (!string.IsNullOrEmpty(cocktail.ImageUrl))
+            {
+                var deleted = await azureStorageService.DeleteCocktailImageAsync(userId, cocktail.ImageUrl, isAdmin);
+                if (!deleted)
+                {
+                    Console.WriteLine($"Impossibile eliminare l'immagine precedente: {cocktail.ImageUrl}");
+                }
+            }
+
+            using var stream = file.OpenReadStream();
+            var imageUrl = await azureStorageService.UploadCocktailImageAsync(userId, stream, file.ContentType);
+
+            cocktail.ImageUrl = imageUrl;
+            await dbContext.SaveChangesAsync();
+
+            return Results.Ok(new { imageUrl });
+        }
+
+        private static async Task<IResult> DeleteCocktailImage(
+            long? id,
+            ClaimsPrincipal user,
+            CocktailsDbContext dbContext,
+            IAzureStorageService azureStorageService)
+        {
+            if (!id.HasValue)
+                return Results.BadRequest(new { message = "ID del cocktail non valido o non specificato" });
+
+            var userId = user.FindFirst("UserID")?.Value;
+            if (userId == null)
+                return Results.BadRequest(new { message = "User not found" });
+
+            var cocktail = await dbContext.Cocktails.FindAsync(id.Value);
+            if (cocktail == null)
+                return Results.NotFound(new { message = "Cocktail not found" });
+
+            var isAdmin = user.IsInRole("Admin");
+            if (cocktail.Creator != userId && !isAdmin)
+                return Results.Forbid();
+
+            if (string.IsNullOrEmpty(cocktail.ImageUrl))
+                return Results.BadRequest(new { message = "No image to delete" });
+
+            var deleted = await azureStorageService.DeleteCocktailImageAsync(userId, cocktail.ImageUrl, isAdmin);
+            if (!deleted)
+                return Results.BadRequest(new { message = "Failed to delete image" });
+
+            cocktail.ImageUrl = null;
+            await dbContext.SaveChangesAsync();
+
+            return Results.Ok(new { message = "Image deleted successfully" });
         }
 
         private static async Task<IResult> CreateCocktail(
@@ -160,7 +253,31 @@ namespace terranova.Server.Controllers
                 await dbContext.SaveChangesAsync();
             }
 
-            return Results.Created($"/search/{cocktail.Id}", cocktail);
+            var response = new
+            {
+                cocktail.Id,
+                cocktail.Name,
+                Category = category?.Name,
+                cocktail.IsAlcoholic,
+                Glass = glass?.Name,
+                Instructions = new
+                {
+                    En = instructions?.En,
+                    Es = instructions?.Es,
+                    De = instructions?.De,
+                    Fr = instructions?.Fr,
+                    It = instructions?.It
+                },
+                cocktail.ImageUrl,
+                Ingredients = cocktailData.Ingredients?.Select(i => new
+                {
+                    Name = i.Name,
+                    MetricMeasure = i.Metric,
+                    ImperialMeasure = i.Imperial
+                }).ToArray()
+            };
+
+            return Results.Created($"/search/{cocktail.Id}", response);
         }
 
         private static async Task<IResult> UpdateCocktail(

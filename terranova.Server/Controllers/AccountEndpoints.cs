@@ -218,7 +218,11 @@ namespace terranova.Server.Controllers
             // delete old image if exists
             if (!string.IsNullOrEmpty(userDetails.PropicUrl))
             {
-                await azureStorageService.DeleteProfileImageAsync(userId, userDetails.PropicUrl, isAdmin);
+                var deleted = await azureStorageService.DeleteProfileImageAsync(userId, userDetails.PropicUrl, isAdmin);
+                if (!deleted)
+                {
+                    Console.WriteLine($"Impossibile eliminare l'immagine precedente: {userDetails.PropicUrl}");
+                }
             }
 
             // upload new image

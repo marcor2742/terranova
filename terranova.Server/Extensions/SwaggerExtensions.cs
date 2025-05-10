@@ -135,6 +135,7 @@ namespace terranova.Server.Extensions
                 return;
 
             if (context.ApiDescription.RelativePath?.Contains("uploadProfileImage") == true ||
+                context.ApiDescription.RelativePath?.Contains("uploadCocktailImage") == true ||
                 operation.OperationId?.Contains("Upload") == true)
             {
                 if (operation.RequestBody == null)
