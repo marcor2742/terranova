@@ -1,51 +1,190 @@
 .cocktail-creator {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  background-color: var(--surface-card);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 1.5rem;
+	background-color: var(--surface-card);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
+	margin-bottom: 1.5rem;
+	color: var(--text-color);
+	display: block;
+	width: 100%;
 }
 
 .creation-section {
-  margin-bottom: 1rem;
+	margin-bottom: 2rem;
+	width: 100%;
+
+	label {
+		display: block !important;
+		width: 100% !important;
+		text-align: left !important;
+		margin-bottom: 0.5rem !important;
+	}
+
+	// Ensure inputs take full width
+	input[type="text"],
+	.p-dropdown,
+	.p-inputtextarea,
+	.p-selectbutton,
+	app-glass-selector,
+	app-ingredient-selector {
+		width: 100% !important;
+		display: block;
+	}
 }
 
+// Rest of your existing styles...
+
 .ingredients-measures {
-  background-color: var(--surface-ground);
-  padding: 1rem;
-  border-radius: 6px;
-  
-  h4 {
-    margin-bottom: 1rem;
-  }
-  
-  .measure-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    
-    label {
-      font-weight: 500;
-    }
-  }
+	display: flex;
+	flex-direction: column;
+	background-color: var(--surface-ground);
+	padding: 1rem;
+	border-radius: 6px;
+
+	h4 {
+		margin-bottom: 1rem;
+	}
+
+	.measure-item {
+		display: flex;
+		align-items: center;
+		margin-bottom: 0.75rem;
+		gap: 1rem;
+
+		label {
+			font-weight: 500;
+		}
+	}
 }
 
 .form-actions {
-  margin-top: 2rem;
+	margin-top: 2rem;
 }
 
 :host ::ng-deep {
-  .p-dropdown {
-    width: 100%;
-  }
-  
-  textarea {
-    resize: vertical;
-  }
+	.p-dropdown {
+		width: 100%;
+	}
+
+	.p-fileupload {
+		.p-fileupload-buttonbar {
+			background: var(--surface-section);
+			padding: 1rem;
+			border-bottom: 1px solid var(--surface-border);
+			border-top-left-radius: 6px;
+			border-top-right-radius: 6px;
+
+			.p-button {
+				margin-right: 0.5rem;
+				min-width: 2.5rem !important;
+				min-height: 2.5rem !important;
+
+				// Center icon in button
+				.p-button-icon {
+					margin: 0 auto;
+					font-size: 1.2rem;
+				}
+			}
+		}
+
+		.p-fileupload-content {
+			padding: 2rem;
+			background: var(--surface-section);
+			border-bottom-left-radius: 6px;
+			border-bottom-right-radius: 6px;
+			min-height: 200px; /* Add minimum height for the drop area */
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.rounded-border {
+			border-radius: 6px;
+			border: 1px solid var(--surface-border);
+			padding: 1rem;
+			transition: all 0.2s;
+			margin: 0.5rem;
+			min-width: 150px;
+
+			&:hover {
+				box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+			}
+		}
+
+		.p-progressbar {
+			height: 0.5rem;
+		}
+
+		/* Ensure icon in the empty state is styled correctly */
+		.pi-check-circle {
+			border: 2px solid !important;
+			border-radius: 50% !important;
+			padding: 2rem !important;
+			font-size: 2rem !important;
+			color: var(--text-color-secondary) !important;
+			margin-bottom: 1rem;
+		}
+
+		.pi-cloud-upload {
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			width: 5rem !important;
+			height: 5rem !important;
+			border: 2px solid var(--surface-border) !important;
+			border-radius: 50% !important;
+			font-size: 2rem !important;
+			color: var(--text-color-secondary) !important;
+			margin: 0 auto 1rem auto !important;
+		}
+
+		/* Fix buttons spacing */
+		.flex.gap-2 {
+			gap: 0.5rem !important;
+			display: flex !important;
+		}
+
+		/* Fix file card layout */
+		.flex.flex-col.gap-8 {
+			gap: 2rem !important;
+		}
+
+		.flex.flex-wrap.gap-4 {
+			gap: 1rem !important;
+			display: flex !important;
+		}
+	}
+
+	// Consistent spacing for buttons
+	.form-actions {
+		.p-button {
+			min-width: 8rem;
+		}
+	}
+
+	.p-inputtextarea {
+		width: 100% !important;
+		box-sizing: border-box;
+	}
+	.instructions-textarea {
+		min-height: 120px !important;
+		width: 100% !important;
+		resize: vertical;
+	}
+
+	// Ensure creation section doesn't restrict width
+	.creation-section {
+		width: 100%;
+
+		label {
+			display: block;
+			margin-bottom: 0.5rem;
+			font-weight: 500;
+		}
+	}
 }

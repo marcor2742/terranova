@@ -40,7 +40,7 @@
 	"selectCategory": "Seleziona una categoria",
 	"selectGlass": "Seleziona un tipo di bicchiere",
 	"addIngredients": "Aggiungi ingredienti",
-	"ingredientMeasures": "Misure degli ingredienti",
+	"ingredientMeasures": "Misure per gli ingredienti",
 	"imperial": "Imperiale (oz)",
 	"metric": "Metrico (ml)",
 	"instructionsPlaceholder": "Spiega come preparare il cocktail...",
@@ -53,5 +53,8 @@
 	"cocktailUpdated": "Cocktail aggiornato con successo",
 	"cocktailUpdateFailed": "Aggiornamento del cocktail fallito",
 	"cocktailDeleted": "Cocktail eliminato con successo",
-	"cocktailDeletionFailed": "Eliminazione del cocktail fallita"
+	"cocktailDeletionFailed": "Eliminazione del cocktail fallita",
+	"measuringIn": "Unità di misura",
+	"dragAndDropPrompt": "Trascina e rilascia la tua immagine qui o fai clic per selezionarla",
+	"cocktailImage": "Immagine per il cocktail"
 }

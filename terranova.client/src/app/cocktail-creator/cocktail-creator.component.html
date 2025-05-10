@@ -1,142 +1,363 @@
 <div class="cocktail-creator">
-  <h2>{{ "createYourCocktail" | translate }}</h2>
+	<h2>{{ "createYourCocktail" | translate }}</h2>
 
-  <form [formGroup]="cocktailForm" (ngSubmit)="sendCocktail()">
-    <!-- Cocktail Name -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "cocktailName" | translate }}</label>
-      <input 
-        type="text" 
-        pInputText 
-        formControlName="name" 
-        class="w-full"
-        placeholder="{{ 'enterCocktailName' | translate }}"
-      />
-      <small *ngIf="cocktailForm.get('name')?.invalid && cocktailForm.get('name')?.touched" class="text-red-500">
-        {{ "nameIsRequired" | translate }}
-      </small>
-    </div>
+	<div *ngIf="!inBrowser()">
+		<p>{{ "loadingCocktailCreator" | translate }}</p>
+	</div>
 
-    <p-divider></p-divider>
+	<!-- Only render the form in browser environment -->
+	<form
+		*ngIf="inBrowser()"
+		[formGroup]="cocktailForm"
+		(ngSubmit)="sendCocktail()"
+	>
+		<!-- Cocktail Name -->
+		<div class="creation-section">
+			 <label class="block mb-2 w-full">{{ "cocktailName" | translate }}</label>
+			<input
+				type="text"
+				pInputText
+				formControlName="name"
+				class="w-full"
+				placeholder="{{ 'enterCocktailName' | translate }}"
+			/>
+			<small
+				*ngIf="
+					cocktailForm.get('name')?.invalid &&
+					cocktailForm.get('name')?.touched
+				"
+				class="text-red-500"
+			>
+				{{ "nameIsRequired" | translate }}
+			</small>
+		</div>
 
-    <!-- Alcoholic/Non-Alcoholic Selection -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "AlcoholContent" | translate }}</label>
-      <p-selectButton
-        [options]="alcolOption"
-        formControlName="Alcoholic"
-        optionLabel="label"
-        optionValue="value"
-        [style]="{ width: '100%' }"
-      ></p-selectButton>
-    </div>
+		<p-divider></p-divider>
 
-    <p-divider></p-divider>
+		<!-- Alcoholic/Non-Alcoholic Selection -->
+		<div class="creation-section">
+			<label class="block mb-2 w-full">{{ "AlcoholContent" | translate }}</label>
+			<p-selectButton
+				[options]="alcolOption"
+				formControlName="Alcoholic"
+				optionLabel="label"
+				optionValue="value"
+				[style]="{ width: '100%' }"
+			></p-selectButton>
+		</div>
 
-    <!-- Category Selection -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "Category" | translate }}</label>
-      <p-dropdown
-        [options]="categories"
-        formControlName="Category"
-        optionLabel="name"
-        optionValue="name"
-        [style]="{ width: '100%' }"
-        placeholder="{{ 'selectCategory' | translate }}"
-      ></p-dropdown>
-    </div>
+		<p-divider></p-divider>
 
-    <p-divider></p-divider>
+		<!-- Category Selection -->
+		<div class="creation-section">
+			<label class="block mb-2 w-full">{{ "Category" | translate }}</label>
+			<p-dropdown
+				[options]="categories"
+				formControlName="Category"
+				optionLabel="name"
+				optionValue="name"
+				[style]="{ width: '100%' }"
+				placeholder="{{ 'selectCategory' | translate }}"
+			></p-dropdown>
+		</div>
 
-    <!-- Glass Selection -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "GlassType" | translate }}</label>
-      <app-glass-selector
-        formControlName="Glass"
-        [placeholder]="'selectGlass' | translate"
-        [maxGlasses]="1"
-      ></app-glass-selector>
-    </div>
+		<p-divider></p-divider>
 
-    <p-divider></p-divider>
+		<!-- Glass Selection -->
+		<div class="creation-section">
+			<label class="block mb-2 w-full">{{ "GlassType" | translate }}</label>
+			<app-glass-selector
+				formControlName="Glass"
+				[placeholder]="'selectGlass' | translate"
+				[maxGlasses]="1"
+			></app-glass-selector>
+		</div>
 
-    <!-- Ingredients Selection with Measures -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "Ingredients" | translate }}</label>
-      <app-ingredient-selector
-        formControlName="Ingredients"
-        [placeholder]="'addIngredients' | translate"
-        [maxIngredients]="15"
-      ></app-ingredient-selector>
-      
-      <!-- Show user's preferred measurement system -->
-      <div class="mt-2 mb-4 text-sm">
-        <span>{{ "measuringIn" | translate }}: {{ preferredMeasurementSystem === 'imperial' ? 'Imperial (oz, tsp, tbsp)' : 'Metric (ml, cl)' }}</span>
-      </div>
-      
-      <!-- Ingredients Measures -->
-      <div class="ingredients-measures mt-4" *ngIf="cocktailForm.get('Ingredients')?.value?.length">
-        <h4>{{ "ingredientMeasures" | translate }}</h4>
-        <div class="measure-item flex gap-3 mb-2" *ngFor="let ingredient of cocktailForm.get('Ingredients')?.value; let i = index">
-          <label class="ingredient-name flex-1">{{ ingredient.name }}</label>
-          <div class="flex-1">
-            <input type="text" pInputText 
-                  [placeholder]="preferredMeasurementSystem === 'imperial' ? 'e.g. 1.5 oz, 1 tsp' : 'e.g. 45 ml, 5 ml'" 
-                  [formControl]="getIngredientControl(i)" 
-                  class="w-full">
-          </div>
-        </div>
-      </div>
-    </div>
+		<p-divider></p-divider>
 
-    <p-divider></p-divider>
+		<!-- Ingredients Selection with Measures -->
+		<div class="creation-section">
+			<label class="block mb-2 w-full">{{ "Ingredients" | translate }}</label>
+			<app-ingredient-selector
+				formControlName="Ingredients"
+				[placeholder]="'addIngredients' | translate"
+				[maxIngredients]="15"
+			></app-ingredient-selector>
 
-    <!-- Instructions -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "preparationHeading" | translate }} ({{ preferredLanguage | uppercase }})</label>
-      <textarea 
-        pInputTextarea 
-        formControlName="Instructions" 
-        rows="4" 
-        class="w-full"
-        placeholder="{{ 'instructionsPlaceholder' | translate }}"
-      ></textarea>
-      <small *ngIf="cocktailForm.get('Instructions')?.invalid && cocktailForm.get('Instructions')?.touched" class="text-red-500">
-        {{ "instructionsRequired" | translate }}
-      </small>
-    </div>
+			<!-- Show user's preferred measurement system -->
+			<div class="mt-2 mb-4 text-sm">
+				<span
+					>{{ "measuringIn" | translate }}:
+					{{
+						preferredMeasurementSystem === "imperial"
+							? "Imperial (oz, tsp, tbsp)"
+							: "Metric (ml, cl)"
+					}}</span
+				>
+			</div>
 
-    <p-divider></p-divider>
+			<!-- Ingredients Measures -->
+			<div
+				class="ingredients-measures mt-4"
+				*ngIf="cocktailForm.get('Ingredients')?.value?.length"
+			>
+				<h4>{{ "ingredientMeasures" | translate }}</h4>
+				<div
+					class="measure-item flex items-center gap-3 mb-2"
+					*ngFor="
+						let ingredient of cocktailForm.get('Ingredients')
+							?.value;
+						let i = index
+					"
+				>
+					<label class="ingredient-name flex-1">{{
+						ingredient.name
+					}}</label>
+					<div class="flex-1">
+						<input
+							type="text"
+							pInputText
+							[placeholder]="
+								preferredMeasurementSystem === 'imperial'
+									? 'e.g. 1.5 oz, 1 tsp 1lb'
+									: 'e.g. 45 ml, 5 ml 50g'
+							"
+							[formControl]="getIngredientControl(i)"
+							class="w-full"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <!-- Optional Image URL -->
-    <div class="creation-section">
-      <label class="block mb-2">{{ "imageUrl" | translate }} ({{ "optional" | translate }})</label>
-      <input 
-        type="text" 
-        pInputText 
-        formControlName="ImageUrl" 
-        class="w-full"
-        placeholder="https://example.com/image.jpg"
-      />
-    </div>
+		<p-divider></p-divider>
 
-    <!-- Form Actions -->
-    <div class="form-actions flex justify-between mt-5">
-      <button 
-        type="button" 
-        pButton 
-        label="{{ 'reset' | translate }}" 
-        class="p-button-outlined p-button-secondary" 
-        (click)="resetForm()"
-      ></button>
-      
-      <button 
-        type="submit" 
-        pButton 
-        label="{{ 'createCocktail' | translate }}" 
-        class="p-button-primary" 
-        [disabled]="!cocktailForm.valid"
-      ></button>
-    </div>
-  </form>
+		<!-- Instructions -->
+		<div class="creation-section">
+			<label class="block mb-2 w-full">{{ "preparationHeading" | translate }}</label>
+			<textarea
+				pTextarea
+				formControlName="Instructions"
+				rows="5"
+				[autoResize]="true"
+				class="w-full instructions-textarea"
+				placeholder="{{ 'instructionsPlaceholder' | translate }}"
+			></textarea>
+			<small
+				*ngIf="
+					cocktailForm.get('Instructions')?.invalid &&
+					cocktailForm.get('Instructions')?.touched
+				"
+				class="text-red-500"
+			>
+				{{ "instructionsRequired" | translate }}
+			</small>
+		</div>
+
+		<p-divider></p-divider>
+
+		<!-- Optional Image URL -->
+		<!-- <div class="creation-section">
+			<label class="block mb-2 w-full"
+				>{{ "imageUrl" | translate }} ({{
+					"optional" | translate
+				}})</label
+			>
+			<input
+				type="text"
+				pInputText
+				formControlName="ImageUrl"
+				class="w-full"
+				placeholder="https://example.com/image.jpg"
+			/>
+		</div> -->
+
+		<!-- Image Upload -->
+
+		<div class="creation-section">
+			<label class="block mb-2 w-full">{{ "cocktailImage" | translate }}</label>
+			<p-toast></p-toast>
+			<p-fileupload
+				name="{{ 'cocktailImage' | translate }}"
+				[url]="fileUploadUrl"
+				(onUpload)="onImageUploadSuccess($event)"
+				(onError)="onUploadError($event)"
+				(onSelect)="onSelectFiles($event)"
+				(onProgress)="onProgress($event)"
+				[multiple]="false"
+				accept="image/*"
+				maxFileSize="2000000"
+				[showCancelButton]="false"
+				[showUploadButton]="false"
+				styleClass="p-fileupload-primary"
+			>
+				<ng-template
+					#header
+					let-files="files"
+					let-chooseCallback="chooseCallback"
+					let-clearCallback="clearCallback"
+					let-uploadCallback="uploadCallback"
+				>
+					<div
+						class="flex flex-wrap justify-between items-center flex-1 gap-4"
+					>
+						<div class="flex gap-2">
+							<p-button
+								(click)="choose($event, chooseCallback)"
+								icon="pi pi-images"
+								[rounded]="true"
+								[outlined]="true"
+							></p-button>
+							<p-button
+								(click)="initiateUpload(uploadCallback)"
+								icon="pi pi-cloud-upload"
+								[rounded]="true"
+								[outlined]="true"
+								severity="success"
+								[disabled]="
+									!filesToUpload || filesToUpload.length === 0
+								"
+							></p-button>
+							<p-button
+								(click)="onClearTemplatingUpload(clearCallback)"
+								icon="pi pi-times"
+								[rounded]="true"
+								[outlined]="true"
+								severity="danger"
+								[disabled]="
+									!filesToUpload || filesToUpload.length === 0
+								"
+							></p-button>
+						</div>
+						<p-progressBar
+							[value]="totalSizePercent"
+							[showValue]="false"
+							class="w-full"
+							styleClass="md:w-20rem h-1 w-full md:ml-auto"
+						>
+							<span class="whitespace-nowrap"
+								>{{ totalSize | number }}B /
+								{{ totalSizePercent }}%</span
+							>
+						</p-progressBar>
+					</div>
+				</ng-template>
+				<ng-template
+					#content
+					let-files="files"
+					let-removeFileCallback="removeFileCallback"
+					let-removeUploadedFileCallback="removeUploadedFileCallback"
+				>
+					<div class="flex flex-col gap-8 pt-4">
+						<div *ngIf="filesToUpload && filesToUpload.length > 0">
+							<h5>{{ "pending" | translate }}</h5>
+							<div class="flex flex-wrap gap-4">
+								<div
+									*ngFor="
+										let file of filesToUpload;
+										let i = index
+									"
+									class="p-8 rounded-border flex flex-col border border-surface items-center gap-4"
+								>
+									<div>
+										<img
+											role="presentation"
+											[alt]="file.name"
+											[src]="
+												file.objectURL
+													? file.objectURL
+													: ''
+											"
+											width="100"
+											height="50"
+										/>
+									</div>
+									<span
+										class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden"
+										>{{ file.name }}</span
+									>
+									<div>{{ formatSize(file.size) }}</div>
+									<p-badge
+										[value]="'pending' | translate"
+										severity="warn"
+									></p-badge>
+									<p-button
+										icon="pi pi-times"
+										(click)="
+											onRemoveTemplatingFile(
+												file,
+												removeFileCallback,
+												i
+											)
+										"
+										[outlined]="true"
+										[rounded]="true"
+										severity="danger"
+									></p-button>
+								</div>
+							</div>
+						</div>
+						<div *ngIf="uploadedImageUrl">
+							<h5>{{ "completed" | translate }}</h5>
+							<div class="flex flex-wrap gap-4">
+								<div
+									class="card m-0 px-12 flex flex-col border border-surface items-center gap-4 rounded-border"
+								>
+									<div>
+										<img
+											role="presentation"
+											alt="Uploaded Image"
+											[src]="uploadedImageUrl"
+											width="100"
+											height="50"
+										/>
+									</div>
+									<span
+										class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden"
+										>{{ "uploadedImage" | translate }}</span
+									>
+									<p-badge
+										[value]="'completed' | translate"
+										class="mt-4"
+										severity="success"
+									></p-badge>
+								</div>
+							</div>
+						</div>
+					</div>
+				</ng-template>
+				<ng-template #empty>
+					<div
+						class="flex items-center justify-center flex-col min-h-[200px]"
+					>
+						<i class="pi pi-cloud-upload"></i>
+						<p class="mt-6 mb-0">
+							{{ "dragAndDropPrompt" | translate }}
+						</p>
+					</div>
+				</ng-template>
+			</p-fileupload>
+			<!-- Hidden input to store the ImageUrl for the form -->
+			<input type="hidden" formControlName="ImageUrl" />
+		</div>
+
+		<!-- Form Actions -->
+		<div class="form-actions flex justify-between mt-5">
+			<button
+				type="button"
+				pButton
+				label="{{ 'reset' | translate }}"
+				class="p-button-outlined p-button-secondary"
+				(click)="resetForm()"
+			></button>
+
+			<button
+				type="submit"
+				pButton
+				label="{{ 'createCocktail' | translate }}"
+				class="p-button-primary"
+				[disabled]="!cocktailForm.valid"
+			></button>
+		</div>
+	</form>
 </div>

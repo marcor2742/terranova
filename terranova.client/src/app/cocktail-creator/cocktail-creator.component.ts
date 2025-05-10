@@ -26,6 +26,20 @@ import { ButtonModule } from 'primeng/button';
 import { SettingsService } from '../services/setting-service.service';
 import { CocktailModifierService } from '../services/cocktail-modifier.service';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import {
+	FileUploadModule,
+	FileUploadHandlerEvent,
+	FileUploadErrorEvent,
+} from 'primeng/fileupload';
+import { ToastModule } from 'primeng/toast';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { BadgeModule } from 'primeng/badge';
+import {
+	FileManagementService,
+	UploadResponse,
+} from '../services/file-management.service'; // Import the service
+import { environment } from '../../environments/environment'; // For upload URL
 
 /**
 	 * {
@@ -77,6 +91,10 @@ type CocktailCreator = {
 	}[];
 };
 
+interface UploadFile extends File {
+	objectURL?: string;
+}
+
 @Component({
 	selector: 'app-cocktail-creator',
 	imports: [
@@ -94,15 +112,29 @@ type CocktailCreator = {
 		DropdownModule,
 		TextareaModule,
 		ButtonModule,
+		FileUploadModule,
+		ToastModule,
+		ProgressBarModule,
+		BadgeModule,
 	],
 	templateUrl: './cocktail-creator.component.html',
 	styleUrl: './cocktail-creator.component.scss',
+	providers: [MessageService],
 	standalone: true,
 })
 export class CocktailCreatorComponent implements OnInit {
 	cocktailForm: FormGroup;
 	ingredientMeasures: FormArray;
 	categories: Category[] = [];
+
+	fileUploadUrl = environment.cocktailImgUploadUrl; // URL for file upload
+	uploadResponse: UploadResponse | null = null; // Response from the upload service
+	uploadedImageUrl: string = ''; // URL of the uploaded image
+
+	// uploadedFiles: any[] = [];
+	filesToUpload: UploadFile[] = [];
+	totalSize: number = 0;
+	totalSizePercent: number = 0;
 
 	// Current user preferences
 	preferredMeasurementSystem = 'imperial'; // Default
@@ -132,7 +164,8 @@ export class CocktailCreatorComponent implements OnInit {
 		private settingsService: SettingsService,
 		private cocktailModifierService: CocktailModifierService,
 		private router: Router,
-		@Inject(PLATFORM_ID) private platformId: Object
+		@Inject(PLATFORM_ID) private platformId: Object,
+		private messageService: MessageService // private fileManagementService: FileManagementService
 	) {
 		this.ingredientMeasures = this.fb.array([]);
 
@@ -146,6 +179,10 @@ export class CocktailCreatorComponent implements OnInit {
 			ImageUrl: [''],
 			ingredientMeasures: this.ingredientMeasures,
 		});
+	}
+
+	inBrowser() {
+		return isPlatformBrowser(this.platformId);
 	}
 
 	ngOnInit() {
@@ -164,6 +201,7 @@ export class CocktailCreatorComponent implements OnInit {
 	}
 
 	loadUserPreferences() {
+		if (!isPlatformBrowser(this.platformId)) return;
 		// Get user's preferred measurement system
 		this.settingsService.getMeasurementSystem().subscribe((system) => {
 			this.preferredMeasurementSystem = system || 'imperial';
@@ -180,6 +218,8 @@ export class CocktailCreatorComponent implements OnInit {
 	}
 
 	loadCategories() {
+		if (!isPlatformBrowser(this.platformId)) return;
+
 		this.categoriesService.getCategories().subscribe((categories) => {
 			this.categories = categories;
 		});
@@ -214,7 +254,6 @@ export class CocktailCreatorComponent implements OnInit {
 		toSystem: string
 	): string {
 		if (!value || value.trim() === '') return '';
-
 		// Extract numeric value and unit if possible
 		const match = value.match(/^([\d.]+)\s*(\w+)?$/);
 		if (!match) return value; // Can't parse, return as-is
@@ -245,6 +284,7 @@ export class CocktailCreatorComponent implements OnInit {
 
 	// When submitting, combine ingredients with their measurements
 	sendCocktail() {
+		if (!isPlatformBrowser(this.platformId)) return;
 		if (this.cocktailForm.valid) {
 			const formValue = this.cocktailForm.value;
 
@@ -325,5 +365,163 @@ export class CocktailCreatorComponent implements OnInit {
 			Alcoholic: 'Alcoholic',
 		});
 		this.ingredientMeasures.clear();
+	}
+
+	onSelectFiles(event: any): void {
+    if (!event) {
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Invalid file selection event'
+        });
+        return;
+    }
+
+    // PrimeNG's FileUpload component puts the actual files in currentFiles
+    if (!event.currentFiles || !Array.isArray(event.currentFiles) || event.currentFiles.length === 0) {
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'No Files',
+            detail: 'No files were selected'
+        });
+        return;
+    }
+
+    // Only use the first file since we only want single file uploads
+    const file = event.currentFiles[0];
+    this.filesToUpload = [file];
+    this.totalSize = file.size || 0;
+    this.totalSizePercent = 0; // Reset progress
+
+    this.messageService.add({
+        severity: 'info',
+        summary: 'File Selected',
+        detail: `"${file.name}" ready to upload`
+    });
+}
+
+	onRemoveTemplatingFile(
+		file: UploadFile,
+		removeFileCallback: Function,
+		index: number
+	): void {
+		if (typeof removeFileCallback !== 'function') {
+			console.error('removeFileCallback is not a function');
+			return;
+		}
+
+		removeFileCallback(index);
+
+		if (!Array.isArray(this.filesToUpload)) {
+			this.filesToUpload = [];
+			return;
+		}
+
+		this.filesToUpload = this.filesToUpload.filter((f, i) => i !== index);
+		this.totalSize = 0;
+
+		if (this.filesToUpload.length > 0) {
+			this.filesToUpload.forEach((f_) => {
+				if (f_ && f_.size) {
+					this.totalSize += f_.size;
+				}
+			});
+		} else {
+			this.totalSizePercent = 0;
+		}
+	}
+
+	onClearTemplatingUpload(clearCallback: Function): void {
+		if (typeof clearCallback === 'function') {
+			clearCallback();
+		}
+		this.filesToUpload = [];
+		this.totalSize = 0;
+		this.totalSizePercent = 0;
+	}
+
+	// This method will be triggered by the template's upload button
+	initiateUpload(uploadCallback: Function): void {
+		if (!isPlatformBrowser(this.platformId)) return;
+
+		if (this.filesToUpload.length > 0) {
+			// PrimeNG's FileUpload component will handle the actual upload if `url` is set
+			// and `customUpload` is false. The `uploadCallback()` triggers its internal mechanism.
+			uploadCallback();
+		} else {
+			this.messageService.add({
+				severity: 'warn',
+				summary: 'No file selected',
+				detail: 'Please select a file to upload.',
+			});
+		}
+	}
+
+	// This is called by p-fileupload after its internal upload mechanism completes
+	onImageUploadSuccess(event: { originalEvent: any; files: File[] }): void {
+		if (!isPlatformBrowser(this.platformId)) return;
+
+		const response = event.originalEvent.body; // Or event.originalEvent.target.response if using XHR directly
+		if (response && response.url) {
+			// Assuming server returns { "url": "..." }
+			this.uploadedImageUrl = response.url;
+			this.cocktailForm.patchValue({ ImageUrl: this.uploadedImageUrl });
+			this.messageService.add({
+				severity: 'info',
+				summary: 'Success',
+				detail: 'File Uploaded',
+			});
+
+			// Add to uploadedFiles for display in template if needed
+			event.files.forEach((file) => {
+				// To display in "Completed" section, you might need to adapt how `uploadedFiles` is populated
+				// For a single image, you might not need a list of `uploadedFiles` in the UI
+				// and just rely on `uploadedImageUrl`
+			});
+			this.filesToUpload = []; // Clear pending files
+			this.totalSize = 0;
+			this.totalSizePercent = 100; // Mark as complete
+		} else {
+			this.messageService.add({
+				severity: 'error',
+				summary: 'Error',
+				detail: 'Could not get image URL from response.',
+			});
+			this.totalSizePercent = 0;
+		}
+	}
+
+	onUploadError(event: FileUploadErrorEvent): void {
+		if (!isPlatformBrowser(this.platformId)) return;
+		this.messageService.add({
+			severity: 'error',
+			summary: 'Error',
+			detail: 'File upload failed.',
+		});
+		console.error('Upload error:', event);
+		this.totalSizePercent = 0;
+	}
+
+	onProgress(event: { progress: number }): void {
+		if (!isPlatformBrowser(this.platformId)) return;
+
+		this.totalSizePercent = event.progress;
+	}
+
+	choose(event: Event, callback: Function): void {
+		callback();
+	}
+
+	formatSize(bytes: number): string {
+		const k = 1024;
+		const dm = 2;
+		const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+		if (bytes === 0) {
+			return '0 B';
+		}
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+		return (
+			parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+		);
 	}
 }
