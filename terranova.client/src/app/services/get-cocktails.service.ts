@@ -19,7 +19,7 @@ export class GetCocktailsService {
 	 * 
 	*/
 	getAllCocktails(parameters: HttpParams) {
-		return this.http.get<Cocktail[]>(this.allCocktailsUrl);
+		return this.http.get<Cocktail[]>(this.allCocktailsUrl, { params: parameters });
 	}
 
 	getCocktailSuggestions() {

@@ -1,10 +1,4 @@
-import {
-	Component,
-	inject,
-	OnInit,
-	signal,
-	PLATFORM_ID,
-} from '@angular/core';
+import { Component, inject, OnInit, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { GetCocktailsService } from '../services/get-cocktails.service';
 import { TokenStoreService } from '../services/token-store.service';
@@ -49,16 +43,16 @@ export class ForYouComponent implements OnInit {
 	ngOnInit() {
 		if (isPlatformBrowser(this.platformId)) {
 			// Check login status
-			this.isLoggedIn.set(this.tokenService.isLoggedin());
+			setTimeout(() => {
+				// Check login status
+				this.isLoggedIn.set(this.tokenService.isLoggedin());
 
-			// Fetch suggested cocktails if logged in
-			if (this.isLoggedIn()) {
-				console.log('User is logged in, loading suggested cocktails');
-				this.loadSuggestedCocktails();
-			}
-
-			// Fetch random cocktails for everyone
-			this.loadRandomCocktails();
+				// Fetch data after a delay
+				if (this.isLoggedIn()) {
+					this.loadSuggestedCocktails();
+				}
+				this.loadRandomCocktails();
+			}, 100);
 		}
 	}
 
