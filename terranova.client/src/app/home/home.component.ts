@@ -100,7 +100,13 @@ export class HomeComponent implements OnDestroy {
 	currentSearchTerm = signal<string>('');
 	searchMode = signal<string>('dropdown');
 	activeView = signal<
-		'home' | 'settings' | 'dashboard' | 'cocktails' | 'favorites' | 'search'
+		| 'home'
+		| 'settings'
+		| 'dashboard'
+		| 'cocktails'
+		| 'favorites'
+		| 'search'
+		| 'create'
 	>('home');
 
 	constructor() {
@@ -247,6 +253,12 @@ export class HomeComponent implements OnDestroy {
 				visible: !!this.currentSearchTerm(),
 			},
 			{
+				label: `Create`,
+				icon: 'pi pi-plus',
+				command: () => this.setActiveView('create'),
+				expanded: this.activeView() === 'create',
+			},
+			{
 				label: 'Settings',
 				icon: 'pi pi-cog',
 				command: () => this.setActiveView('settings'),
@@ -311,6 +323,7 @@ export class HomeComponent implements OnDestroy {
 			| 'cocktails'
 			| 'favorites'
 			| 'search'
+			| 'create'
 	) {
 		this.activeView.set(view);
 		this.router.navigate([view], { relativeTo: this.route });

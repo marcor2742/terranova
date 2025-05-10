@@ -19,4 +19,6 @@ export const environment = {
 	suggestedDrinksUrl: 'localhost:8000/suggestedDrinks',
 	allCocktailsUrl: 'localhost:8000/allCocktails',
 	editCocktailUrl: 'localhost:8000/editCocktails',
+	cocktailImgUploadUrl: '/api/uploadProfileImage',
+	userImgUploadUrl: '/api/uploadProfileImage',
 };

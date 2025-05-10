@@ -22,7 +22,7 @@ export class SettingsService {
 	private defaultSettings: UserSettings = {
 		theme: 'light',
 		language: 'en',
-		locale: 'imperial',
+		locale: 'metric',
 		notifications: true,
 		searchPreference: 'all',
 	};

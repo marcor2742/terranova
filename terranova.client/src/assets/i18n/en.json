@@ -53,5 +53,8 @@
 	"cocktailUpdated": "Cocktail updated successfully",
 	"cocktailUpdateFailed": "Cocktail update failed",
 	"cocktailDeleted": "Cocktail deleted successfully",
-	"cocktailDeletionFailed": "Cocktail deletion failed"
+	"cocktailDeletionFailed": "Cocktail deletion failed",
+	"measuringIn": "Measuring in",
+	"dragAndDropPrompt": "Drag and drop your image here or click to select it",
+	"cocktailImage": "Image for the cocktail"
 }
