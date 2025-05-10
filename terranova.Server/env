@@ -1,0 +1,11 @@
+SQL_PASSWORD=AWDss551029!
+DOKER_SQL_PASSWORD=StrongPassword123!
+SQL_SERVER=portatile-marco\Sqlexpress
+SQL_NAME=IdentityUserDB
+SQL_USER=sa
+
+BLOB_CONNECTION=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+JWT_SECRET=nuova_chiave_sicura_per_jwt_molto_lunga_e_complessa
+ADMIN_USERNAME=admin2
+ADMIN_EMAIL=admin2@terranova.com
+ADMIN_PASSWORD=Password_Complessa!123
