@@ -117,4 +117,5 @@ src/environments/environment*.ts
 .fake
 
 #secrets
-appsettings.json
+.env
+env
