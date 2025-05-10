@@ -1,6 +1,7 @@
 import {
 	Component,
 	effect,
+	ErrorHandler,
 	Inject,
 	input,
 	OnInit,
