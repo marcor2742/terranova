@@ -87,7 +87,6 @@ export class CocktailCardComponent implements OnInit {
 				},
 				{ defaultValue: new Cocktail(0, false, '', '') }
 			);
-			// Effect runs when cocktail resource successfully loads data
 			effect(() => {
 				// Only run when the data is actually available
 				if (

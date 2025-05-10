@@ -56,5 +56,8 @@
 	"cocktailDeletionFailed": "Eliminazione del cocktail fallita",
 	"measuringIn": "Unità di misura",
 	"dragAndDropPrompt": "Trascina e rilascia la tua immagine qui o fai clic per selezionarla",
-	"cocktailImage": "Immagine per il cocktail"
+	"cocktailImage": "Immagine per il cocktail",
+	"ErrorLoadingSuggestions": "Errore durante il caricamento dei suggerimenti",
+	"ErrorLoadingCocktails": "Errore durante il caricamento dei cocktail",
+	"TryReloadingPage": "Prova a ricaricare la pagina"
 }

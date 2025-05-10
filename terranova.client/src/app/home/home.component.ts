@@ -239,12 +239,12 @@ export class HomeComponent implements OnDestroy {
 				command: () => this.setActiveView('dashboard'),
 				expanded: this.activeView() === 'dashboard',
 			},
-			{
-				label: 'Favorites',
-				icon: 'pi pi-heart',
-				command: () => this.setActiveView('favorites'),
-				expanded: this.activeView() === 'favorites',
-			},
+			// {
+			// 	label: 'Favorites',
+			// 	icon: 'pi pi-heart',
+			// 	command: () => this.setActiveView('favorites'),
+			// 	expanded: this.activeView() === 'favorites',
+			// },
 			{
 				label: `Search: "${this.currentSearchTerm()}"`,
 				icon: 'pi pi-search',

@@ -13,7 +13,9 @@
 	>
 		<!-- Cocktail Name -->
 		<div class="creation-section">
-			 <label class="block mb-2 w-full">{{ "cocktailName" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"cocktailName" | translate
+			}}</label>
 			<input
 				type="text"
 				pInputText
@@ -36,7 +38,9 @@
 
 		<!-- Alcoholic/Non-Alcoholic Selection -->
 		<div class="creation-section">
-			<label class="block mb-2 w-full">{{ "AlcoholContent" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"AlcoholContent" | translate
+			}}</label>
 			<p-selectButton
 				[options]="alcolOption"
 				formControlName="Alcoholic"
@@ -50,14 +54,18 @@
 
 		<!-- Category Selection -->
 		<div class="creation-section">
-			<label class="block mb-2 w-full">{{ "Category" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"Category" | translate
+			}}</label>
 			<p-dropdown
 				[options]="categories"
 				formControlName="Category"
 				optionLabel="name"
 				optionValue="name"
 				[style]="{ width: '100%' }"
+				[panelStyle]="{ width: 'auto', minWidth: '100%' }"
 				placeholder="{{ 'selectCategory' | translate }}"
+				appendTo="body"
 			></p-dropdown>
 		</div>
 
@@ -65,7 +73,9 @@
 
 		<!-- Glass Selection -->
 		<div class="creation-section">
-			<label class="block mb-2 w-full">{{ "GlassType" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"GlassType" | translate
+			}}</label>
 			<app-glass-selector
 				formControlName="Glass"
 				[placeholder]="'selectGlass' | translate"
@@ -77,7 +87,9 @@
 
 		<!-- Ingredients Selection with Measures -->
 		<div class="creation-section">
-			<label class="block mb-2 w-full">{{ "Ingredients" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"Ingredients" | translate
+			}}</label>
 			<app-ingredient-selector
 				formControlName="Ingredients"
 				[placeholder]="'addIngredients' | translate"
@@ -134,7 +146,9 @@
 
 		<!-- Instructions -->
 		<div class="creation-section">
-			<label class="block mb-2 w-full">{{ "preparationHeading" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"preparationHeading" | translate
+			}}</label>
 			<textarea
 				pTextarea
 				formControlName="Instructions"
@@ -175,7 +189,9 @@
 		<!-- Image Upload -->
 
 		<div class="creation-section">
-			<label class="block mb-2 w-full">{{ "cocktailImage" | translate }}</label>
+			<label class="block mb-2 w-full">{{
+				"cocktailImage" | translate
+			}}</label>
 			<p-toast></p-toast>
 			<p-fileupload
 				name="{{ 'cocktailImage' | translate }}"
