@@ -2,7 +2,7 @@
 
 // Core variables
 $sidebar-width: 300px;
-$header-height: 65px;
+$header-height: 200px;
 $transition-speed: 0.3s;
 
 // Base layout
@@ -26,12 +26,33 @@ $transition-speed: 0.3s;
 
 // Main layout with sidebar and content
 .main-container {
-  display: flex;
-  flex-direction: row;
-  height: calc(100vh - $header-height);
-  width: 100%;
-  position: relative;
-  flex-grow: 1;
+	display: flex;
+	flex-direction: row;
+	height: calc(100vh - $header-height);
+	width: 100%;
+	position: relative;
+	flex-grow: 1;
+
+	&.content-with-sidebar {
+		// Stili specifici quando la sidebar è attiva
+		// Webkit browsers (Chrome, Safari, Edge)
+		&::-webkit-scrollbar-track {
+			background: transparent !important;
+			border: none;
+		}
+
+		&::-webkit-scrollbar {
+			width: 8px !important; // Larghezza della scrollbar
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: var(--primary-color);
+			border-radius: 4px;
+		}
+		// Firefox
+		scrollbar-width: thin;
+		scrollbar-color: var(--primary-color) transparent;
+	}
 }
 
 // Sidebar component
@@ -70,10 +91,11 @@ $transition-speed: 0.3s;
 
 // Main content area
 .content {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-  transition: margin-left $transition-speed ease;
+	flex: 1;
+	padding: 1rem;
+	overflow-y: auto;
+	transition: margin-left $transition-speed ease;
+
 }
 
 // Cocktail list styling
@@ -184,34 +206,7 @@ $transition-speed: 0.3s;
     }
   }
   
-  // Scroller styling
-  .p-scroller {
-    width: 100%;
-    
-    .p-scroller-content {
-      padding: 0;
-      display: block !important;
-    }
-    
-    .p-scroller-item {
-      position: relative !important;
-      height: auto !important;
-      margin-bottom: 10px;
-    }
-    
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--primary-color);
-      border-radius: 4px;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-  }
+  
   
   // Divider styling
   .cocktail-divider {

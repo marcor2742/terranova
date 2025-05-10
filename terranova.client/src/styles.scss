@@ -33,7 +33,7 @@ body.summer-theme {
 }
 
 html {
-	min-height: 100vh;
+	height: 100vh;
 	margin: 0;
 	padding: 0;
 }
@@ -41,7 +41,7 @@ html {
 /* Apply base styles to body - Note: body styling moved to background-effects.scss */
 
 body.dark-theme,body.summer-theme {
-	min-height: 100vh;
+	height: 100vh;
 	background: linear-gradient(145deg, var(--primary-color), var(--secondary-color));
 	animation: liquid-bg 15s ease infinite;
 }
@@ -49,3 +49,42 @@ body.dark-theme,body.summer-theme {
 button-group {
 	width: 100%;
 }
+
+html, body {
+	height: 100%;
+	margin: 0; /* Also good practice to remove default margins */
+	padding: 0; /* Also good practice to remove default padding */
+}
+
+app-root {
+	height: 100%;
+}
+
+*, ::before, ::after {
+	box-sizing: border-box;
+	position: relative;
+}
+
+/* Modifiche specifiche per p-inputSwitch per garantire posizionamento corretto del pallino */
+.p-inputswitch {
+	.p-inputswitch-slider {
+		position: relative;
+		display: inline-block;
+
+		&:before {
+			position: absolute;
+			content: "";
+			transform: translateY(-50%);
+			top: 50%;
+			left: 0.25rem;
+			transition: transform 0.2s;
+		}
+	}
+
+	&.p-inputswitch-checked .p-inputswitch-slider:before {
+		transform: translateX(1.25rem) translateY(-50%);
+	}
+}
+
+
+//height: calc(100vh - $header-height); $header-height in home è più alta del dovuto ma funziona comunque
