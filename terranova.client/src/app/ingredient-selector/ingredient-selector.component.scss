@@ -1,38 +1,71 @@
 :host {
-  display: block; // Ensures the component takes up block space
+  display: block;
   width: 100%;
 }
 
 .ingredient-selector-container {
   width: 100%;
 
-  // Style the chips container if needed
-  .selected-chips {
+  // Improved chips container styles
+  .selected-chips-container {
     width: 100%;
-    margin-bottom: 0.5rem; // Add space below chips
-
-    // Target the input inside p-chips if you want to hide it completely
-    .p-chips-input-token {
-       display: none; // Uncomment if you don't want any input in the chips area
+    margin-bottom: 1rem; // Increased bottom margin
+    padding: 0.5rem; // Add padding around all chips
+    min-height: 3rem; // Ensure minimum height even when empty
+    
+    // Add a subtle background to make the chips area more visible
+    background-color: var(--surface-ground);
+    border-radius: 6px;
+  }
+  
+  // Style the individual chips
+  ::ng-deep .p-chip {
+    margin: 0.25rem; // Add margin around each chip
+    padding: 0.5rem 0.75rem; // Increase padding inside chips
+    
+    .p-chip-text {
+      padding: 0 0.25rem; // Add padding to chip text
+    }
+    
+    .p-chip-remove-icon {
+      margin-left: 0.5rem; // More space between text and remove icon
     }
   }
 
-  // Style the AutoComplete suggestions
-  .ingredient-suggestion-item {
-    padding: 0.5rem;
+  // Increase the size of the autocomplete input
+  ::ng-deep .p-autocomplete {
+    .p-inputtext {
+      padding: 0.75rem 1rem; // Increase padding inside input
+      height: auto; // Let height adjust to content
+      min-height: 3rem; // Ensure minimum height
+      font-size: 1rem; // Slightly larger text
+      line-height: 1.5; // More line height to prevent cutting off descenders
+    }
+    
+    // Improve dropdown panel
+    .p-autocomplete-panel {
+      .p-autocomplete-items {
+        padding: 0.5rem;
+        
+        .p-autocomplete-item {
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+        }
+      }
+    }
   }
 
   // Style the spinner to overlay the input
-  .relative { // Ensure the parent div has relative positioning
+  .relative {
     position: relative;
   }
 
   .search-spinner {
     position: absolute;
-    right: 10px; // Adjust position as needed
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px !important; // Override default size
+    width: 20px !important;
     height: 20px !important;
   }
 
@@ -40,15 +73,14 @@
     display: block;
     text-align: right;
     font-size: 0.8em;
-    color: var(--text-color-secondary); // Use theme variable if available
+    color: var(--text-color-secondary);
+    margin-top: 0.5rem; // Add more space above counter
   }
 }
 
-// PrimeNG Overrides (place in global styles.scss if preferred, scoped here for example)
-// ::ng-deep .p-chips .p-chips-multiple-container {
-//   width: 100%;
-// }
-
-// ::ng-deep .p-autocomplete-input {
-//   width: 100%;
-// }
+// Fix text wrapping and overflow in chips
+::ng-deep .p-chip-text {
+  overflow: visible; // Allow text to be fully visible
+  text-overflow: clip; // Don't truncate text
+  white-space: normal; // Allow text wrapping
+}

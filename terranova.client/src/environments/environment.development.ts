@@ -19,6 +19,6 @@ export const environment = {
 	suggestedDrinksUrl: '/api/suggestedDrinks',
 	allCocktailsUrl: '/api/allCocktails',
 	editCocktailUrl: '/api/editCocktails',
-	cocktailImgUploadUrl: '/api/uploadProfileImage',
+	cocktailImgUploadUrl: '/api/uploadCocktailImage',
 	userImgUploadUrl: '/api/uploadProfileImage',
 };

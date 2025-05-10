@@ -1,18 +1,18 @@
 <div class="ingredient-selector-container">
 	<!-- Display selected ingredients as individual chips -->
-	<div class="selected-chips-container mb-2 flex flex-wrap gap-2"> <!-- Use flexbox for layout -->
-	  @for (ingredient of selectedIngredients(); track ingredient.id) {
-		<p-chip
-		  [label]="ingredient.name"
-		  [removable]="true"
-		  (onRemove)="removeIngredient(ingredient)"
-		  styleClass="selected-chip-item"
-		></p-chip>
-	  }
-	  @if (selectedIngredients().length === 0) {
-		<span class="text-sm text-gray-500 italic">No ingredients selected</span>
-	  }
-	</div>
+<div class="selected-chips-container mb-3 flex flex-wrap gap-3">
+  @for (ingredient of selectedIngredients(); track ingredient.id) {
+    <p-chip
+      [label]="ingredient.name"
+      [removable]="true"
+      (onRemove)="removeIngredient(ingredient)"
+      styleClass="selected-chip-item"
+    ></p-chip>
+  }
+  @if (selectedIngredients().length === 0) {
+    <span class="text-sm text-gray-500 italic p-2">No ingredients selected</span>
+  }
+</div>
 
 
   <div class="p-fluid relative">
@@ -26,7 +26,7 @@
       [minLength]="2"
       [forceSelection]="true"
       [style]="{'width': '100%'}"
-      [inputStyle]="{'width': '100%'}"
+      [inputStyle]="{'width': '100%', 'padding': '0.75rem 1rem', 'min-height': '3rem'}"
       [disabled]="isMaxReached"
       appendTo="body"
     >

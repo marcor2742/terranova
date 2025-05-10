@@ -112,11 +112,9 @@
 					<p-button
 						[icon]="isFavorite() ? 'pi pi-star-fill' : 'pi pi-star'"
 						(onClick)="toggleFavorite()"
-						[label]="
-							isFavorite()
-								? 'RemoveFromFavorites'
-								: 'AddToFavorites'
-						"
+						[label]="isFavorite() 
+								? ('RemoveFromFavorites' | translate) 
+								: ('AddToFavorites' | translate)"
 					>
 					</p-button>
 				</div>

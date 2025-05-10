@@ -26,7 +26,10 @@ const PROXY_CONFIG = [
 			'/api/preferences',
 			'/api/categoriesTable',
 			'/api/suggestedDrinks',
-			'/api/allCocktails'
+			'/api/allCocktails',
+			'/api/editCocktails',
+			'/api/uploadCocktailImage',
+			'/api/uploadProfileImage',
 		],
 		target: apiTarget,
 		secure: false,

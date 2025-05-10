@@ -131,8 +131,8 @@
 							pInputText
 							[placeholder]="
 								preferredMeasurementSystem === 'imperial'
-									? 'e.g. 1.5 oz, 1 tsp 1lb'
-									: 'e.g. 45 ml, 5 ml 50g'
+									? 'e.g. 1.5 oz, 1 tsp, 1lb'
+									: 'e.g. 45 ml, 5 ml, 50g'
 							"
 							[formControl]="getIngredientControl(i)"
 							class="w-full"
@@ -377,3 +377,4 @@
 		</div>
 	</form>
 </div>
+<p-confirmDialog [style]="{width: '450px'}" styleClass="image-confirm-dialog"></p-confirmDialog>

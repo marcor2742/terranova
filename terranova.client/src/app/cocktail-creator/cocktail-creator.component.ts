@@ -26,7 +26,7 @@ import { ButtonModule } from 'primeng/button';
 import { SettingsService } from '../services/setting-service.service';
 import { CocktailModifierService } from '../services/cocktail-modifier.service';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import {
 	FileUploadModule,
 	FileUploadHandlerEvent,
@@ -40,6 +40,7 @@ import {
 	UploadResponse,
 } from '../services/file-management.service'; // Import the service
 import { environment } from '../../environments/environment'; // For upload URL
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 /**
 	 * {
@@ -116,10 +117,11 @@ interface UploadFile extends File {
 		ToastModule,
 		ProgressBarModule,
 		BadgeModule,
+		ConfirmDialogModule,
 	],
 	templateUrl: './cocktail-creator.component.html',
 	styleUrl: './cocktail-creator.component.scss',
-	providers: [MessageService],
+	providers: [MessageService, ConfirmationService],
 	standalone: true,
 })
 export class CocktailCreatorComponent implements OnInit {
@@ -135,6 +137,7 @@ export class CocktailCreatorComponent implements OnInit {
 	filesToUpload: UploadFile[] = [];
 	totalSize: number = 0;
 	totalSizePercent: number = 0;
+	createdCocktailId: number | null = null; // ID of the created cocktail
 
 	// Current user preferences
 	preferredMeasurementSystem = 'imperial'; // Default
@@ -165,7 +168,9 @@ export class CocktailCreatorComponent implements OnInit {
 		private cocktailModifierService: CocktailModifierService,
 		private router: Router,
 		@Inject(PLATFORM_ID) private platformId: Object,
-		private messageService: MessageService // private fileManagementService: FileManagementService
+		private messageService: MessageService,
+		private fileManagementService: FileManagementService,
+		private confirmationService: ConfirmationService
 	) {
 		this.ingredientMeasures = this.fb.array([]);
 
@@ -325,39 +330,148 @@ export class CocktailCreatorComponent implements OnInit {
 
 			// Set the user's preferred language
 			instructions[this.preferredLanguage] = formValue.Instructions;
+			let glassValue = formValue.Glass;
 
+			// If glass is an object or array, extract the name property or first item
+			if (typeof glassValue === 'object' && glassValue !== null) {
+				if (Array.isArray(glassValue)) {
+					glassValue = glassValue[0]?.name || glassValue[0] || '';
+				} else {
+					glassValue = glassValue.name || '';
+				}
+			}
 			// Prepare the cocktail data in the format expected by the API
 			const cocktailData: CocktailCreator = {
 				name: formValue.name,
 				category: formValue.Category,
 				isAlcoholic: formValue.Alcoholic === 'Alcoholic',
-				glassName: formValue.Glass,
-				imageUrl: formValue.ImageUrl || undefined,
+				glassName: glassValue,
+				// ImageUrl will be set after upload
 				instructions: instructions,
 				ingredients: ingredients,
 			};
 
 			console.log('Sending cocktail data:', cocktailData);
 
-			// Call the API to create the cocktail
+			// Step 1: Create the cocktail
 			this.cocktailModifierService
 				.createCocktail(cocktailData)
 				.subscribe({
 					next: (response) => {
 						console.log('Cocktail created successfully:', response);
-						// Navigate to the new cocktail
+
 						if (response && response.id) {
-							this.router.navigate([
-								`/home/cocktail/${response.id}`,
-							]);
+							// Step 2: If we have a file to upload, upload it to the specific URL
+							if (this.filesToUpload.length > 0) {
+								this.uploadImageForCocktail(response.id);
+							} else {
+								// Show confirmation dialog when no image is provided
+								this.confirmationService.confirm({
+									header: 'No Image Provided',
+									message:
+										'Your cocktail has been created without an image. Would you like to add an image now?',
+									icon: 'pi pi-image',
+									acceptLabel: 'Add Image',
+									rejectLabel: 'Continue Without Image',
+									accept: () => {
+										// User wants to add an image - stay on page and show a message
+										this.messageService.add({
+											severity: 'info',
+											summary: 'Add Image',
+											detail: 'Please select and upload an image for your cocktail.',
+										});
+
+										// Store the cocktail ID for later upload
+										this.createdCocktailId = response.id;
+
+										// Optionally scroll to the image upload section
+										// You could add an ID to your file upload element and scroll to it:
+										// document.getElementById('image-upload-section')?.scrollIntoView({ behavior: 'smooth' });
+									},
+									reject: () => {
+										// User wants to continue without an image
+										this.messageService.add({
+											severity: 'success',
+											summary: 'Success',
+											detail: 'Cocktail created successfully without an image',
+										});
+										this.router.navigate([
+											`/home/cocktail/${response.id}`,
+										]);
+									},
+								});
+							}
 						}
 					},
 					error: (error) => {
 						console.error('Error creating cocktail:', error);
-						// Handle error (show message to user)
+						this.messageService.add({
+							severity: 'error',
+							summary: 'Error',
+							detail: 'Failed to create cocktail. Please try again.',
+						});
 					},
 				});
+		} else {
+			// Form is invalid
+			this.messageService.add({
+				severity: 'error',
+				summary: 'Invalid Form',
+				detail: 'Please fill in all required fields',
+			});
+			// Mark all fields as touched to show validation errors
+			Object.keys(this.cocktailForm.controls).forEach((key) => {
+				this.cocktailForm.get(key)?.markAsTouched();
+			});
 		}
+	}
+
+	
+	// New method to upload image after cocktail creation
+	private uploadImageForCocktail(cocktailId: number): void {
+		if (
+			!isPlatformBrowser(this.platformId) ||
+			this.filesToUpload.length === 0
+		)
+			return;
+
+		const file = this.filesToUpload[0];
+		const formData = new FormData();
+		formData.append('file', file, file.name);
+
+		// Create endpoint with cocktail ID
+		const uploadUrl = `${this.fileUploadUrl}/${cocktailId}`;
+
+		this.fileManagementService.uploadImage(formData, uploadUrl).subscribe({
+			next: (response) => {
+				if (response && response.url) {
+					this.uploadedImageUrl = response.url;
+					this.messageService.add({
+						severity: 'success',
+						summary: 'Success',
+						detail: 'Cocktail and image uploaded successfully',
+					});
+					this.router.navigate([`/home/cocktail/${cocktailId}`]);
+				} else {
+					this.messageService.add({
+						severity: 'warn',
+						summary: 'Warning',
+						detail: 'Cocktail created but image upload failed',
+					});
+					this.router.navigate([`/home/cocktail/${cocktailId}`]);
+				}
+			},
+			error: (error) => {
+				console.error('Error uploading image:', error);
+				this.messageService.add({
+					severity: 'warn',
+					summary: 'Warning',
+					detail: 'Cocktail created but image upload failed',
+				});
+				// Still navigate to the cocktail since it was created
+				this.router.navigate([`/home/cocktail/${cocktailId}`]);
+			},
+		});
 	}
 
 	resetForm() {
@@ -368,37 +482,41 @@ export class CocktailCreatorComponent implements OnInit {
 	}
 
 	onSelectFiles(event: any): void {
-    if (!event) {
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Invalid file selection event'
-        });
-        return;
-    }
+		if (!event) {
+			this.messageService.add({
+				severity: 'error',
+				summary: 'Error',
+				detail: 'Invalid file selection event',
+			});
+			return;
+		}
 
-    // PrimeNG's FileUpload component puts the actual files in currentFiles
-    if (!event.currentFiles || !Array.isArray(event.currentFiles) || event.currentFiles.length === 0) {
-        this.messageService.add({
-            severity: 'warn',
-            summary: 'No Files',
-            detail: 'No files were selected'
-        });
-        return;
-    }
+		// PrimeNG's FileUpload component puts the actual files in currentFiles
+		if (
+			!event.currentFiles ||
+			!Array.isArray(event.currentFiles) ||
+			event.currentFiles.length === 0
+		) {
+			this.messageService.add({
+				severity: 'warn',
+				summary: 'No Files',
+				detail: 'No files were selected',
+			});
+			return;
+		}
 
-    // Only use the first file since we only want single file uploads
-    const file = event.currentFiles[0];
-    this.filesToUpload = [file];
-    this.totalSize = file.size || 0;
-    this.totalSizePercent = 0; // Reset progress
+		// Only use the first file since we only want single file uploads
+		const file = event.currentFiles[0];
+		this.filesToUpload = [file];
+		this.totalSize = file.size || 0;
+		this.totalSizePercent = 0; // Reset progress
 
-    this.messageService.add({
-        severity: 'info',
-        summary: 'File Selected',
-        detail: `"${file.name}" ready to upload`
-    });
-}
+		this.messageService.add({
+			severity: 'info',
+			summary: 'File Selected',
+			detail: `"${file.name}" ready to upload`,
+		});
+	}
 
 	onRemoveTemplatingFile(
 		file: UploadFile,
@@ -443,16 +561,21 @@ export class CocktailCreatorComponent implements OnInit {
 	// This method will be triggered by the template's upload button
 	initiateUpload(uploadCallback: Function): void {
 		if (!isPlatformBrowser(this.platformId)) return;
-
+	
 		if (this.filesToUpload.length > 0) {
-			// PrimeNG's FileUpload component will handle the actual upload if `url` is set
-			// and `customUpload` is false. The `uploadCallback()` triggers its internal mechanism.
+			// If we have a stored cocktail ID, upload directly 
+			if (this.createdCocktailId) {
+				this.uploadImageForCocktail(this.createdCocktailId);
+				return;
+			}
+			
+			// Otherwise use PrimeNG's default upload mechanism
 			uploadCallback();
 		} else {
 			this.messageService.add({
 				severity: 'warn',
 				summary: 'No file selected',
-				detail: 'Please select a file to upload.',
+				detail: 'Please select a file to upload.'
 			});
 		}
 	}
