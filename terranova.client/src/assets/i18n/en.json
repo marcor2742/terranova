@@ -56,5 +56,8 @@
 	"cocktailDeletionFailed": "Cocktail deletion failed",
 	"measuringIn": "Measuring in",
 	"dragAndDropPrompt": "Drag and drop your image here or click to select it",
-	"cocktailImage": "Image for the cocktail"
+	"cocktailImage": "Image for the cocktail",
+	"ErrorLoadingSuggestions": "Error loading suggestions",
+	"ErrorLoadingCocktails": "Error loading cocktails",
+	"TryReloadingPage": "Please try reloading the page"
 }

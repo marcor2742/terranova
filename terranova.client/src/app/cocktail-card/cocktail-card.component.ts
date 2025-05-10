@@ -72,7 +72,7 @@ export class CocktailCardComponent implements OnInit {
 	isFavorite = signal<boolean>(false);
 	resolvedCocktailId = signal<number>(-1);
 
-	// Track whether we're ready to fetch data
+	// Track whether we're ready to fetch data or not
 	private shouldFetchData = signal<boolean>(false);
 
 	cocktail: Resource<Cocktail> | null = null;

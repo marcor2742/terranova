@@ -77,3 +77,81 @@
     font-size: 0.9rem;
   }
 }
+// Add these styles to your existing SCSS
+.carousel-placeholder {
+  width: 100%;
+  min-height: 280px;
+  padding: 1rem 0;
+
+  .placeholder-items {
+    display: flex;
+    gap: 1rem;
+    overflow-x: hidden;
+    
+    .placeholder-card {
+      flex: 0 0 calc(25% - 0.75rem);
+      min-width: 200px;
+      background-color: var(--surface-card);
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      animation: pulse 1.5s infinite ease-in-out;
+      
+      .placeholder-image {
+        height: 140px;
+        background-color: var(--surface-200);
+        border-radius: 4px;
+        margin-bottom: 0.75rem;
+      }
+      
+      .placeholder-title {
+        height: 1.5rem;
+        width: 80%;
+        background-color: var(--surface-200);
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+      }
+      
+      .placeholder-text {
+        height: 1rem;
+        background-color: var(--surface-200);
+        border-radius: 4px;
+        width: 60%;
+      }
+    }
+  }
+}
+
+.carousel-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  gap: 1rem;
+  color: var(--primary-color);
+}
+
+.error-card {
+  background-color: var(--surface-card);
+  margin: 1rem 0;
+  
+  .no-data-message {
+    i {
+      color: var(--red-500);
+    }
+  }
+}
+
+// Pulse animation for placeholders
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
