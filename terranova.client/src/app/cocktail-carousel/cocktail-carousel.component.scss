@@ -7,24 +7,24 @@
 }
 
 .cocktail-card {
-  position: relative;
-  transition: all 0.3s ease;
-  transform-origin: center;
-  cursor: pointer;
-  overflow: hidden;
-  background-color: var(--surface-card);
-  border-radius: 8px;
-  height: 100%;
-  
-  &:hover {
-    transform: scale(1.05);
-    z-index: 10;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    
-    .cocktail-hover-info {
-      opacity: 1;
+    position: relative;
+    transition: all 0.3s ease;
+    transform-origin: center;
+    cursor: pointer;
+    overflow: hidden;
+    background-color: var(--surface-card);
+    border-radius: 8px;
+    height: 100%;
+
+    &:hover {
+        transform: scale(1.05);
+        z-index: 10;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+        .cocktail-hover-info {
+            opacity: 1;
+        }
     }
-  }
 }
 
 .cocktail-image-container {
@@ -35,7 +35,6 @@
   
   img {
     width: 100%;
-    height: 180px;
     object-fit: cover;
     transition: transform 0.5s ease;
   }
@@ -82,15 +81,23 @@
   }
 }
 
+:host ::ng-deep {
+	.p-carousel .p-carousel-content .p-carousel-viewport {
+		padding: 1rem;
+	}
 
+	.p-carousel .p-carousel-content .p-carousel-items-content .p-carousel-item-list {
+		padding: 1rem;
+	}
+}
 /* Make sure carousel navigation stays above cards but below trails */
 :host ::ng-deep {
-  .p-carousel .p-carousel-indicators {
-    z-index: 5;
-  }
-  
-  .p-carousel .p-carousel-content .p-carousel-prev,
-  .p-carousel .p-carousel-content .p-carousel-next {
-    z-index: 5;
-  }
+    .p-carousel .p-carousel-indicators {
+        z-index: 5;
+    }
+
+    .p-carousel .p-carousel-content .p-carousel-prev,
+    .p-carousel .p-carousel-content .p-carousel-next {
+        z-index: 5;
+    }
 }
