@@ -20,6 +20,7 @@ export const routes: Routes = [
 			{ path: 'dashboard', component: DashboardComponent },
 			{ path: 'settings', component: SettingsComponent },
 			{ path: 'cocktail/:id', component: CocktailCardComponent },
+			{ path: 'cocktails/:ids', component: CocktailListComponent},
 			{ path: 'search', component: CocktailListComponent },
 			{ path: 'search/:term', component: CocktailListComponent },
 			{ path: 'create', component: CocktailCreatorComponent },

@@ -346,11 +346,22 @@ export class HomeComponent implements OnDestroy {
 		this.selectedCocktails.set(updatedCocktails);
 		this.stateService.updateSelectedCocktails(updatedCocktails);
 
-		// Only navigate if not already on the cocktails page
-		if (this.router.url !== '/home/cocktails') {
-			this.router.navigate(['cocktails'], { relativeTo: this.route });
+		// Crea il parametro di percorso per l'URL
+		const cocktailIds = updatedCocktails.join(',');
+
+		// Controlla se siamo già nella pagina dei cocktail
+		if (this.router.url.includes('/home/cocktails')) {
+			// Aggiorna solo lo stato senza navigare, aggiornare anche i parametri dell'URL
+			this.router.navigate(['cocktails', cocktailIds], {
+				relativeTo: this.route,
+				replaceUrl: true // Sostituisce invece di aggiungere alla cronologia
+			});
+		} else {
+			// Se non siamo già nella pagina cocktails, naviga a cocktails con ID
+			this.router.navigate(['cocktails', cocktailIds], { relativeTo: this.route });
 		}
 	}
+
 
 	/**
 	 * Close cocktail details and reset selection
