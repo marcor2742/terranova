@@ -6,56 +6,57 @@
 </div>
 
 <div class="box">
-	@if (showEmailConfirmation()) {
-	<h2>{{ "RegisterPage" | translate }}</h2>
-	} @else {
-	<h2>{{ "LoginPage" | translate }}</h2>
-	}
-	<div *ngIf="!showStepper()">
+	<div *ngIf="!showStepper()" style="display: flex; flex-direction: column; flex-grow:1;">
 		<!-- Form con logica condizionale per login/register -->
-		<form [formGroup]="loginForm">
+		<form [formGroup]="loginForm" style="display: flex; flex-grow: 1; flex-direction: column;">
+			@if (showEmailConfirmation()) {
+			<h2>{{ "RegisterPage" | translate }}</h2>
+			} @else {
+			<h2>{{ "LoginPage" | translate }}</h2>
+			}
 			<!-- Username field with validazione -->
-			<div class="form-field">
-				<label for="username">Username:</label>
-				<input id="username" type="text" formControlName="username" />
-				<div *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors" class="error">
-					<div *ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))">
-						Username is required
+			<div style="margin-top:auto;">
+				<div class="form-field">
+					<label for="username">Username:</label>
+					<input id="username" type="text" formControlName="username" />
+					<div *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors" class="error">
+						<div *ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))">
+							Username is required
+						</div>
+						<div *ngIf="loginForm.get('username')?.errors?.['minlength']">
+							Username must be at least 4 characters
+						</div>
 					</div>
-					<div *ngIf="loginForm.get('username')?.errors?.['minlength']">
-						Username must be at least 4 characters
+					<div *ngIf="usernameError()" class="error">
+						{{ usernameError() }}
 					</div>
 				</div>
-				<div *ngIf="usernameError()" class="error">
-					{{ usernameError() }}
+
+				<!-- Email field, mostrato solo se showEmailConfirmation è true -->
+				<div class="form-field" *ngIf="showEmailConfirmation()">
+					<label for="email">Email:</label>
+					<input id="email" type="email" formControlName="email" />
+					<div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors" class="error">
+						<div *ngIf="loginForm.get('email')?.errors">
+							Please enter a valid email
+						</div>
+					</div>
+					<div *ngIf="emailError()" class="error email-exists">
+						{{ emailError() }}
+					</div>
+				</div>
+
+				<!-- Password field -->
+				<div class="form-field">
+					<label for="password">Password:</label>
+					<input id="password" type="password" formControlName="password" />
+					<div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors" class="error">
+						<div *ngIf="loginForm.get('password')?.errors?.['required']">
+							Password is required
+						</div>
+					</div>
 				</div>
 			</div>
-
-			<!-- Email field, mostrato solo se showEmailConfirmation è true -->
-			<div class="form-field" *ngIf="showEmailConfirmation()">
-				<label for="email">Email:</label>
-				<input id="email" type="email" formControlName="email" />
-				<div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors" class="error">
-					<div *ngIf="loginForm.get('email')?.errors">
-						Please enter a valid email
-					</div>
-				</div>
-				<div *ngIf="emailError()" class="error email-exists">
-					{{ emailError() }}
-				</div>
-			</div>
-
-			<!-- Password field -->
-			<div class="form-field">
-				<label for="password">Password:</label>
-				<input id="password" type="password" formControlName="password" />
-				<div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors" class="error">
-					<div *ngIf="loginForm.get('password')?.errors?.['required']">
-						Password is required
-					</div>
-				</div>
-			</div>
-
 			<!-- Pulsanti diversi a seconda dello stato -->
 			<div class="button-group" *ngIf="!showEmailConfirmation()">
 				<p-button label="Login"

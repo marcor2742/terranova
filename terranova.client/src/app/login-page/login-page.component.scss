@@ -7,6 +7,7 @@
 }
 
 $text-light: white;
+$input-height: 40px;
 
 :host {
 	display: flex;
@@ -37,7 +38,11 @@ $text-light: white;
 	margin: 0 15px;
 	position: relative;
 	transition: all 0.3s ease;
-	padding-bottom: 0;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	height: 500px;
+	
 	// Overlay per effetto bordo illuminato
 	&::after {
 		content: "";
@@ -119,6 +124,11 @@ $text-light: white;
 			box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 		}
 	}
+}
+
+input {
+	height: $input-height;
+	padding: 0 10px;
 }
 
 // Stepper styles
@@ -223,6 +233,7 @@ h3 {
 // Rendi i bottoni un po' più piccoli
 ::ng-deep .p-button {
 	padding: 0.35rem 0.75rem !important;
+	height: $input-height;
 }
 
 @media (max-width: 480px) {
@@ -264,7 +275,7 @@ h3 {
 .button-group {
 	display: flex;
 	gap: 10px;
-	margin: 15px 0 5px;
+	margin-top: auto;
 	position: relative;
 	z-index: 3;
 	justify-content: space-between;
