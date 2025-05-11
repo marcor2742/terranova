@@ -1,12 +1,13 @@
-// Modifiche al file login-page.component.scss per ottenere l'effetto vetro con riflesso circolare e bordo realistico
+// Modifiche al file login-page.component.scss con ottimizzazioni per il layout
 
-@use "sass:color";
-@use "../app.component.scss" as app;
+@mixin mobile {
+	@media (max-width: 767px) {
+		@content;
+	}
+}
 
 $text-light: white;
-$box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 
-// Responsive mixins
 :host {
 	display: flex;
 	align-items: center;
@@ -23,44 +24,32 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 	-webkit-backdrop-filter: blur(5px);
 	border-radius: 16px;
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -1px 1px rgba(0, 0, 0, 0.3);
-	border-image: linear-gradient( 145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 100% );
+	border-image: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.1) 100%);
 	border-image-slice: 1;
 	color: $text-light;
 	max-width: 500px;
-	overflow: hidden;
-	padding: 0;
-	position: relative;
+	width: 100%;
+	max-height: 90vh; // Altezza massima 90% del viewport
+	overflow-y: auto; // Scroll verticale se necessario
+	overflow: hidden; // Nasconde lo scroll orizzontale
 	display: flex;
 	flex-direction: column;
-	flex-grow: 1;
-	min-width: 200px;
-	transition: all 0.3s ease;
+	margin: 0 15px;
 	position: relative;
+	transition: all 0.3s ease;
+	padding-bottom: 0;
 	// Overlay per effetto bordo illuminato
 	&::after {
 		content: "";
 		position: absolute;
 		inset: 0;
 		border-radius: 16px;
-		padding: 1px; // Spessore del bordo
-		background: linear-gradient( 145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.1) 70%, rgba(0, 0, 0, 0.05) 100% );
+		padding: 1px;
+		background: linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.1) 70%, rgba(0, 0, 0, 0.05) 100%);
 		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
 		-webkit-mask-composite: xor;
 		mask-composite: exclude;
 		pointer-events: none;
-	}
-
-	&:hover {
-		box-shadow: 0 7px 35px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 1px rgba(0, 0, 0, 0.3);
-	}
-
-	@include app.mobile {
-		margin: 15px;
-		border-radius: 12px;
-
-		&::after {
-			border-radius: 12px;
-		}
 	}
 	// Riflesso circolare
 	&::before {
@@ -70,7 +59,7 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 		left: -500px;
 		width: 900px;
 		height: 900px;
-		background: radial-gradient( circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 40%, transparent 70% );
+		background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.12) 40%, transparent 70%);
 		border-radius: 50%;
 		opacity: 0.8;
 		pointer-events: none;
@@ -78,269 +67,299 @@ $box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 	}
 	// Header
 	h2 {
-		margin-top: 30px;
-		font-size: 26px;
-		padding: 25px 20px;
+		margin: 15px 0;
+		font-size: 24px;
 		text-align: center;
 		text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
 		position: relative;
 		z-index: 3;
 		letter-spacing: 0.5px;
 		font-weight: 600;
-
-		@include app.mobile {
-			font-size: 22px;
-			padding: 15px;
-		}
 	}
 
-	form {
-		padding: 25px;
+	h3 {
+		margin: 12px 0;
+		font-size: 20px;
+		text-align: center;
+	}
+	// Form base e contenuti
+	form, .flex {
+		padding: 15px;
 		position: relative;
 		z-index: 3;
-
-		@include app.mobile {
-			padding: 15px;
-		}
 	}
 }
 
 // Form fields
-.form-field {
-	margin-bottom: 22px;
+.form-field, .form-field-col {
+	margin-bottom: 15px;
 	position: relative;
 
 	label {
 		display: block;
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: 500;
-		margin-bottom: 10px;
+		margin-bottom: 5px;
 		opacity: 0.95;
 		letter-spacing: 0.3px;
 		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-
-		@include app.mobile {
-			font-size: 14px;
-			margin-bottom: 8px;
-		}
 	}
 
-	input {
-		background-color: rgba(255, 255, 255, 0.10);
-		border-radius: 10px;
-		color: white;
-		font-size: 16px;
-		padding: 14px 15px;
-		transition: all 0.3s;
+	input:not([type="checkbox"]), textarea, p-dropdown, p-calendar {
 		width: 100%;
-		backdrop-filter: blur(5px);
-		box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-		position: relative;
-		// Effetto bordo illuminato anche per gli input
-		&::after {
-			content: "";
-			position: absolute;
-			inset: 0;
-			border-radius: 10px;
-			padding: 1px;
-			background: linear-gradient( 145deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100% );
-			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-			-webkit-mask-composite: xor;
-			mask-composite: exclude;
-			pointer-events: none;
-		}
-
-		&::placeholder {
-			color: rgba(255, 255, 255, 0.6);
-		}
+		background-color: rgba(255, 255, 255, 0.10);
+		border-radius: 8px;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: white;
+		transition: all 0.3s;
 
 		&:focus {
-			border-image: linear-gradient( to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2) );
-			border-image-slice: 1;
-			box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 2px 5px rgba(0, 0, 0, 0.1);
+			border-color: rgba(255, 255, 255, 0.5);
 			outline: none;
-		}
-
-		@include app.mobile {
-			font-size: 15px;
-			padding: 12px;
-			border-radius: 8px;
+			box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 		}
 	}
 }
 
-// Error messages
-.error {
-	color: rgba(255, 100, 100, 0.9);
-	font-size: 13px;
-	font-weight: normal;
-	margin-top: 6px;
-	text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+// Stepper styles
+.stepper-container {
+	width: 100%;
+	max-width: 100%;
+
+
+	::ng-deep {
+		// Contenitore principale del stepper
+		.p-stepper {
+			width: 100%;
+			overflow: hidden;
+
+			.p-step-list {
+				width: 100%;
+				display: flex;
+				justify-content: space-around;
+				padding: 0.5rem 0;
+				overflow-x: auto; // Permette di scorrere orizzontalmente se necessario
+
+				&::-webkit-scrollbar {
+					height: 4px; // Barra di scorrimento sottile
+				}
+			}
+			// Pannelli degli step
+			.p-step-panels {
+				width: 100%;
+				overflow-y: auto; // Scroll verticale se necessario
+
+				.p-step-panel {
+					width: 100%;
+					overflow: hidden;
+				}
+			}
+		}
+		// Stile per input e dropdown componenti PrimeNG
+		.p-dropdown, .p-calendar, .p-checkbox {
+			width: 100%;
+		}
+		// Input text
+		.p-inputtext {
+			width: 100%;
+		}
+		// Miglioramento del testo nei campi input
+		input, textarea {
+			color: white !important;
+		}
+		// File upload più compatto
+		.p-fileupload {
+			.p-fileupload-buttonbar {
+				padding: 0.25rem;
+			}
+
+			.p-fileupload-content {
+				padding: 0.25rem;
+			}
+		}
+		// Assicurati che non ci siano elementi che strabordano
+		.p-component {
+			max-width: 100%;
+		}
+	}
 }
 
-// Button group
+// Rendi più compatte le form rows
+.form-row {
+	gap: 0.5rem;
+	margin-bottom: 0.25rem;
+}
+
+// Garantisci che tutte le colonne abbiano la stessa larghezza
+.form-field-col {
+	flex: 1 1 calc(50% - 0.25rem);
+	min-width: 140px;
+}
+
+// Textarea deve rispettare i limiti
+textarea {
+	max-width: 100%;
+	min-height: 60px; // Altezza minima ridotta
+}
+
+// Stile per il contenitore delle immagini
+.profile-image-container {
+	width: 100px;
+	height: 100px;
+}
+
+// Padding ridotto per ottimizzare lo spazio
+.p-message {
+	padding: 0.25rem 0.5rem !important;
+	margin: 0.25rem 0 !important;
+}
+
+// Riduci lo spazio in verticale
+h3 {
+	margin: 0.5rem 0 !important;
+	font-size: 1.2rem !important;
+}
+
+// Rendi i bottoni un po' più piccoli
+::ng-deep .p-button {
+	padding: 0.35rem 0.75rem !important;
+}
+
+@media (max-width: 480px) {
+	.form-field-col {
+		flex: 1 1 100%;
+	}
+}
+
+// Profile image
+.profile-image-container {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	margin: 0 auto 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+.profile-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.profile-image-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+// Pulsanti
 .button-group {
 	display: flex;
-	gap: 15px;
-	width: 100%;
-	margin: 50px 0 15px;
+	gap: 10px;
+	margin: 15px 0 5px;
 	position: relative;
 	z-index: 3;
-	justify-content: center;
+	justify-content: space-between;
 
-	@include app.mobile {
+	@media (max-width: 400px) {
 		flex-direction: column;
-	}
-	// Style for my-ui-button
-	my-ui-button {
-		display: inline-block;
-		transition: all 0.3s;
 
-		&:hover {
-			transform: translateY(-3px);
-		}
-
-		@include app.mobile {
+		::ng-deep button {
 			width: 100%;
 		}
 	}
 }
 
-// Enhanced button styling with glassmorphism
-.visible-button {
-	&::ng-deep button {
-		background: rgb(41, 65, 199, 0.65) !important;
-		backdrop-filter: blur(5px) !important;
-		border: -1px solid rgb(255, 255, 255, 0.8) !important;
-		border-radius: 10px !important;
-		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
-		color: white !important;
-		font-weight: 600 !important;
-		letter-spacing: 1px !important;
-		min-width: 120px !important;
-		opacity: 1 !important;
-		padding: 14px 24px !important;
-		text-transform: uppercase !important;
-		transition: all 0.3s !important;
-		visibility: visible !important;
-		position: relative !important;
-		overflow: hidden !important;
-		// Effetto bordo illuminato per i pulsanti
-		&::after {
-			content: "" !important;
-			position: absolute !important;
-			inset: 0 !important;
-			border-radius: 10px !important;
-			padding: 1px !important;
-			background: linear-gradient( 145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 30%, rgba(255, 255, 255, 0.1) 70%, rgba(0, 0, 0, 0.05) 100% ) !important;
-			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
-			-webkit-mask-composite: xor !important;
-			mask-composite: exclude !important;
-			pointer-events: none !important;
-		}
-
-		&:hover:not(:disabled) {
-			background: rgba(77, 97, 208, 0.8) !important;
-			box-shadow: 0 7px 15px rgba(0, 0, 0, 0.25) !important;
-			transform: translateY(-1px) !important;
-		}
-
-		&:disabled {
-			background: rgba(176, 176, 176, 0.4) !important;
-			box-shadow: none !important;
-			opacity: 0.7 !important;
-		}
-
-		@include app.mobile {
-			width: 100% !important;
-			padding: 14px 20px !important;
-		}
-	}
+// Messaggi di errore
+.error {
+	color: #ff8a8a;
+	font-size: 12px;
+	margin-top: 4px;
+	font-weight: normal;
 }
 
-// Form status display
-p {
+// Messaggi di successo/errore
+.p-message {
+	margin-top: 10px;
 	font-size: 14px;
-	margin: 10px 25px 20px;
-	opacity: 0.7;
-	text-align: center;
-	font-style: italic;
-	position: relative;
-	z-index: 3;
+	padding: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+
+	&.p-message-success {
+		background-color: rgba(46, 125, 50, 0.3);
+		border: 1px solid rgba(76, 175, 80, 0.5);
+	}
+
+	&.p-message-error {
+		background-color: rgba(198, 40, 40, 0.3);
+		border: 1px solid rgba(239, 83, 80, 0.5);
+	}
 }
 
+// FileUpload con dimensioni più contenute
+::ng-deep .p-fileupload {
+	border: 1px dashed rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 0.05);
+	padding: 10px;
+	border-radius: 8px;
 
-
-
-// Data display section
-.data-display {
-	background-color: var(--secondary-color);
-	border-radius: 12px;
-	box-shadow: $box-shadow;
-	color: $text-light;
-	margin: 30px auto;
-	max-width: 600px;
-	padding: 20px 25px;
-	width: 90%;
-
-	@include app.mobile {
-		width: 95%;
-		padding: 15px 20px;
-		margin: 15px auto;
+	.p-fileupload-buttonbar {
+		padding: 0.5rem;
+		background: transparent;
+		border: none;
 	}
 
-	h3 {
-		border-bottom: 2px solid var(--accent-color);
-		font-size: 22px;
-		margin-top: 0;
-		padding-bottom: 10px;
+	.p-fileupload-content {
+		padding: 0.5rem;
+		background: transparent;
+		border: none;
 	}
 
-	p {
-		margin: 12px 0;
-		opacity: 1;
+	.p-button {
+		padding: 0.5rem;
+	}
+}
 
-		strong {
-			color: var(--accent-color);
+// Fix per p-calendar e p-dropdown per renderli visibili
+::ng-deep {
+	.p-calendar, .p-dropdown, .p-multiselect {
+		width: 100%;
+		background-color: rgba(255, 255, 255, 0.1);
+		border-radius: 8px;
+
+		.p-inputtext {
+			color: white;
+			background: transparent;
+			border: none;
+		}
+
+		.p-dropdown-trigger, .p-calendar-trigger {
+			color: rgba(255, 255, 255, 0.7);
 		}
 	}
-}
 
-// Modal styles with enhanced appearance
-.modal-overlay {
-	align-items: center;
-	background-color: rgba(0, 0, 0, 0.7);
-	bottom: 0;
-	display: flex;
-	justify-content: center;
-	left: 0;
-	position: fixed;
-	right: 0;
-	top: 0;
-	z-index: 1000;
-	backdrop-filter: blur(4px);
-}
-
-.modal-dialog {
-	background-color: white;
-	border-radius: 12px;
-	box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-	max-width: 450px;
-	overflow: hidden;
-	width: 90%;
-
-	@include app.mobile {
-		width: 95%;
+	.p-checkbox {
+		.p-checkbox-box {
+			background-color: rgba(255, 255, 255, 0.1);
+			border-color: rgba(255, 255, 255, 0.3);
+		}
 	}
-}
 
-.modal-actions {
-	display: flex;
-	gap: 10px;
-	justify-content: flex-end;
-	margin-top: 20px;
-
-	@include app.mobile {
-		flex-direction: column;
+	.p-checkbox-checked .p-checkbox-box {
+		background-color: var(--primary-color);
+	}
+	// Override for PrimeNG to ensure text is visible
+	.p-checkbox-label, .p-dropdown-label, .p-multiselect-label {
+		color: white !important;
 	}
 }

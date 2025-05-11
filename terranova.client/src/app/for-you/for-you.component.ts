@@ -114,6 +114,7 @@ export class ForYouComponent implements OnInit {
 
 	loadMoreRandomCocktails() {
 		if (!this.isLoadingRandom()) {
+			console.log('Loading more random cocktails...');
 			this.randomPage.set(this.randomPage() + 1);
 			this.loadRandomCocktails();
 		}

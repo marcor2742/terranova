@@ -21,4 +21,6 @@ export const environment = {
 	editCocktailUrl: 'https://localhost:8081/api/editCocktails',
 	cocktailImgUploadUrl: 'https://localhost:8081/api/uploadCocktailImage',
 	userImgUploadUrl: 'https://localhost:8081/api/uploadProfileImage',
+	addProfileInfoUrl: 'https://localhost:8081/api/addProfileInfo',
+
 };

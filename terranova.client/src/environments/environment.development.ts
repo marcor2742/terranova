@@ -21,4 +21,5 @@ export const environment = {
 	editCocktailUrl: '/api/editCocktails',
 	cocktailImgUploadUrl: '/api/uploadCocktailImage',
 	userImgUploadUrl: '/api/uploadProfileImage',
+	addProfileInfoUrl: '/api/addProfileInfo',
 };

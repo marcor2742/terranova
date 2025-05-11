@@ -21,6 +21,40 @@ interface AuthResponse {
 	message?: string;
 	exist?: boolean;
 }
+/**
+ * {
+  "fullName": "string",
+  "birthDate": "2025-05-11",
+  "alcoholContentPreference": "string",
+  "language": "string",
+  "measurementSystem": "string",
+  "glassPreference": "string",
+  "baseIngredientPreference": "string",
+  "bio": "string",
+  "propicUrl": "string",
+  "phoneNumber": "string",
+  "showMyCocktails": true
+}
+
+* Represents the data structure for user registration.
+only for sending
+ */
+export interface UserData {
+	fullName: string;
+	birthDate: string;
+	alcoholContentPreference: 'NoPreference' | 'Alcoholic' | 'NonAlcoholic';
+	language: 'en' | 'it' | 'es' | 'fr' | 'de';
+	measurementSystem: 'imperial' | 'metric';
+	glassPreference: string;
+	baseIngredientPreference: string;
+	bio: string;
+	phoneNumber?: string;
+	showMyCocktails: boolean;
+	propicUrl?: string;
+}
+
+
+
 
 interface RegisterResponse {
 	DuplicateUsername: string;
@@ -68,13 +102,13 @@ export class LoginService {
 		email: string | null,
 		username: string | null,
 		password: string
-	  ): Observable<HttpResponse<AuthResponse>> {
+	): Observable<HttpResponse<AuthResponse>> {
 		return this.http.post<AuthResponse>(
-		  `${this.loginUrl}`,
-		  { email, username, password },
-		  { observe: 'response' }
+			`${this.loginUrl}`,
+			{ email, username, password },
+			{ observe: 'response' }
 		);
-	  }
+	}
 
 	/**
 	 * Registers a new user with the provided user data.
@@ -86,11 +120,20 @@ export class LoginService {
 		email: string;
 		password: string;
 		username: string;
-	  }): Observable<HttpResponse<RegisterResponse>> {
+	}): Observable<HttpResponse<RegisterResponse>> {
 		return this.http.post<RegisterResponse>(
-		  `${this.registerUrl}`,
-		  userData,
-		  { observe: 'response' }
+			`${this.registerUrl}`,
+			userData,
+			{ observe: 'response' }
 		);
-	  }
+	}
+
+	updateProfile(userData: UserData) {
+
+		return this.http.put<User>(
+			`${environment.addProfileInfoUrl}`,
+			userData,
+			{ observe: 'response' }
+		);
+	}
 }

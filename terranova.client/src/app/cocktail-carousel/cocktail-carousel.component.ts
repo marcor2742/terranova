@@ -71,16 +71,16 @@ export class CocktailCarouselComponent implements OnDestroy {
 			return;
 		}
 
-		const totalItems = cocktailsArr.length;
-		const itemsPerPage = event.rows || this.numVisible();
-		const currentFirstItem = event.first || 0;
-		const itemsLeft = totalItems - (currentFirstItem + itemsPerPage);
-		const loadThreshold = itemsPerPage; // Load more when less than one page left
+		const totalItems = cocktailsArr.length; // Numero totale di cocktail
+		const itemsPerPage = event.rows || this.numVisible(); // Numero di elementi visibili per pagina
+		const currentPage = event.page || 0; // Pagina corrente
+		const lastVisibleIndex = (currentPage + 1) * itemsPerPage; // Indice dell'ultimo elemento visibile
+		const itemsLeft = totalItems - lastVisibleIndex; // Cocktail rimanenti da visualizzare
+		const loadThreshold = itemsPerPage; // Soglia per il caricamento
+
 
 		if (itemsLeft <= loadThreshold && !this.loadTriggered) {
-			console.log(
-				`Near end of carousel (${itemsLeft} items left), loading more...`
-			);
+
 			this.loadTriggered = true;
 			this.loadMore.emit();
 
@@ -88,7 +88,7 @@ export class CocktailCarouselComponent implements OnDestroy {
 			this.loadResetTimeout = setTimeout(() => {
 				this.loadTriggered = false;
 				this.loadResetTimeout = null;
-			}, 1000);
+			}, 100);
 		}
 	}
 }
