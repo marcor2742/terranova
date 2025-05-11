@@ -18,7 +18,7 @@ namespace terranova.Server.Controllers
         public static IEndpointRouteBuilder MapAccountEndpoints(this IEndpointRouteBuilder app)
         {
             app.MapGet("/userProfile", GetUserProfile) //.RequireAuthorization();
-               .WithDescription("Restituisce i dati dell'utente")
+               .WithDescription("Restituisce i dati dell'utente e i suoi drink creati")
                .WithOpenApi();
 
             app.MapPost("/addProfileInfo", AddProfileInfo)
@@ -26,7 +26,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapPost("/uploadProfileImage", UploadProfileImage)
-               .WithDescription("carica la foto profilo e cancella quella precedente")
+               .WithDescription("Carica la foto profilo e cancella quella precedente se presente")
                .WithOpenApi();
 
             app.MapDelete("/deleteProfileImage", DeleteProfileImage)

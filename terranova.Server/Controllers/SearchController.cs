@@ -28,7 +28,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapDelete("/deleteCocktailImage/{id:long?}", DeleteCocktailImage)
-               .WithDescription("Elimina l'immagine di un cocktail specificato dall'id")
+               .WithDescription("Elimina l'immagine di un cocktail specificato dall'id se si è il creatore o l'admin")
                .WithOpenApi();
 
             app.MapGet("/allCocktails/", ShowAllCocktails)
@@ -915,16 +915,24 @@ namespace terranova.Server.Controllers
         /// <summary>
         /// nome o lettere
         /// </summary>
+        [System.ComponentModel.Description("Stringa da ricercare")]
         public string? SearchString { get; set; }
         public int? PageSize { get; set; }
         public int? Page { get; set; }
+        [System.ComponentModel.Description("\"NoPreference\", \"Alcoholic\", o \"NonAlcoholic\"")]
         public string? IsAlcoholic { get; set; }
+        [System.ComponentModel.Description("Nome del bicchiere. Se selezionati più bicchieri, i drink della query avranno prima l'uno e poi l'altro")]
         public string[]? GlassNames { get; set; }
-        public string[]? Creators { get; set; } // per username (per i propri mandi il proprio username). e guardare come mettere piu filtri dello stesso tipo. ad esempio piu glassname
+        [System.ComponentModel.Description("non fatto. restituirebbe i drink creati da un utente se le sue preferenze lo consentono")]
+        public string[]? Creators { get; set; }
+        [System.ComponentModel.Description("Categoria del cocktail. Se selezionate più categorie, i drink della query avranno prima l'una e poi l'altra")]
         public string[]? Categories { get; set; }
+        [System.ComponentModel.Description("Ingredienti del cocktail. Se selezionati più ingredienti, i drink della query avranno prima l'una e poi l'altra, a meno che showOnlyOriginal non sia true")]
         public string[]? Ingredients { get; set; }
-        public string? AllIngredients { get; set; } //false se non specificato. vuol dire che se ci sono più ingredienti come parametro, allora se true devono esserci tutti in un drink
-        public string? showOnlyOriginal { get; set; } //false se non specificato (o non loggato). true se non vuoi vedere i drink creati da altri utenti, compresi i propri.
+        [System.ComponentModel.Description("false se non specificato, se più ingredienti come parametro, i drink della query avranno almeno un ingrediente. se true allora devono esserci tutti in un drink")]
+        public string? AllIngredients { get; set; }
+        [System.ComponentModel.Description("false se non specificato (o non loggato). true se non vuoi vedere i drink creati da altri utenti, compresi i propri.")]
+        public string? showOnlyOriginal { get; set; }
     }
 
     public class DataForAllQuery

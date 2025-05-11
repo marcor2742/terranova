@@ -16,13 +16,21 @@ namespace terranova.Server.Controllers
     {
         public static IEndpointRouteBuilder MapIdentityUserEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/registerextended", CreateUser); //.AllowAnonymous();
+            app.MapPost("/registerextended", CreateUser) //.AllowAnonymous()
+            .WithDescription("Registra l'utente. Sostituisce il /register di ASP.NET Core Identity")
+               .WithOpenApi();
 
-            app.MapPost("/loginextended", SignIn);
+            app.MapPost("/loginextended", SignIn)
+            .WithDescription("Fa accedere l'utente. Sostituisce il /login di ASP.NET Core Identity")
+               .WithOpenApi();
 
-            app.MapPost("/refreshextended", RefreshToken);
+            app.MapPost("/refreshextended", RefreshToken)
+            .WithDescription("Restituisce un nuovo access Token avendo il refresh Token. Sostituisce il /refresh di ASP.NET Core Identity")
+               .WithOpenApi();
 
-            app.MapPost("/logoutextended", Logout); // remove refresh token from db
+            app.MapPost("/logoutextended", Logout)
+            .WithDescription("Rimuove il refresh Token dal Database. Sostituisce il /logout di ASP.NET Core Identity")
+               .WithOpenApi();
 
             return app;
         }

@@ -14,7 +14,9 @@ namespace terranova.Server.Controllers
     {
         public static IEndpointRouteBuilder MapSuggestedEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapGet("suggestedDrinks", SuggestedDrinks);
+            app.MapGet("suggestedDrinks", SuggestedDrinks)
+               .WithDescription("Suggerisce drink all'utente a seconda della SearchHistory, i preferiti e i drink creati. Query calcolata con la Cosine Similarity tra il drink ideale e ogni drink")
+               .WithOpenApi();
 
             return app;
         }

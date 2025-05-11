@@ -52,6 +52,7 @@ namespace terranova.Server.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(options =>
             {
+                options.DocumentFilter<HideSpecificEndpointsFilter>();
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -167,6 +168,38 @@ namespace terranova.Server.Extensions
                         }
                     };
                 }
+            }
+        }
+    }
+
+    public class HideSpecificEndpointsFilter : IDocumentFilter
+    {
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        {
+            // Lista di endpoint da nascondere in Swagger
+            var endpointsToHide = new List<string>
+        {
+            "/api/register",
+            "/api/login",
+            "/api/refresh",
+            "/api/confirmEmail",
+            "/api/resendConfirmationEmail",
+            "/api/forgotPassword",
+            "/api/resetPassword",
+            "/api/manage/2fa",
+            "/api/manage/info",
+        };
+
+            // Rimuovi gli endpoint dalla documentazione
+            foreach (var path in endpointsToHide)
+            {
+                var pathWithApiPrefix = path.StartsWith("/api/") ? path : $"/api{path}";
+
+                if (swaggerDoc.Paths.ContainsKey(path))
+                    swaggerDoc.Paths.Remove(path);
+
+                if (swaggerDoc.Paths.ContainsKey(pathWithApiPrefix))
+                    swaggerDoc.Paths.Remove(pathWithApiPrefix);
             }
         }
     }

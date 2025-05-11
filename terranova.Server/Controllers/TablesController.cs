@@ -9,15 +9,15 @@ namespace terranova.Server.Controllers
         public static IEndpointRouteBuilder MapTablesEndpoints(this IEndpointRouteBuilder app)
         {
             app.MapGet("/glassesTable", showGlasses)
-               .WithDescription("mostra tutta la tabella degli glasses. con paginazione")
+               .WithDescription("Mostra tutta la tabella degli glasses, on paginazione")
                .WithOpenApi();
 
             app.MapGet("/ingredientsTable", showIngredients)
-               .WithDescription("mostra tutta la tabella degli ingredients. con paginazione")
+               .WithDescription("Mostra tutta la tabella degli ingredients, con paginazione")
                .WithOpenApi();
 
             app.MapGet("/categoriesTable", showCategories)
-               .WithDescription("mostra tutta la tabella degli ingredients. con paginazione")
+               .WithDescription("Mostra tutta la tabella degli ingredients, con paginazione")
                .WithOpenApi();
 
             return app;

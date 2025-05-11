@@ -13,7 +13,7 @@ namespace terranova.Server.Controllers
                .WithOpenApi();
 
             app.MapDelete("/favorites/{id}", RemoveFromFavorites)
-               .WithDescription("Rimuove il drink ai preferiti")
+               .WithDescription("Rimuove il drink dai preferiti")
                .WithOpenApi();
 
             app.MapGet("/favorites", GetUserFavorites)
