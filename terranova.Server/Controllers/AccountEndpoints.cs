@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using terranova.Server.Services;
 using terranova.Server.Migrations.IdentityUser;
+using Microsoft.EntityFrameworkCore;
 
 namespace terranova.Server.Controllers
 {
@@ -37,7 +38,8 @@ namespace terranova.Server.Controllers
 
         //[Authorize] //default policy
         private static async Task<IResult> GetUserProfile(ClaimsPrincipal user,
-            UserManager<IdentityUserExtended> userManager)
+            UserManager<IdentityUserExtended> userManager,
+            CocktailsDbContext dbContext)
         {
             var userId = user.FindFirstValue("UserID");
             if (userId == null)
@@ -49,6 +51,43 @@ namespace terranova.Server.Controllers
             {
                 return Results.BadRequest(new { message = "User not found" });
             }
+
+            var userCocktails = await dbContext.Cocktails
+                .Where(c => c.Creator == userId)
+                .Include(c => c.Glass)
+                .Include(c => c.Category)
+                .Include(c => c.Instructions)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Ingredient)
+                .Include(c => c.CocktailIngredients)
+                    .ThenInclude(ci => ci.Measure)
+                .OrderByDescending(c => c.DateModified)
+                .ToListAsync();
+
+            var formattedCocktails = userCocktails.Select(c => new
+            {
+                c.Id,
+                c.Name,
+                Category = c.Category?.Name,
+                c.IsAlcoholic,
+                Glass = c.Glass?.Name,
+                c.ImageUrl,
+                Instructions = new
+                {
+                    En = c.Instructions?.En,
+                    Es = c.Instructions?.Es,
+                    De = c.Instructions?.De,
+                    Fr = c.Instructions?.Fr,
+                    It = c.Instructions?.It
+                },
+                Ingredients = c.CocktailIngredients.Select(ci => new
+                {
+                    Name = ci.Ingredient.Name,
+                    MetricMeasure = ci.Measure?.Metric,
+                    ImperialMeasure = ci.Measure?.Imperial
+                }).ToList()
+            }).ToList();
+
             return Results.Ok(new
             {
                 UserName = userDetails?.UserName,
@@ -63,6 +102,7 @@ namespace terranova.Server.Controllers
                 MeasurementSystem = userDetails?.MeasurementSystem,
                 PropicUrl = userDetails?.PropicUrl,
                 ShowMyCocktails = userDetails?.ShowMyCocktails,
+                MyDrinks = formattedCocktails
             });
         }
 
