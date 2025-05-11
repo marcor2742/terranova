@@ -32,7 +32,7 @@ namespace terranova.Server.Services
             var blobClient = containerClient.GetBlobClient(blobName);
 
             await blobClient.UploadAsync(imageStream, new BlobHttpHeaders { ContentType = contentType });
-            return blobClient.Uri.ToString();
+            return blobClient.Uri.ToString().Replace("http://azurite:10000", "http://localhost:10000");
         }
 
         public async Task<bool> DeleteProfileImageAsync(string userId, string imageUrl, bool isAdmin = false)
@@ -65,7 +65,8 @@ namespace terranova.Server.Services
             var blobClient = containerClient.GetBlobClient(blobName);
 
             await blobClient.UploadAsync(imageStream, new BlobHttpHeaders { ContentType = contentType });
-            return blobClient.Uri.ToString();
+            return blobClient.Uri.ToString().Replace("http://azurite:10000", "http://localhost:10000");
+
         }
 
         public async Task<bool> DeleteCocktailImageAsync(string userId, string imageUrl, bool isAdmin = false)
