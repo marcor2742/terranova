@@ -51,23 +51,38 @@ export class CocktailListComponent implements OnInit, OnDestroy {
 
 	searchTerm: string = '';
 	displayedCocktails: number[] = [];
+	viewMode: 'search' | 'list' = 'search';
 
 	ngOnInit() {
 		if (isPlatformBrowser(this.platformId)) {
-			// Read route parameters
+			// Subscribe to route parameters
 			this.subscriptions.add(
 				this.route.params.subscribe((params) => {
+					// Check if we have a search term
 					if (params['term']) {
 						this.searchTerm = params['term'];
+						this.viewMode = 'search';
 						console.log('Search term from route:', this.searchTerm);
+					}
+
+					// Check if we have cocktail IDs in the route
+					if (params['ids']) {
+						this.viewMode = 'list';
+						// Split comma-separated cocktail IDs
+						const cocktailIds = params['ids'].split(',').map(Number);
+						this.displayedCocktails = cocktailIds;
+
+						// Update the state service with these IDs
+						this.stateService.updateSelectedCocktails(cocktailIds);
+						console.log('Cocktail IDs from route:', cocktailIds);
 					}
 				})
 			);
 
-			// Subscribe to search results instead of performing searches
+			// Subscribe to search results if in search mode
 			this.subscriptions.add(
 				this.stateService.searchResults$.subscribe((results) => {
-					if (results && results.length > 0) {
+					if (this.viewMode === 'search' && results && results.length > 0) {
 						const cocktailIds = results.map(
 							(cocktail) => cocktail.id
 						);
@@ -80,17 +95,18 @@ export class CocktailListComponent implements OnInit, OnDestroy {
 				})
 			);
 
+			// Subscribe to selected cocktails if in list mode
 			this.subscriptions.add(
 				this.stateService.selectedCocktails$.subscribe((cocktails) => {
-					if (cocktails && cocktails.length > 0) {
+					if (this.viewMode === 'list' && cocktails && cocktails.length > 0) {
 						this.displayedCocktails = cocktails;
+						console.log('CocktailList: Updated from selected cocktails:', cocktails);
 					}
 				})
 			);
 		}
 	}
 
-	// REMOVE the performSearchFromURL method entirely
 	ngOnDestroy() {
 		this.subscriptions.unsubscribe();
 	}
