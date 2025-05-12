@@ -23,17 +23,14 @@
 }
 
 .cocktail-card {
-    display: flex;
-    grid-template-columns: 1fr 1fr;
-    position: relative;
-    min-height: 400px;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background-color: var(--secondary-color);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    align-content: center;
-    justify-content: center;
-    align-items: center;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	position: relative;
+	min-height: 400px;
+	overflow: hidden;
+	border-radius: var(--radius);
+	background-color: var(--secondary-color);
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .photo-side {

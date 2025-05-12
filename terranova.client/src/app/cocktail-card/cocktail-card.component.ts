@@ -100,15 +100,11 @@ export class CocktailCardComponent implements OnInit {
 					isPlatformBrowser(this.platformId) &&
 					this.cocktail?.hasValue()
 				) {
-					const cocktailData = this.cocktail.value();
-					if (!this.isValidCocktail(cocktailData)) {
-						console.error(
-							'Invalid cocktail data received:',
-							cocktailData
-						);
-						this.isNotFound.set(true);
-						return;
-					}
+					console.log(
+						`CocktailCard: Cocktail ${
+							this.cocktail.value().id
+						} loaded`
+					);
 					this.isFavorite.set(
 						this.cocktail.value().favorite ?? false
 					);

@@ -1,46 +1,53 @@
 <div class="user-favorites">
-  <p-carousel
-    #carousel
-    [value]="cocktails()"
-    [numVisible]="numVisible()"
-    [responsiveOptions]="responsiveOptions()"
-    circular="false"
-    (onPage)="onPageChange($event)"
-  >
-    <ng-template pTemplate="item" let-cocktail>
-      <div 
-        class="cocktail-card border border-surface rounded-border m-2 p-4"
-        [routerLink]="['/home/cocktail', cocktail.id]"
-      >
-        <div class="cocktail-image-container">
-          <img [src]="cocktail.imageUrl" alt="{{ cocktail.name }}" />
-          <div class="cocktail-hover-info">
-            <h3>{{ cocktail.name }}</h3>
-            <p>{{ cocktail.category }}</p>
-            <span class="view-details">{{ 'ViewDetails' | translate }}</span>
-          </div>
-        </div>
-        <div class="flex items-center mb-4 font-medium">
-          <span class="mr-2">{{ cocktail.name }}</span>
-          <img
-            *ngIf="cocktail.isAlcoholic === true"
-            src="./assets/icons/drink.svg"
-            alt="Alcoholic drink"
-            width="20"
-            height="20"
-          />
-          <img
-            *ngIf="cocktail.isAlcoholic === false"
-            src="./assets/icons/no_drink.svg"
-            alt="Non-alcoholic drink"
-            width="20"
-            height="20"
-          />
-        </div>
-        <p class="text-sm text-gray-600 flex-grow">
-          {{ cocktail.category }}
-        </p>
-      </div>
-    </ng-template>
-  </p-carousel>
+	<p-carousel
+		#carousel
+		[value]="cocktails()"
+		[numVisible]="numVisible()"
+		[responsiveOptions]="responsiveOptions()"
+		circular="false"
+		(onPage)="onPageChange($event)"
+	>
+		<ng-template pTemplate="item" let-cocktail>
+			<div
+				class="cocktail-card border border-surface rounded-border m-2 p-4"
+				[routerLink]="['/home/cocktail', cocktail.id]"
+			>
+				<div class="cocktail-image-container">
+					<img
+						[src]="
+							cocktail.imageUrl || '/assets/default-cocktail.jpg'
+						"
+						alt="{{ cocktail.name }}"
+					/>
+					<div class="cocktail-hover-info">
+						<h3>{{ cocktail.name }}</h3>
+						<p>{{ cocktail.category }}</p>
+						<span class="view-details">{{
+							"ViewDetails" | translate
+						}}</span>
+					</div>
+				</div>
+				<div class="flex items-center mb-4 font-medium">
+					<span class="mr-2">{{ cocktail.name }}</span>
+					<img
+						*ngIf="cocktail.isAlcoholic === true"
+						src="./assets/icons/drink.svg"
+						alt="Alcoholic drink"
+						width="20"
+						height="20"
+					/>
+					<img
+						*ngIf="cocktail.isAlcoholic === false"
+						src="./assets/icons/no_drink.svg"
+						alt="Non-alcoholic drink"
+						width="20"
+						height="20"
+					/>
+				</div>
+				<p class="text-sm text-gray-600 flex-grow">
+					{{ cocktail.category }}
+				</p>
+			</div>
+		</ng-template>
+	</p-carousel>
 </div>

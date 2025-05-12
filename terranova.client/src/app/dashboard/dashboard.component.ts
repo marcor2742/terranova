@@ -18,6 +18,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { Cocktail, Ingredient } from '../Classes/cocktail';
 import { ButtonModule } from 'primeng/button';
 import { CocktailCarouselComponent } from '../cocktail-carousel/cocktail-carousel.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
 	selector: 'app-dashboard',
@@ -28,7 +29,8 @@ import { CocktailCarouselComponent } from '../cocktail-carousel/cocktail-carouse
 		CarouselModule,
 		SkeletonModule,
 		ButtonModule,
-		CocktailCarouselComponent
+		CocktailCarouselComponent,
+		RouterModule,
 	],
 	templateUrl: './dashboard.component.html',
 	styleUrl: './dashboard.component.scss',
@@ -41,11 +43,19 @@ export class DashboardComponent {
 	favCocktails: Resource<Cocktail[]> | null = null;
 	carouselPage = signal<number>(1);
 	carouselPageSize = signal<number>(20);
-	//favCocktails = httpResource<Cocktail[]>(
-	//	`${
-	//		this.favoriteUrl
-	//	}?page=${this.carouselPage()}&pageSize=${this.carouselPageSize()}`
-	//);
+
+	userCreatedCocktails = computed(() => {
+		if (this.user?.hasValue()) {
+			return this.user.value()!.myDrinks;
+		} else {
+			return [];
+		}
+	});
+
+	getNumVisForMyDrinks(): number {
+		const myDrinksLength = this.userCreatedCocktails()?.length || 0;
+		return myDrinksLength > 4 ? 4 : myDrinksLength;
+	}
 
 	cachedCocktails = signal<Cocktail[]>([]);
 
@@ -62,7 +72,7 @@ export class DashboardComponent {
 				{
 					defaultValue: [
 						new Cocktail(
-							1,
+							-1,
 							true,
 							'Mojito',
 							'Cocktail',
@@ -86,14 +96,14 @@ export class DashboardComponent {
 
 	ngDoCheck() {
 		if (this.favCocktails && this.favCocktails.hasValue()) {
-			const newOnes = this.favCocktails
-				.value()!
-				.filter(
-					(c) =>
-						!this.cachedCocktails().some(
-							(existing) => existing.id === c.id
-						)
-				);
+			const newOnes = this.favCocktails.value()!.filter(
+				(c) =>
+					c.id > 0 && // Make sure it's not a default cocktail
+					!this.cachedCocktails().some(
+						(existing) => existing.id === c.id
+					)
+			);
+
 			if (newOnes.length > 0) {
 				this.cachedCocktails.set([
 					...this.cachedCocktails(),

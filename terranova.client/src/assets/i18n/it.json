@@ -59,5 +59,11 @@
 	"cocktailImage": "Immagine per il cocktail",
 	"ErrorLoadingSuggestions": "Errore durante il caricamento dei suggerimenti",
 	"ErrorLoadingCocktails": "Errore durante il caricamento dei cocktail",
-	"TryReloadingPage": "Prova a ricaricare la pagina"
+	"TryReloadingPage": "Prova a ricaricare la pagina",
+	"cocktailNotFound": "Cocktail non trovato",
+	"cocktailNotFoundMessage": "Il cocktail che stai cercando non esiste o è stato eliminato.",
+	"noCreatedDrinks": "Non hai ancora creato nessun cocktail.",
+	"createDrink": "Crea il tuo cocktail",
+	"MyFavDrinks": "I tuoi cocktail preferiti",
+	"myDrinks": "I tuoi cocktail"
 }

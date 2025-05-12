@@ -1,14 +1,11 @@
-import {
-	inject,
-	Injectable,
-	PLATFORM_ID,
-} from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, tap, of, map } from 'rxjs';
 
 import { isPlatformBrowser } from '@angular/common';
 import { TokenStoreService } from './token-store.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 
 export interface UserSettings {
 	theme: string;
@@ -41,9 +38,8 @@ export class SettingsService {
 	private platformId = inject(PLATFORM_ID);
 	private token = inject(TokenStoreService);
 	private http = inject(HttpClient);
-	constructor(
-		
-	) {
+	private translate = inject(TranslateService);
+	constructor() {
 		this.isBrowser = isPlatformBrowser(this.platformId);
 
 		// Initialize with default settings first
@@ -60,6 +56,11 @@ export class SettingsService {
 				this.currentSettings = settings;
 			});
 		}
+		this.getSetting('language').subscribe((language) => {
+			if (language && this.isBrowser) {
+				this.translate.use(language);
+			}
+		});
 	}
 
 	private loadSettings() {
@@ -74,7 +75,10 @@ export class SettingsService {
 							...parsedSettings,
 						});
 					} catch (parseError) {
-						console.error('Error parsing settings JSON:', parseError);
+						console.error(
+							'Error parsing settings JSON:',
+							parseError
+						);
 					}
 				}
 			}
@@ -129,7 +133,26 @@ export class SettingsService {
 		// Save to localStorage only in browser context
 		if (this.isBrowser && typeof localStorage !== 'undefined') {
 			try {
-				localStorage.setItem('userSettings', JSON.stringify(updatedSettings));
+				localStorage.setItem(
+					'userSettings',
+					JSON.stringify(updatedSettings)
+				);
+			} catch (e) {
+				console.error('Error saving settings to localStorage:', e);
+			}
+		}
+
+		if (key === 'language' && this.isBrowser) {
+			this.translate.use(value as string);
+		}
+
+		// Save to localStorage as before
+		if (this.isBrowser && typeof localStorage !== 'undefined') {
+			try {
+				localStorage.setItem(
+					'userSettings',
+					JSON.stringify(updatedSettings)
+				);
 			} catch (e) {
 				console.error('Error saving settings to localStorage:', e);
 			}
@@ -147,19 +170,17 @@ export class SettingsService {
 		this.currentSettings = { ...this.defaultSettings };
 
 		// Invia la richiesta di logout al server
-		return this.http.post(environment.logoutUrlextended, {})
-			.pipe(
-				tap(() => {
-					// Invia una notifica di logout al token service
-					this.token.logout();
-				}),
-				catchError(error => {
-					console.error('Errore durante il logout:', error);
-					// Anche se la richiesta fallisce, procedi con il logout lato client
-					this.token.logout();
-					return of({ success: false, error: error });
-				})
-			);
+		return this.http.post(environment.logoutUrlextended, {}).pipe(
+			tap(() => {
+				// Invia una notifica di logout al token service
+				this.token.logout();
+			}),
+			catchError((error) => {
+				console.error('Errore durante il logout:', error);
+				// Anche se la richiesta fallisce, procedi con il logout lato client
+				this.token.logout();
+				return of({ success: false, error: error });
+			})
+		);
 	}
-
 }

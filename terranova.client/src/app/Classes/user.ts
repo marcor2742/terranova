@@ -1,3 +1,5 @@
+import { Cocktail } from "./cocktail";
+
 /**
  * Represents a user in the application
  * Contains user details and preferences
@@ -20,6 +22,7 @@ export class User {
 		public locale?: 'Metric' | 'Imperial',
 		public language?: string,
 		public fullName?: string,
+		public myDrinks?: Cocktail[],
 	) {}
 }
 

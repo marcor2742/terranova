@@ -25,6 +25,32 @@
 	<p-skeleton height="18px" width="40%"></p-skeleton>
 	}
 </div>
+
+<div class="section-container my-drinks-section">
+    <h2 class="section-title">{{ 'myDrinks' | translate }}</h2>
+    @if (userCreatedCocktails()?.length === 0) {
+        <div class="empty-state">
+            <p>{{ 'noCreatedDrinks' | translate }}</p>
+            <p-button 
+                icon="pi pi-plus" 
+                label="{{ 'createDrink' | translate }}" 
+                routerLink="/create-cocktail"
+            ></p-button>
+        </div>
+    } @else {
+        <app-dashboard-carousel
+            [cocktails]="userCreatedCocktails() || []"
+            [numVisible]="getNumVisForMyDrinks()"
+            [responsiveOptions]="[
+                { breakpoint: '1024px', numVisible: 3, numScroll: 3 },
+                { breakpoint: '600px', numVisible: 2, numScroll: 2 },
+                { breakpoint: '480px', numVisible: 1, numScroll: 1 }
+            ]"
+            [disabled]="Disabled"
+        ></app-dashboard-carousel>
+    }
+</div>
+ <h2 class="section-title">{{ 'MyFavDrinks' | translate }}</h2>
 <app-dashboard-carousel
 	[cocktails]="carouselItems"
 	[numVisible]="getNumvis()"

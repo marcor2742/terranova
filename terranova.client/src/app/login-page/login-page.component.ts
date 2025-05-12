@@ -324,11 +324,11 @@ export class LoginPageComponent implements OnInit {
 	];
 
 	languageOptions = [
-		{ label: 'English', value: 'en' },
-		{ label: 'Italian', value: 'it' },
-		{ label: 'French', value: 'fr' },
-		{ label: 'German', value: 'de' },
-		{ label: 'Spanish', value: 'es' },
+		{ label: 'English', value: 'English' },
+		{ label: 'Italian', value: 'Italian' },
+		{ label: 'French', value: 'French' },
+		{ label: 'German', value: 'German' },
+		{ label: 'Spanish', value: 'Spanish' },
 	];
 
 	measurementOptions = [
