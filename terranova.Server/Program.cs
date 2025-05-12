@@ -25,7 +25,7 @@ var envFilePath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
 if (File.Exists(envFilePath))
 {
     DotNetEnv.Env.Load(envFilePath);
-    Console.WriteLine($"File .env caricato da: {envFilePath}");
+    Console.WriteLine($"File .env caricato da: {envFilePath}"); 
 }
 
 var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
