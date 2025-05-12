@@ -1,29 +1,78 @@
-<div style="width: 180px; height: 180px; position: fixed; z-index: -1; top: 50%; left: 50%; transform: translateX(150px) translateY(-320px);">
-	<img src="assets/login/limone.png" class="lemon-slice" alt="Fetta di limone">
+<div
+	style="
+		width: 180px;
+		height: 180px;
+		position: fixed;
+		z-index: -1;
+		top: 50%;
+		left: 50%;
+		transform: translateX(150px) translateY(-320px);
+	"
+>
+	<img
+		src="assets/login/limone.png"
+		class="lemon-slice"
+		alt="Fetta di limone"
+	/>
 </div>
-<div style="width: 180px; height: 180px; position: fixed; z-index: -1; top: 50%; left: 50%; transform: translateX(-350px) translateY(90px);">
-	<img src="assets/login/menta.png" class="mint-leaf" alt="Foglia di menta" style="transform: rotate(-45deg);">
+<div
+	style="
+		width: 180px;
+		height: 180px;
+		position: fixed;
+		z-index: -1;
+		top: 50%;
+		left: 50%;
+		transform: translateX(-350px) translateY(90px);
+	"
+>
+	<img
+		src="assets/login/menta.png"
+		class="mint-leaf"
+		alt="Foglia di menta"
+		style="transform: rotate(-45deg)"
+	/>
 </div>
 
 <div class="box">
-	<div *ngIf="!showStepper()" style="display: flex; flex-direction: column; flex-grow:1;">
+	<div
+		*ngIf="!showStepper()"
+		style="display: flex; flex-direction: column; flex-grow: 1"
+	>
 		<!-- Form con logica condizionale per login/register -->
-		<form [formGroup]="loginForm" style="display: flex; flex-grow: 1; flex-direction: column;">
+		<form
+			[formGroup]="loginForm"
+			style="display: flex; flex-grow: 1; flex-direction: column"
+		>
 			@if (showEmailConfirmation()) {
 			<h2>{{ "RegisterPage" | translate }}</h2>
 			} @else {
 			<h2>{{ "LoginPage" | translate }}</h2>
 			}
 			<!-- Username field with validazione -->
-			<div style="margin-top:auto;">
+			<div style="margin-top: auto">
 				<div class="form-field">
 					<label for="username">Username:</label>
-					<input id="username" type="text" formControlName="username" />
-					<div *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors" class="error">
-						<div *ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))">
+					<input
+						id="username"
+						type="text"
+						formControlName="username"
+					/>
+					<div
+						*ngIf="
+							loginForm.get('username')?.touched &&
+							loginForm.get('username')?.errors
+						"
+						class="error"
+					>
+						<div
+							*ngIf="loginForm.get('username')?.errors?.['required'] && (showEmailConfirmation() && loginForm.get('email'))"
+						>
 							Username is required
 						</div>
-						<div *ngIf="loginForm.get('username')?.errors?.['minlength']">
+						<div
+							*ngIf="loginForm.get('username')?.errors?.['minlength']"
+						>
 							Username must be at least 4 characters
 						</div>
 					</div>
@@ -36,7 +85,13 @@
 				<div class="form-field" *ngIf="showEmailConfirmation()">
 					<label for="email">Email:</label>
 					<input id="email" type="email" formControlName="email" />
-					<div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors" class="error">
+					<div
+						*ngIf="
+							loginForm.get('email')?.touched &&
+							loginForm.get('email')?.errors
+						"
+						class="error"
+					>
 						<div *ngIf="loginForm.get('email')?.errors">
 							Please enter a valid email
 						</div>
@@ -49,9 +104,21 @@
 				<!-- Password field -->
 				<div class="form-field">
 					<label for="password">Password:</label>
-					<input id="password" type="password" formControlName="password" />
-					<div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors" class="error">
-						<div *ngIf="loginForm.get('password')?.errors?.['required']">
+					<input
+						id="password"
+						type="password"
+						formControlName="password"
+					/>
+					<div
+						*ngIf="
+							loginForm.get('password')?.touched &&
+							loginForm.get('password')?.errors
+						"
+						class="error"
+					>
+						<div
+							*ngIf="loginForm.get('password')?.errors?.['required']"
+						>
 							Password is required
 						</div>
 					</div>
@@ -59,72 +126,112 @@
 			</div>
 			<!-- Pulsanti diversi a seconda dello stato -->
 			<div class="button-group" *ngIf="!showEmailConfirmation()">
-				<p-button label="Login"
-						  (onClick)="login()"
-						  [disabled]="!loginForm.valid || isLoading()"
-						  [loading]="isLoading()"></p-button>
-				<p-button label="Register"
-						  (onClick)="showEmailConfirmation.set(true)"
-						  [disabled]="isLoading()"></p-button>
+				<p-button
+					label="Login"
+					(onClick)="login()"
+					[disabled]="!loginForm.valid || isLoading()"
+					[loading]="isLoading()"
+				></p-button>
+				<p-button
+					label="Register"
+					(onClick)="showEmailConfirmation.set(true)"
+					[disabled]="isLoading()"
+				></p-button>
 			</div>
 
 			<div class="button-group" *ngIf="showEmailConfirmation()">
-				<p-button label="Back to Login"
-						  (onClick)="showEmailConfirmation.set(false)"
-						  [disabled]="isRegistering()"></p-button>
-				<p-button label="Complete Registration"
-						  (onClick)="register()"
-						  [disabled]="!loginForm.valid || isRegistering()"
-						  [loading]="isRegistering()"></p-button>
+				<p-button
+					label="Back to Login"
+					(onClick)="showEmailConfirmation.set(false)"
+					[disabled]="isRegistering()"
+				></p-button>
+				<p-button
+					label="Complete Registration"
+					(onClick)="register()"
+					[disabled]="!loginForm.valid || isRegistering()"
+					[loading]="isRegistering()"
+				></p-button>
 			</div>
 		</form>
 	</div>
 
 	<div *ngIf="showStepper()" class="stepper-container">
 		<!-- Stepper -->
-		<p-stepper [value]="activeStep()" (valueChange)="activeStep.set($event)">
+		<p-stepper
+			[value]="activeStep()"
+			(valueChange)="activeStep.set($event || 1)"
+		>
 			<p-step-list>
 				<p-step [value]="1">
-					<ng-template pTemplate="content" let-activateCallback="activateCallback">
-						<button class="bg-transparent border-0 inline-flex flex-col gap-2" (click)="activateCallback()">
-							<span class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
-								  [ngClass]="{
-								  'bg-primary text-primary-contrast border-primary' : 1 <= activeStep(),
-                  'border-surface': 1 > activeStep()
-                }">
-                <i class="pi pi-user"></i>
-            </span>
+					<ng-template
+						pTemplate="content"
+						let-activateCallback="activateCallback"
+					>
+						<button
+							class="bg-transparent border-0 inline-flex flex-col gap-2"
+							(click)="activateCallback()"
+						>
+							<span
+								class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
+								[ngClass]="{
+									'bg-primary text-primary-contrast border-primary':
+										1 <= activeStep(),
+									'border-surface': 1 > activeStep()
+								}"
+							>
+								<i class="pi pi-user"></i>
+							</span>
 							<span class="text-sm">Account</span>
 						</button>
 					</ng-template>
 				</p-step>
 
 				<p-step [value]="2">
-					<ng-template pTemplate="content" let-activateCallback="activateCallback">
-						<button class="bg-transparent border-0 inline-flex flex-col gap-2" (click)="activateCallback()">
-							<span class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
-								  [ngClass]="{
-								  'bg-primary text-primary-contrast border-primary' : 2 <= activeStep(),
-                                'border-surface': 2 > activeStep()
-                            }">
-                                <i class="pi pi-sliders-h"></i>
-                            </span>
+					<ng-template
+						pTemplate="content"
+						let-activateCallback="activateCallback"
+					>
+						<button
+							class="bg-transparent border-0 inline-flex flex-col gap-2"
+							(click)="activateCallback()"
+						>
+							<span
+								class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
+								[ngClass]="{
+									'bg-primary text-primary-contrast border-primary':
+										2 <= activeStep(),
+									'border-surface': 2 > activeStep()
+								}"
+							>
+								<i class="pi pi-sliders-h"></i>
+							</span>
 							<span class="text-sm">Preferences</span>
 						</button>
 					</ng-template>
 				</p-step>
 
 				<p-step [value]="3">
-					<ng-template pTemplate="content" let-activateCallback="activateCallback">
-						<button class="bg-transparent border-0 inline-flex flex-col gap-2" (click)="activateCallback()">
-							<span class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
-								  [ngClass]="{
-								  'bg-primary text-primary-contrast border-primary' : 3 <= activeStep(),
-                                'border-surface': 3 > activeStep()
-                            }">
-                                <i class="pi pi-camera"></i>
-                            </span>
-							<span class="text-sm">{{"ProfileImage" | translate}}</span>
+					<ng-template
+						pTemplate="content"
+						let-activateCallback="activateCallback"
+					>
+						<button
+							class="bg-transparent border-0 inline-flex flex-col gap-2"
+							(click)="activateCallback()"
+						>
+							<span
+								class="rounded-full border-2 w-12 h-12 inline-flex items-center justify-center"
+								[ngClass]="{
+									'bg-primary text-primary-contrast border-primary':
+										3 <= activeStep(),
+									'border-surface': 3 > activeStep()
+								}"
+							>
+								<i class="pi pi-camera"></i>
+							</span>
+							<span class="text-sm">{{
+								"ProfileImage" | translate
+							}}</span>
 						</button>
 					</ng-template>
 				</p-step>
@@ -134,25 +241,51 @@
 			<!-- Step 1: Account Created Successfully -->
 			<p-step-panels>
 				<p-step-panel [value]="1">
-					<ng-template pTemplate="content" let-activateCallback="activateCallback">
+					<ng-template
+						pTemplate="content"
+						let-activateCallback="activateCallback"
+					>
 						<div class="flex flex-col gap-4">
-							<h3 class="text-center">Account Created Successfully!</h3>
+							<h3 class="text-center">
+								Account Created Successfully!
+							</h3>
 							<div class="text-center mb-4">
-								<i class="pi pi-check-circle text-green-500" style="font-size: 3rem"></i>
+								<i
+									class="pi pi-check-circle text-green-500"
+									style="font-size: 3rem"
+								></i>
 							</div>
-							<p>{{"Hello" | translate}}, <strong>{{ username() }}</strong>! Your account has been created successfully. Now let's set up your preferences.</p>
+							<p>
+								{{ "Hello" | translate }},
+								<strong>{{ username() }}</strong
+								>! Your account has been created successfully.
+								Now let's set up your preferences.
+							</p>
 
 							<div class="flex justify-between">
-								<p-button (onClick)="skipSetup()" label="Skip Setup" severity="secondary"></p-button>
-								<p-button (onClick)="activateCallback(2)" label="Set Up Your Preferences"></p-button>
+								<p-button
+									(onClick)="skipSetup()"
+									label="Skip Setup"
+									severity="secondary"
+								></p-button>
+								<p-button
+									(onClick)="activateCallback(2)"
+									label="Set Up Your Preferences"
+								></p-button>
 							</div>
 
-							<div *ngIf="successMessage()" class="p-message p-message-success">
+							<div
+								*ngIf="successMessage()"
+								class="p-message p-message-success"
+							>
 								<i class="pi pi-check"></i>
 								<span>{{ successMessage() }}</span>
 							</div>
 
-							<div *ngIf="errorMessage()" class="p-message p-message-error">
+							<div
+								*ngIf="errorMessage()"
+								class="p-message p-message-error"
+							>
 								<i class="pi pi-times"></i>
 								<span>{{ errorMessage() }}</span>
 							</div>
@@ -161,8 +294,19 @@
 				</p-step-panel>
 				<!-- Step 2: User Preferences -->
 				<p-step-panel [value]="2">
-					<ng-template pTemplate="content" let-activateCallback="activateCallback">
-						<form [formGroup]="profileForm" class="flex flex-col gap-3 overflow-scroll content-with-sidebar" style="overflow-y: scroll; height: 400px; scrollbar-color: #9a9999bc transparent; ">
+					<ng-template
+						pTemplate="content"
+						let-activateCallback="activateCallback"
+					>
+						<form
+							[formGroup]="profileForm"
+							class="flex flex-col gap-3 overflow-scroll content-with-sidebar"
+							style="
+								overflow-y: scroll;
+								height: 400px;
+								scrollbar-color: #9a9999bc transparent;
+							"
+						>
 							<h3 class="text-center">Set Your Preferences</h3>
 
 							<!-- Contenitore a griglia per gli input affiancati -->
@@ -170,50 +314,117 @@
 								<!-- Prima riga -->
 								<div class="form-field-col">
 									<label for="fullName">Full Name:</label>
-									<input id="fullName" type="text" formControlName="fullName" pInputText class="w-full" />
+									<input
+										id="fullName"
+										type="text"
+										formControlName="fullName"
+										pInputText
+										class="w-full"
+									/>
 								</div>
 								<div class="form-field-col">
 									<label for="birthDate">Birth Date:</label>
-									<p-calendar formControlName="birthDate" [showIcon]="true" inputId="birthDate" class="w-full"></p-calendar>
+									@if (isPlatformBrowserValue &&
+									showCalendar()) {
+									<p-calendar
+										formControlName="birthDate"
+										[showIcon]="true"
+										inputId="birthDate"
+										class="w-full"
+										appendTo="body"
+										[hideOnDateTimeSelect]="true"
+									></p-calendar>
+									} @else {
+									<!-- Fallback for server-side rendering -->
+									<input
+										type="text"
+										formControlName="birthDate"
+										pInputText
+										placeholder="YYYY-MM-DD"
+										class="w-full"
+									/>
+									}
 								</div>
 							</div>
 
 							<!-- Seconda riga -->
 							<div class="form-row">
 								<div class="form-field-col">
-									<label for="alcoholContentPreference">Alcohol Preference:</label>
-									<p-dropdown formControlName="alcoholContentPreference" [options]="alcoholOptions"
-												optionLabel="label" optionValue="value" class="w-full"></p-dropdown>
+									<label for="alcoholContentPreference"
+										>Alcohol Preference:</label
+									>
+									<p-dropdown
+										formControlName="alcoholContentPreference"
+										[options]="alcoholOptions"
+										optionLabel="label"
+										optionValue="value"
+										class="w-full"
+									></p-dropdown>
 								</div>
 								<div class="form-field-col">
 									<label for="language">Language:</label>
-									<p-dropdown formControlName="language" [options]="languageOptions"
-												optionLabel="label" optionValue="value" class="w-full"></p-dropdown>
+									<p-dropdown
+										formControlName="language"
+										[options]="languageOptions"
+										optionLabel="label"
+										optionValue="value"
+										class="w-full"
+									></p-dropdown>
 								</div>
 							</div>
 
 							<!-- Terza riga -->
 							<div class="form-row">
 								<div class="form-field-col">
-									<label for="measurementSystem">Measurement System:</label>
-									<p-dropdown formControlName="measurementSystem" [options]="measurementOptions"
-												optionLabel="label" optionValue="value" class="w-full"></p-dropdown>
+									<label for="measurementSystem"
+										>Measurement System:</label
+									>
+									<p-dropdown
+										formControlName="measurementSystem"
+										[options]="measurementOptions"
+										optionLabel="label"
+										optionValue="value"
+										class="w-full"
+									></p-dropdown>
 								</div>
 								<div class="form-field-col">
-									<label for="glassPreference">Glass Preference:</label>
-									<input id="glassPreference" type="text" formControlName="glassPreference" pInputText class="w-full" />
+									<label for="glassPreference"
+										>Glass Preference:</label
+									>
+									<input
+										id="glassPreference"
+										type="text"
+										formControlName="glassPreference"
+										pInputText
+										class="w-full"
+									/>
 								</div>
 							</div>
 
 							<!-- Quarta riga -->
 							<div class="form-row">
 								<div class="form-field-col">
-									<label for="baseIngredientPreference">Base Ingredient Preference:</label>
-									<input id="baseIngredientPreference" type="text" formControlName="baseIngredientPreference" pInputText class="w-full" />
+									<label for="baseIngredientPreference"
+										>Base Ingredient Preference:</label
+									>
+									<input
+										id="baseIngredientPreference"
+										type="text"
+										formControlName="baseIngredientPreference"
+										pInputText
+										class="w-full"
+									/>
 								</div>
 								<div class="form-field-col">
-									<label for="showMyCocktails" class="flex items-center gap-2 h-full pt-6">
-										<p-checkbox formControlName="showMyCocktails" [binary]="true" inputId="showMyCocktails"></p-checkbox>
+									<label
+										for="showMyCocktails"
+										class="flex items-center gap-2 h-full pt-6"
+									>
+										<p-checkbox
+											formControlName="showMyCocktails"
+											[binary]="true"
+											inputId="showMyCocktails"
+										></p-checkbox>
 										<span>Show My Cocktails to Others</span>
 									</label>
 								</div>
@@ -222,25 +433,53 @@
 							<!-- Bio a larghezza piena -->
 							<div class="form-field">
 								<label for="bio">Bio:</label>
-								<textarea pTextarea id="bio" formControlName="bio" [autoResize]="true" rows="3" class="w-full"></textarea>
+								<textarea
+									pTextarea
+									id="bio"
+									formControlName="bio"
+									[autoResize]="true"
+									rows="3"
+									class="w-full"
+								></textarea>
 							</div>
 
 							<!-- Messaggi di stato/errore -->
-							<div *ngIf="successMessage()" class="p-message p-message-success">
+							<div
+								*ngIf="successMessage()"
+								class="p-message p-message-success"
+							>
 								<i class="pi pi-check"></i>
 								<span>{{ successMessage() }}</span>
 							</div>
 
-							<div *ngIf="errorMessage()" class="p-message p-message-error">
+							<div
+								*ngIf="errorMessage()"
+								class="p-message p-message-error"
+							>
 								<i class="pi pi-times"></i>
 								<span>{{ errorMessage() }}</span>
 							</div>
 
 							<!-- Pulsanti -->
 							<div class="button-group flex justify-between">
-								<p-button (onClick)="activateCallback(1)" label="Back" severity="secondary"></p-button>
-								<p-button (onClick)="skipSetup()" label="Skip Setup" severity="secondary"></p-button>
-								<p-button (onClick)="savePreferencesAndGoNext(activateCallback)" label="Save and Continue"></p-button>
+								<p-button
+									(onClick)="activateCallback(1)"
+									label="Back"
+									severity="secondary"
+								></p-button>
+								<p-button
+									(onClick)="skipSetup()"
+									label="Skip Setup"
+									severity="secondary"
+								></p-button>
+								<p-button
+									(onClick)="
+										savePreferencesAndGoNext(
+											activateCallback
+										)
+									"
+									label="Save and Continue"
+								></p-button>
 							</div>
 						</form>
 					</ng-template>
@@ -248,91 +487,180 @@
 
 				<!-- Step 3: Profile Image -->
 				<p-step-panel [value]="3">
-					<ng-template pTemplate="content" let-activateCallback="activateCallback">
+					<ng-template
+						pTemplate="content"
+						let-activateCallback="activateCallback"
+					>
 						<div class="flex flex-col gap-4">
-							<h3 class="text-center">{{"UploadProfileImage" | translate }}</h3>
-
+							<h3 class="text-center">
+								{{ "UploadProfileImage" | translate }}
+							</h3>
 
 							<div class="flex justify-center">
 								<div class="profile-image-container">
-									<img *ngIf="profileImageUrl()" [src]="profileImageUrl()" alt="Profile image" class="profile-image" />
-									<div *ngIf="!profileImageUrl()" class="profile-image-placeholder">
-										<i class="pi pi-user" style="font-size: 2rem"></i>
+									<img
+										*ngIf="profileImageUrl()"
+										[src]="profileImageUrl()"
+										alt="Profile image"
+										class="profile-image"
+									/>
+									<div
+										*ngIf="!profileImageUrl()"
+										class="profile-image-placeholder"
+									>
+										<i
+											class="pi pi-user"
+											style="font-size: 2rem"
+										></i>
 									</div>
 								</div>
 							</div>
 
-							<p-fileUpload name="profile-image"
-										  [url]="profileImageUploadUrl"
-										  (onSelect)="onSelectFiles($event)"
-										  (onError)="onProfileImageUploadError($event)"
-										  (onProgress)="onProgress($event)"
-										  [showCancelButton]="false"
-										  [showUploadButton]="false"
-										  accept="image/*"
-										  [maxFileSize]="1000000"
-										  styleClass="p-fileupload-primary">
-								<ng-template pTemplate="header"
-											 let-files="files"
-											 let-chooseCallback="chooseCallback"
-											 let-clearCallback="clearCallback"
-											 let-uploadCallback="uploadCallback">
-									<div class="flex flex-wrap justify-between items-center flex-1 gap-4">
+							<p-fileUpload
+								name="profile-image"
+								[url]="profileImageUploadUrl"
+								(onSelect)="onSelectFiles($event)"
+								(onError)="onProfileImageUploadError($event)"
+								(onProgress)="onProgress($event)"
+								[showCancelButton]="false"
+								[showUploadButton]="false"
+								accept="image/*"
+								[maxFileSize]="1000000"
+								styleClass="p-fileupload-primary"
+							>
+								<ng-template
+									pTemplate="header"
+									let-files="files"
+									let-chooseCallback="chooseCallback"
+									let-clearCallback="clearCallback"
+									let-uploadCallback="uploadCallback"
+								>
+									<div
+										class="flex flex-wrap justify-between items-center flex-1 gap-4"
+									>
 										<div class="flex gap-2">
-											<p-button (click)="choose($event, chooseCallback)"
-													  icon="pi pi-images"
-													  [rounded]="true"
-													  [outlined]="true"></p-button>
-											<p-button (click)="initiateUpload(uploadCallback)"
-													  icon="pi pi-cloud-upload"
-													  [rounded]="true"
-													  [outlined]="true"
-													  severity="success"
-													  [disabled]="!filesToUpload || filesToUpload.length === 0"></p-button>
-											<p-button (click)="onClearTemplatingUpload(clearCallback)"
-													  icon="pi pi-times"
-													  [rounded]="true"
-													  [outlined]="true"
-													  severity="danger"
-													  [disabled]="!filesToUpload || filesToUpload.length === 0"></p-button>
+											<p-button
+												(click)="
+													choose(
+														$event,
+														chooseCallback
+													)
+												"
+												icon="pi pi-images"
+												[rounded]="true"
+												[outlined]="true"
+											></p-button>
+											<p-button
+												(click)="
+													initiateUpload(
+														uploadCallback
+													)
+												"
+												icon="pi pi-cloud-upload"
+												[rounded]="true"
+												[outlined]="true"
+												severity="success"
+												[disabled]="
+													!filesToUpload ||
+													filesToUpload.length === 0
+												"
+											></p-button>
+											<p-button
+												(click)="
+													onClearTemplatingUpload(
+														clearCallback
+													)
+												"
+												icon="pi pi-times"
+												[rounded]="true"
+												[outlined]="true"
+												severity="danger"
+												[disabled]="
+													!filesToUpload ||
+													filesToUpload.length === 0
+												"
+											></p-button>
 										</div>
-										<p-progressBar [value]="totalSizePercent"
-													   [showValue]="false"
-													   class="w-full"
-													   styleClass="md:w-20rem h-1 w-full md:ml-auto">
+										<p-progressBar
+											[value]="totalSizePercent"
+											[showValue]="false"
+											class="w-full"
+											styleClass="md:w-20rem h-1 w-full md:ml-auto"
+										>
 											<span class="whitespace-nowrap">
-												{{ totalSize | number }}B / {{ totalSizePercent }}%
+												{{ totalSize | number }}B /
+												{{ totalSizePercent }}%
 											</span>
 										</p-progressBar>
 									</div>
 								</ng-template>
 								<!-- Content template for displaying selected/uploaded files -->
-								<ng-template pTemplate="content"
-											 let-files="files"
-											 let-removeFileCallback="removeFileCallback">
+								<ng-template
+									pTemplate="content"
+									let-files="files"
+									let-removeFileCallback="removeFileCallback"
+								>
 									<div class="flex flex-col gap-8 pt-4">
-										<div *ngIf="filesToUpload && filesToUpload.length > 0">
+										<div
+											*ngIf="
+												filesToUpload &&
+												filesToUpload.length > 0
+											"
+										>
 											<h5>{{ "pending" | translate }}</h5>
 											<div class="flex flex-wrap gap-4">
-												<div *ngFor="let file of filesToUpload; let i = index"
-													 class="p-8 rounded-border flex flex-col border border-surface items-center gap-4">
+												<div
+													*ngFor="
+														let file of filesToUpload;
+														let i = index
+													"
+													class="p-8 rounded-border flex flex-col border border-surface items-center gap-4"
+												>
 													<div>
-														<img role="presentation"
-															 [alt]="file.name"
-															 [src]="file.objectURL ? file.objectURL : ''"
-															 width="100"
-															 height="50" />
+														<img
+															role="presentation"
+															[alt]="file.name"
+															[src]="
+																file.objectURL
+																	? file.objectURL
+																	: ''
+															"
+															width="100"
+															height="50"
+														/>
 													</div>
-													<span class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden">
+													<span
+														class="font-semibold text-ellipsis max-w-60 whitespace-nowrap overflow-hidden"
+													>
 														{{ file.name }}
 													</span>
-													<div>{{ formatSize(file.size) }}</div>
-													<p-badge [value]="'pending' | translate" severity="warn"></p-badge>
-													<p-button icon="pi pi-times"
-															  (click)="onRemoveTemplatingFile(file, removeFileCallback, i)"
-															  [outlined]="true"
-															  [rounded]="true"
-															  severity="danger"></p-button>
+													<div>
+														{{
+															formatSize(
+																file.size
+															)
+														}}
+													</div>
+													<p-badge
+														[value]="
+															'pending'
+																| translate
+														"
+														severity="warn"
+													></p-badge>
+													<p-button
+														icon="pi pi-times"
+														(click)="
+															onRemoveTemplatingFile(
+																file,
+																removeFileCallback,
+																i
+															)
+														"
+														[outlined]="true"
+														[rounded]="true"
+														severity="danger"
+													></p-button>
 												</div>
 											</div>
 										</div>
@@ -340,18 +668,34 @@
 								</ng-template>
 
 								<ng-template pTemplate="empty">
-									<div class="flex items-center justify-center flex-col min-h-[200px]">
+									<div
+										class="flex items-center justify-center flex-col min-h-[200px]"
+									>
 										<i class="pi pi-cloud-upload"></i>
-										<p class="mt-6 mb-0">{{ "dragAndDropPrompt" | translate }}</p>
+										<p class="mt-6 mb-0">
+											{{
+												"dragAndDropPrompt" | translate
+											}}
+										</p>
 									</div>
 								</ng-template>
 							</p-fileUpload>
 
-
 							<div class="button-group flex justify-between mt-4">
-								<p-button (onClick)="activateCallback(2)" [label]="'Back' | translate" severity="secondary"></p-button>
-								<p-button (onClick)="skipSetup()" [label]="'Skip' | translate" severity="secondary"></p-button>
-								<p-button (onClick)="finishSetup()" [label]="'FinishSetup' | translate"></p-button>
+								<p-button
+									(onClick)="activateCallback(2)"
+									[label]="'Back' | translate"
+									severity="secondary"
+								></p-button>
+								<p-button
+									(onClick)="skipSetup()"
+									[label]="'Skip' | translate"
+									severity="secondary"
+								></p-button>
+								<p-button
+									(onClick)="finishSetup()"
+									[label]="'FinishSetup' | translate"
+								></p-button>
 							</div>
 						</div>
 					</ng-template>
