@@ -7,7 +7,9 @@ import { ButtonModule } from 'primeng/button';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { SelectModule } from 'primeng/select';
+import { DropdownModule } from 'primeng/dropdown';
+import { Router } from '@angular/router';
+
 @Component({
 	selector: 'app-settings',
 	standalone: true,
@@ -19,7 +21,7 @@ import { SelectModule } from 'primeng/select';
 		InputSwitchModule,
 		ToastModule,
 		TranslateModule,
-		SelectModule,
+		DropdownModule,
 	],
 	templateUrl: './settings.component.html',
 	styleUrl: './settings.component.scss',
@@ -48,7 +50,8 @@ export class SettingsComponent implements OnInit {
 	constructor(
 		private fb: FormBuilder,
 		private settingsService: SettingsService,
-		private messageService: MessageService
+		private messageService: MessageService,
+		private router: Router
 	) {
 		this.settingsForm = this.fb.group({
 			theme: [''],
@@ -106,5 +109,30 @@ export class SettingsComponent implements OnInit {
 					this.isSaving = false;
 				});
 		}
+	}
+
+	onLogout(): void {
+		this.settingsService.logout().subscribe({
+			next: () => {
+				this.messageService.add({
+					severity: 'success',
+					summary: 'Logout Success',
+					detail: 'You have been successfully logged out'
+				});
+
+				// Redirect to login page after a short delay to show the message
+				setTimeout(() => {
+					this.router.navigate(['/login']);
+				}, 1500);
+			},
+			error: (error) => {
+				console.error('Logout error:', error);
+				this.messageService.add({
+					severity: 'error',
+					summary: 'Logout Failed',
+					detail: 'An error occurred during logout. Please try again.'
+				});
+			}
+		});
 	}
 }

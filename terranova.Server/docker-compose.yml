@@ -29,6 +29,7 @@
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=${DOKER_SQL_PASSWORD}
+      - MSSQL_ENCRYPT=OPTIONAL
     ports:
       - "1433:1433"
     volumes:
