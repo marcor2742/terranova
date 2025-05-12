@@ -153,4 +153,11 @@ export class TokenStoreService {
 		}
 		return false;
 	}
+
+	logout(): void {
+		this.clearTokens();
+		if (isPlatformBrowser(this.platformId)) {
+			window.location.href = '/login';
+		}
+	}
 }

@@ -1,63 +1,64 @@
 <div class="settings-container">
-	<h2>User Settings</h2>
+	<h2>{{ 'UserSettings' | translate }}</h2>
 
 	<form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
 		<div class="setting-group">
-			<h3>Appearance</h3>
+			<h3>{{ 'Appearance' | translate }}</h3>
 
 			<div class="setting-row">
-				<label for="theme">Theme</label>
-				<p-select
-					id="theme"
-					formControlName="theme"
-					[options]="themeOptions"
-					optionLabel="label"
-					optionValue="value"
-				></p-select>
+				<label for="theme">{{ 'Theme' | translate }}</label>
+				<p-dropdown id="theme"
+							formControlName="theme"
+							[options]="themeOptions"
+							optionLabel="label"
+							optionValue="value"
+							appendTo="body"></p-dropdown>
 			</div>
 		</div>
 
 		<div class="setting-group">
-			<h3>Preferences</h3>
+			<h3>{{ 'Preferences' | translate }}</h3>
 			<div class="setting-row">
-				<label for="searchPreference">{{
-					"searchpreferences" | translate
-				}}</label>
-				<p-select
-					id="searchPreference"
-					formControlName="searchPreference"
-					[options]="searchPreferenceModes"
-					optionLabel="label"
-					optionValue="value"
-				></p-select>
+				<label for="searchPreference">
+					{{
+					"SearchPreferences" | translate
+					}}
+				</label>
+				<p-dropdown id="searchPreference"
+							formControlName="searchPreference"
+							[options]="searchPreferenceModes"
+							optionLabel="label"
+							optionValue="value"
+							appendTo="body"></p-dropdown>
 			</div>
 
 			<div class="setting-row">
-				<label for="language">Language</label>
-				<p-select
-					id="language"
-					formControlName="language"
-					[options]="languageOptions"
-					optionLabel="label"
-					optionValue="value"
-				></p-select>
+				<label for="language">{{ 'Language' | translate }}</label>
+				<p-dropdown id="language"
+							formControlName="language"
+							[options]="languageOptions"
+							optionLabel="label"
+							optionValue="value"
+							appendTo="body"></p-dropdown>
 			</div>
 
 			<div class="setting-row">
-				<label for="notifications">Enable Notifications</label>
-				<p-inputSwitch
-					id="notifications"
-					formControlName="notifications"
-				></p-inputSwitch>
+				<label for="notifications">{{ 'EnableNotifications' | translate }}</label>
+				<p-inputSwitch id="notifications"
+							   formControlName="notifications"></p-inputSwitch>
 			</div>
 		</div>
 
 		<div class="actions">
-			<p-button
-				type="submit"
-				label="Save Settings"
-				[loading]="isSaving"
-			></p-button>
+			<p-button type="button"
+					  [label]="'Logout' | translate"
+					  (click)="onLogout()"
+					  styleClass="p-button-secondary mr-2 red"></p-button>
+
+			<p-button type="submit"
+					  [label]="'SaveSettings' | translate"
+					  [loading]="isSaving"
+					  styleClass="p-button-primary"></p-button>
 		</div>
 	</form>
 </div>
