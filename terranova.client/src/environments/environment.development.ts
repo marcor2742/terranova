@@ -22,4 +22,5 @@ export const environment = {
 	cocktailImgUploadUrl: '/api/uploadCocktailImage',
 	userImgUploadUrl: '/api/uploadProfileImage',
 	addProfileInfoUrl: '/api/addProfileInfo',
+	logoutUrlextended: '/api/logoutextended',
 };

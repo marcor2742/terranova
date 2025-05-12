@@ -1,3 +1,5 @@
+import { log } from "console";
+
 export const environment = {
 	production: true,
 	authUrl: 'https://localhost:8081/api/auth',
@@ -22,5 +24,6 @@ export const environment = {
 	cocktailImgUploadUrl: 'https://localhost:8081/api/uploadCocktailImage',
 	userImgUploadUrl: 'https://localhost:8081/api/uploadProfileImage',
 	addProfileInfoUrl: 'https://localhost:8081/api/addProfileInfo',
+	logoutUrlextended: 'https://localhost:8081/api/logoutextended',
 
 };
