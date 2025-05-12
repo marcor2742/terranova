@@ -5,6 +5,7 @@ import {
 	effect,
 	Inject,
 	inject,
+	OnInit,
 	PLATFORM_ID,
 	Resource,
 	signal,
@@ -50,12 +51,12 @@ interface UploadFile extends File {
 		DropdownModule,
 		FileUploadModule,
 		ProgressBarModule,
-		BadgeModule
+		BadgeModule,
 	],
 	templateUrl: './login-page.component.html',
 	styleUrl: './login-page.component.scss',
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements OnInit {
 	private formBuilder = inject(FormBuilder);
 	private LoginService = inject(LoginService);
 	private AuthService = inject(AuthService);
@@ -91,8 +92,21 @@ export class LoginPageComponent {
 		this.loginForm.get('email')?.valueChanges.subscribe((value) => {
 			this.email.set(value || '');
 		});
+		this.isPlatformBrowserValue = isPlatformBrowser(this.platformId);
 	}
 
+	showCalendar = signal<boolean>(false);
+
+	ngOnInit(): void {
+		if (isPlatformBrowser(this.platformId)) {
+			// Delay calendar initialization to ensure DOM is ready
+			setTimeout(() => {
+				this.showCalendar.set(true);
+			}, 0);
+		}
+	}
+
+	isPlatformBrowserValue = false;
 	isValidEmail(email: string): boolean {
 		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 	}
@@ -133,10 +147,16 @@ export class LoginPageComponent {
 			this.LoginService.register(userData).subscribe({
 				next: (response) => {
 					if (response.status === 200 || response.status === 201) {
-						console.log('Registrazione avvenuta con successo, ora effettuo il login');
+						console.log(
+							'Registrazione avvenuta con successo, ora effettuo il login'
+						);
 						// Dopo la registrazione riuscita, esegui il login automaticamente
-						//this.performLoginAfterRegistration(userData.username, userData.email, userData.password);
-						this.showStepper.set(true); //debug
+						this.performLoginAfterRegistration(
+							userData.username,
+							userData.email,
+							userData.password
+						);
+						// this.showStepper.set(true); debug
 					}
 				},
 				error: (err) => {
@@ -145,14 +165,19 @@ export class LoginPageComponent {
 					// Gestione errori di registrazione
 					if (err.error?.errors) {
 						const errors = err.error.errors;
-						if (errors.Username) this.usernameError.set(errors.Username[0]);
+						if (errors.Username)
+							this.usernameError.set(errors.Username[0]);
 						if (errors.Email) this.emailError.set(errors.Email[0]);
 					} else if (err.error?.DuplicateUserName) {
-						this.usernameError.set('This username is already taken');
+						this.usernameError.set(
+							'This username is already taken'
+						);
 					} else if (err.error?.DuplicateEmail) {
 						this.emailError.set('This email is already registered');
 					} else {
-						this.errorMessage.set('Registration failed. Please try again.');
+						this.errorMessage.set(
+							'Registration failed. Please try again.'
+						);
 					}
 				},
 			});
@@ -162,7 +187,11 @@ export class LoginPageComponent {
 	}
 
 	// metodo per effettuare login dopo registrazione
-	performLoginAfterRegistration(username: string, email: string, password: string) {
+	performLoginAfterRegistration(
+		username: string,
+		email: string,
+		password: string
+	) {
 		this.LoginService.login(email, username, password).subscribe({
 			next: (response) => {
 				this.isRegistering.set(false);
@@ -180,7 +209,9 @@ export class LoginPageComponent {
 					this.errorMessage.set('');
 
 					// Messaggi di successo
-					this.successMessage.set('Registration completed successfully!');
+					this.successMessage.set(
+						'Registration completed successfully!'
+					);
 
 					// Mostra lo stepper
 					this.showStepper.set(true);
@@ -189,7 +220,9 @@ export class LoginPageComponent {
 			error: (err) => {
 				this.isRegistering.set(false);
 				console.error('Login dopo registrazione fallito:', err);
-				this.errorMessage.set('Registration successful but automatic login failed. Please login manually.');
+				this.errorMessage.set(
+					'Registration successful but automatic login failed. Please login manually.'
+				);
 				this.showEmailConfirmation.set(false);
 			},
 		});
@@ -205,7 +238,6 @@ export class LoginPageComponent {
 		// Puoi aggiungere qui la logica per salvare eventuali informazioni finali
 		this.router.navigate(['/home']);
 	}
-
 
 	login(): void {
 		this.isLoading.set(true);
@@ -253,9 +285,13 @@ export class LoginPageComponent {
 				if (err.status === 401) {
 					this.errorMessage.set('Invalid username or password');
 				} else if (err.status === 403) {
-					this.errorMessage.set('Account locked. Please contact support.');
+					this.errorMessage.set(
+						'Account locked. Please contact support.'
+					);
 				} else {
-					this.errorMessage.set(err.error?.message || 'Login failed. Please try again.');
+					this.errorMessage.set(
+						err.error?.message || 'Login failed. Please try again.'
+					);
 				}
 			},
 		});
@@ -277,14 +313,14 @@ export class LoginPageComponent {
 		glassPreference: [''],
 		baseIngredientPreference: [''],
 		bio: [''],
-		showMyCocktails: [true]
+		showMyCocktails: [true],
 	});
 
 	// Opzioni per i dropdown
 	alcoholOptions = [
 		{ label: 'No Preference', value: 'NoPreference' },
 		{ label: 'Alcoholic', value: 'Alcoholic' },
-		{ label: 'Non-Alcoholic', value: 'NonAlcoholic' }
+		{ label: 'Non-Alcoholic', value: 'NonAlcoholic' },
 	];
 
 	languageOptions = [
@@ -297,7 +333,7 @@ export class LoginPageComponent {
 
 	measurementOptions = [
 		{ label: 'Imperial (oz)', value: 'imperial' },
-		{ label: 'Metric (ml)', value: 'metric' }
+		{ label: 'Metric (ml)', value: 'metric' },
 	];
 
 	successMessage = signal<string>('');
@@ -314,7 +350,7 @@ export class LoginPageComponent {
 
 			const profileData = {
 				...this.profileForm.value,
-				birthDate: formattedDate
+				birthDate: formattedDate,
 			} as UserData;
 
 			// Chiamata API per salvare le preferenze
@@ -327,7 +363,9 @@ export class LoginPageComponent {
 				},
 				error: (err) => {
 					console.error('Error updating profile', err);
-					this.errorMessage.set('Error updating profile. Please try again.');
+					this.errorMessage.set(
+						'Error updating profile. Please try again.'
+					);
 					// Gestione degli errori di validazione
 					if (err.error?.errors) {
 						// Mostra gli errori specifici restituiti dal server
@@ -341,7 +379,7 @@ export class LoginPageComponent {
 
 					// Permettiamo comunque di procedere al prossimo step in caso di errore
 					this.activeStep.set(3);
-				}
+				},
 			});
 		} else {
 			// Marca tutti i campi come touched per mostrare gli errori
@@ -349,9 +387,9 @@ export class LoginPageComponent {
 		}
 	}
 
-
 	// Formatta la data per l'API
-	formatDate(date: Date): string {
+	formatDate(date: Date | null): string {
+		if (!date || !isPlatformBrowser(this.platformId)) return '';
 		return date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 	}
 
@@ -362,7 +400,11 @@ export class LoginPageComponent {
 	onSelectFiles(event: any): void {
 		if (!isPlatformBrowser(this.platformId) || !event) return;
 
-		if (!event.currentFiles || !Array.isArray(event.currentFiles) || event.currentFiles.length === 0) {
+		if (
+			!event.currentFiles ||
+			!Array.isArray(event.currentFiles) ||
+			event.currentFiles.length === 0
+		) {
 			return;
 		}
 
@@ -373,7 +415,11 @@ export class LoginPageComponent {
 		this.totalSizePercent = 0; // Reset progress
 	}
 
-	onRemoveTemplatingFile(file: any, removeFileCallback: Function, index: number): void {
+	onRemoveTemplatingFile(
+		file: any,
+		removeFileCallback: Function,
+		index: number
+	): void {
 		if (!isPlatformBrowser(this.platformId)) return;
 
 		if (typeof removeFileCallback === 'function') {
@@ -384,7 +430,7 @@ export class LoginPageComponent {
 		this.totalSize = 0;
 
 		if (this.filesToUpload.length > 0) {
-			this.filesToUpload.forEach(f => {
+			this.filesToUpload.forEach((f) => {
 				if (f && f.size) {
 					this.totalSize += f.size;
 				}
@@ -413,7 +459,8 @@ export class LoginPageComponent {
 			const file = this.filesToUpload[0];
 
 			// Usa FileManagementService per l'upload
-			this.fileManagementService.uploadFile(file, this.profileImageUploadUrl)
+			this.fileManagementService
+				.uploadFile(file, this.profileImageUploadUrl)
 				.subscribe({
 					next: (response) => {
 						if (response && response.url) {
@@ -421,27 +468,33 @@ export class LoginPageComponent {
 
 							// Aggiorna il profilo utente con il nuovo URL dell'immagine
 							const profileUpdateData: Partial<UserData> = {
-								propicUrl: response.url
+								propicUrl: response.url,
 							};
 
-							this.LoginService.updateProfile(profileUpdateData as UserData)
-								.subscribe({
-									next: () => {
-										console.log('Profile image updated successfully');
-										this.filesToUpload = [];
-										this.totalSize = 0;
-										this.totalSizePercent = 100;
-									},
-									error: (err) => {
-										console.error('Error updating profile with new image', err);
-									}
-								});
+							this.LoginService.updateProfile(
+								profileUpdateData as UserData
+							).subscribe({
+								next: () => {
+									console.log(
+										'Profile image updated successfully'
+									);
+									this.filesToUpload = [];
+									this.totalSize = 0;
+									this.totalSizePercent = 100;
+								},
+								error: (err) => {
+									console.error(
+										'Error updating profile with new image',
+										err
+									);
+								},
+							});
 						}
 					},
 					error: (error) => {
 						console.error('Error uploading file:', error);
 						this.totalSizePercent = 0;
-					}
+					},
 				});
 		}
 	}
@@ -479,7 +532,8 @@ export class LoginPageComponent {
 		const file = event.files[0];
 
 		// Usa il servizio FileManagementService
-		this.fileManagementService.uploadFile(file, this.profileImageUploadUrl)
+		this.fileManagementService
+			.uploadFile(file, this.profileImageUploadUrl)
 			.subscribe({
 				next: (response) => {
 					if (response && response.url) {
@@ -488,26 +542,32 @@ export class LoginPageComponent {
 
 						// Aggiorna anche il profilo utente con il nuovo URL dell'immagine
 						const profileUpdateData: Partial<UserData> = {
-							propicUrl: response.url
+							propicUrl: response.url,
 						};
 
 						// Chiamata API per aggiornare il profilo con l'URL dell'immagine
-						this.LoginService.updateProfile(profileUpdateData as UserData)
-							.subscribe({
-								next: (updateResponse) => {
-									console.log('Profile image URL updated successfully');
-								},
-								error: (err) => {
-									console.error('Error updating profile with new image URL', err);
-								}
-							});
+						this.LoginService.updateProfile(
+							profileUpdateData as UserData
+						).subscribe({
+							next: (updateResponse) => {
+								console.log(
+									'Profile image URL updated successfully'
+								);
+							},
+							error: (err) => {
+								console.error(
+									'Error updating profile with new image URL',
+									err
+								);
+							},
+						});
 					} else if (response.error) {
 						console.error('Upload error:', response.error);
 					}
 				},
 				error: (error) => {
 					this.onProfileImageUploadError(error);
-				}
+				},
 			});
 	}
 
@@ -521,5 +581,4 @@ export class LoginPageComponent {
 			activateCallback(3); // passa al prossimo step
 		}
 	}
-
 }

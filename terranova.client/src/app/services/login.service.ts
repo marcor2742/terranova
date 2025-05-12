@@ -53,9 +53,6 @@ export interface UserData {
 	propicUrl?: string;
 }
 
-
-
-
 interface RegisterResponse {
 	DuplicateUsername: string;
 	DuplicateEmail: string;
@@ -129,8 +126,7 @@ export class LoginService {
 	}
 
 	updateProfile(userData: UserData) {
-
-		return this.http.put<User>(
+		return this.http.post<User>(
 			`${environment.addProfileInfoUrl}`,
 			userData,
 			{ observe: 'response' }
