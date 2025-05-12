@@ -2,7 +2,17 @@
 	<div hlmCard class="cocktail-card">
 		@if (cocktail?.isLoading()) {
 		<hlm-skeleton class="h-full w-full" />
-		} @else if (cocktail?.error()) {
+		} @else if (isNotFound()) {
+		<!-- 404 Not Found Message -->
+		<div class="not-found-container">
+			<div class="not-found-content">
+				<i class="pi pi-exclamation-triangle not-found-icon"></i>
+				<h3>{{ "CocktailNotFound" | translate }}</h3>
+				<p>{{ "CocktailNotFoundMessage" | translate }}</p>
+				<p class="not-found-id">ID: {{ resolvedCocktailId() }}</p>
+			</div>
+		</div>
+		} @else if (cocktail?.status()) {
 		<div class="error-container">
 			Error: {{ cocktail?.error() || "Unknown error occurred" }}
 		</div>
@@ -112,9 +122,11 @@
 					<p-button
 						[icon]="isFavorite() ? 'pi pi-star-fill' : 'pi pi-star'"
 						(onClick)="toggleFavorite()"
-						[label]="isFavorite() 
-								? ('RemoveFromFavorites' | translate) 
-								: ('AddToFavorites' | translate)"
+						[label]="
+							isFavorite()
+								? ('RemoveFromFavorites' | translate)
+								: ('AddToFavorites' | translate)
+						"
 					>
 					</p-button>
 				</div>

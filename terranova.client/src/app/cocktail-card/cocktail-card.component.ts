@@ -21,7 +21,11 @@ import {
 	HlmCardTitleDirective,
 } from '@spartan-ng/ui-card-helm';
 import { HlmSkeletonComponent } from '@spartan-ng/ui-skeleton-helm';
-import { httpResource } from '@angular/common/http';
+import {
+	HttpErrorResponse,
+	httpResource,
+	HttpResponse,
+} from '@angular/common/http';
 import { Cocktail } from '../Classes/cocktail';
 import { environment } from '../../environments/environment.development';
 import { TranslateModule } from '@ngx-translate/core';
@@ -32,6 +36,7 @@ import { ButtonComponent } from '../../../projects/my-ui/src/lib/button/button.c
 import { ButtonModule } from 'primeng/button';
 import { FavoritesService } from '../services/favorites.service';
 import { inject } from '@angular/core';
+import { catchError, of } from 'rxjs';
 
 @Component({
 	selector: 'app-cocktail-card',
@@ -71,6 +76,7 @@ export class CocktailCardComponent implements OnInit {
 	// State
 	isFavorite = signal<boolean>(false);
 	resolvedCocktailId = signal<number>(-1);
+	isNotFound = signal<boolean>(false);
 
 	// Track whether we're ready to fetch data or not
 	private shouldFetchData = signal<boolean>(false);
@@ -94,17 +100,32 @@ export class CocktailCardComponent implements OnInit {
 					isPlatformBrowser(this.platformId) &&
 					this.cocktail?.hasValue()
 				) {
-					console.log(
-						`CocktailCard: Cocktail ${
-							this.cocktail.value().id
-						} loaded`
-					);
+					const cocktailData = this.cocktail.value();
+					if (!this.isValidCocktail(cocktailData)) {
+						console.error(
+							'Invalid cocktail data received:',
+							cocktailData
+						);
+						this.isNotFound.set(true);
+						return;
+					}
 					this.isFavorite.set(
 						this.cocktail.value().favorite ?? false
 					);
 				}
 			});
 		}
+	}
+
+	// Add this helper method to validate cocktail object
+	private isValidCocktail(obj: any): boolean {
+		return (
+			obj &&
+			typeof obj === 'object' &&
+			typeof obj.id === 'number' &&
+			typeof obj.name === 'string' &&
+			Array.isArray(obj.ingredients)
+		);
 	}
 
 	ngOnInit() {
