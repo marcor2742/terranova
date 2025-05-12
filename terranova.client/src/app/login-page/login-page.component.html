@@ -162,7 +162,7 @@
 				<!-- Step 2: User Preferences -->
 				<p-step-panel [value]="2">
 					<ng-template pTemplate="content" let-activateCallback="activateCallback">
-						<form [formGroup]="profileForm" class="flex flex-col gap-3 overflow-scroll">
+						<form [formGroup]="profileForm" class="flex flex-col gap-3 overflow-scroll content-with-sidebar" style="overflow-y: scroll; height: 400px; scrollbar-color: #9a9999bc transparent; ">
 							<h3 class="text-center">Set Your Preferences</h3>
 
 							<!-- Contenitore a griglia per gli input affiancati -->
