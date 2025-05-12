@@ -22,7 +22,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { StepperModule } from 'primeng/stepper';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DropdownModule } from 'primeng/dropdown';
@@ -45,7 +45,7 @@ interface UploadFile extends File {
 		StepperModule,
 		ButtonModule,
 		CheckboxModule,
-		CalendarModule,
+		DatePickerModule,
 		InputTextModule,
 		TextareaModule,
 		DropdownModule,
@@ -102,7 +102,7 @@ export class LoginPageComponent implements OnInit {
 			// Delay calendar initialization to ensure DOM is ready
 			setTimeout(() => {
 				this.showCalendar.set(true);
-			}, 0);
+			}, 200);
 		}
 	}
 

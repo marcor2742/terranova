@@ -322,18 +322,18 @@
 										class="w-full"
 									/>
 								</div>
-								<div class="form-field-col">
+								<div class="form-field-col w-full">
 									<label for="birthDate">Birth Date:</label>
 									@if (isPlatformBrowserValue &&
 									showCalendar()) {
-									<p-calendar
-										formControlName="birthDate"
-										[showIcon]="true"
-										inputId="birthDate"
-										class="w-full"
-										appendTo="body"
-										[hideOnDateTimeSelect]="true"
-									></p-calendar>
+									<p-datepicker
+									  formControlName="birthDate"
+									  [showIcon]="true"
+									  inputId="birthDate"
+									  class="w-full"
+									  [hideOnDateTimeSelect]="true"
+									  styleClass="datepicker-custom"
+									></p-datepicker>
 									} @else {
 									<!-- Fallback for server-side rendering -->
 									<input

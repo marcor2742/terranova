@@ -367,36 +367,88 @@ h3 {
 	}
 }
 
+
+
 // Fix per p-calendar e p-dropdown per renderli visibili
 ::ng-deep {
-	.p-calendar, .p-dropdown, .p-multiselect {
-		width: 100%;
-		background-color: rgba(255, 255, 255, 0.1);
-		border-radius: 8px;
+  // Move the datepicker styles out from the p-fileupload block
+  .p-datepicker, p-datepicker {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
 
-		.p-inputtext {
-			color: white;
-			background: transparent;
-			border: none;
-		}
+    .p-inputtext {
+      color: white;
+      background: transparent;
+      border: none;
+    }
 
-		.p-dropdown-trigger, .p-calendar-trigger {
-			color: rgba(255, 255, 255, 0.7);
-		}
-	}
+    .p-datepicker-trigger {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
 
-	.p-checkbox {
-		.p-checkbox-box {
-			background-color: rgba(255, 255, 255, 0.1);
-			border-color: rgba(255, 255, 255, 0.3);
-		}
-	}
+  // Fix for the datepicker overlay/popup panel
+  .p-datepicker-panel {
+    background-color: rgba(42, 42, 42, 0.95) !important; // Darker, more solid background
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 
-	.p-checkbox-checked .p-checkbox-box {
-		background-color: var(--primary-color);
-	}
-	// Override for PrimeNG to ensure text is visible
-	.p-checkbox-label, .p-dropdown-label, .p-multiselect-label {
-		color: white !important;
-	}
+    .p-datepicker-header {
+      background-color: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .p-datepicker-calendar {
+      background-color: rgba(42, 42, 42, 0.95) !important; // Add background to the calendar
+      
+      th {
+        color: rgba(255, 255, 255, 0.8);
+        background-color: rgba(42, 42, 42, 0.95) !important;
+      }
+
+      td {
+        background-color: rgba(42, 42, 42, 0.95) !important; // Add background to all cells
+        
+        > span {
+          color: white;
+          
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+          }
+        }
+        
+        &.p-datepicker-today > span {
+          background-color: rgba(var(--primary-color-rgb, 63, 81, 181), 0.3);
+          border-color: transparent;
+        }
+        
+        &.p-highlight > span {
+          background-color: var(--primary-color, #3f51b5);
+          color: var(--primary-color-text, white);
+        }
+      }
+    }
+  }
+
+  .p-calendar, .p-dropdown, .p-multiselect {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+
+    .p-inputtext {
+      color: white;
+      background: transparent;
+      border: none;
+    }
+
+    .p-dropdown-trigger, .p-calendar-trigger {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  // Rest of your existing styles...
 }
