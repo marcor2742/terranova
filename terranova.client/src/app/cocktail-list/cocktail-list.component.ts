@@ -82,7 +82,7 @@ export class CocktailListComponent implements OnInit, OnDestroy {
 			// Subscribe to search results if in search mode
 			this.subscriptions.add(
 				this.stateService.searchResults$.subscribe((results) => {
-					if (this.viewMode === 'search' && results && results.length > 0) {
+					if (this.viewMode === 'search' && results) {
 						const cocktailIds = results.map(
 							(cocktail) => cocktail.id
 						);

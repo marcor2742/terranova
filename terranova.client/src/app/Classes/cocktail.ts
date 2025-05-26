@@ -3,7 +3,7 @@ import { sample } from "rxjs";
 /**
  * Defines the different volume and weight measurement units available for ingredients
  */
-type MeasureUnit = 'imperial' | 'metric';
+export type MeasureUnit = 'imperial' | 'metric';
 
 /**
  * Represents a cocktail ingredient with name and measurements

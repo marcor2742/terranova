@@ -9,7 +9,9 @@ RUN apt-get update
 RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get -y install nodejs
+RUN apt-get -y install npm
 RUN npm install -g @angular/cli
+
 
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release

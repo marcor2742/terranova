@@ -6,13 +6,14 @@ import { TokenStoreService } from './token-store.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { TranslateService } from '@ngx-translate/core';
+import { MeasureUnit } from '../Classes/cocktail';
 
 export interface UserSettings {
 	theme: string;
 	language: string;
 	notifications: boolean;
 	searchPreference: string;
-	locale?: string;
+	locale?: MeasureUnit;
 }
 
 @Injectable({
