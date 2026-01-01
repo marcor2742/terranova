@@ -33,7 +33,7 @@
 		"@spartan-ng/brain": "0.0.1-alpha.424",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
-		"express": "^4.18.2",
+		"express": "^4.22.1",
 		"jest-editor-support": "*",
 		"jwt-decode": "^4.0.0",
 		"ngx-cookie-service": "^19.1.2",
